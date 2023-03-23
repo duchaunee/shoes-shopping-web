@@ -1,0 +1,8 @@
+export { default as Home } from "./home/Home"
+export { default as Contact } from "./contact/Contact"
+export { default as Admin } from "./admin/Admin"
+export { default as Cart } from "./cart/Cart"
+export { default as Checkout } from "./checkout/CheckOut"
+export { default as Login } from "./login/Login"
+export { default as Product } from "./product/Product"
+export { default as ProductCategory } from "./productCategory/ProductCategory"
