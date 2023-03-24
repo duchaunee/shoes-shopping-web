@@ -3,8 +3,10 @@ import "./spinning.scss"
 
 const Spinning = () => {
   return (
-    <div>
-      <div className="spinning-dots-scaled"></div>
+    <div className='flex w-full relative'>
+      <div className='mx-auto' id="preloader">
+        <div id="loader"></div>
+      </div>
     </div>
   );
 };

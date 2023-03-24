@@ -3,13 +3,13 @@ import "./cascade.scss"
 
 const cascade = () => {
   return (
-    <div>
-      <div className="cascade">
-        {Array(5).fill().map(() => (
-          <div></div>
-        ))}
+    <>
+      <div class="container">
+        <button class="button type">
+          Add to cart
+        </button>
       </div>
-    </div>
+    </>
   );
 };
 

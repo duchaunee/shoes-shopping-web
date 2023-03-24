@@ -2,10 +2,9 @@ import React from 'react';
 import { faMapMarkerAlt, faPhoneAlt, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebookF, faInstagram, faTwitter, faYoutube } from '@fortawesome/free-brands-svg-icons';
-import { navData } from '../Header/navData';
+import { navData } from '../header/navData';
 import MenuFooter from './MenuFooter';
 import Social from './Social';
-
 
 const Footer = () => {
   return (

@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Nav from './Nav';
 import './headerScroll.css'
 import { navData } from './navData';
+import ProductItem from '../product/ProductItem';
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);

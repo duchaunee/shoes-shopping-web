@@ -84,10 +84,13 @@ import React, { useEffect, useRef } from 'react';
 import './index.scss' //tailwindcss
 import './App.css' //reset css
 
-import { Header, Footer } from "./components"
+import { Cascade, Spinning } from './animation-loading';
+
+import { Header, Footer, ProductItem } from "./components"
 import { Home, Contact, Login, Cart, Admin, Checkout, Product, ProductCategory } from './pages';
-//routing
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import ButtonHover from './components/button/ButtonPrimary';
+
 
 // const Child = () => {
 //   console.log('re-render child');
@@ -104,13 +107,13 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 //   )
 // }
 
-
 //LƯU Ý: đang set height cho body là 300vh để xuất hiện thanh scroll
 const App = () => {
   return (
     <>
       <BrowserRouter>
         <Header />
+        <ProductItem />
         <Routes>
           <Route path="/" element={<Home />}></Route>
           <Route path="/gioi-thieu" element={<h2>GIOI THIEU</h2>}></Route>
