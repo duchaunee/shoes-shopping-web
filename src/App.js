@@ -88,9 +88,10 @@ import { Cascade, Spinning } from './animation-loading';
 
 import { Header, Footer, ProductItem, Card, Auth } from "./components"
 import { Home, Contact, Login, Cart, Admin, Checkout, Product, ProductCategory } from './pages';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Redirect1 } from 'react-router-dom';
 import SignUp from './components/auth/SignUp';
 import SignIn from './components/auth/SignIn';
+import { ToastContainer } from 'react-toastify';
 
 // const Child = () => {
 //   console.log('re-render child');
@@ -109,15 +110,27 @@ import SignIn from './components/auth/SignIn';
 
 //LƯU Ý: đang set height cho body là 300vh để xuất hiện thanh scroll
 const App = () => {
+  const isAuthenticated = true;
+  console.log(React.version);
+
   return (
     <>
       <BrowserRouter>
+        <ToastContainer />
         <Header />
         {/* <Card><ProductItem /></Card>
         <Card><ProductItem /></Card> */}
+        {/* <Cart></Cart> */}
         <Routes>
+
+          {/* <Route path='/dang-nhap'>
+            {isAuthenticated ? <Redirect to="/" /> : <Auth />}
+          </Route> */}
+
           <Route path="/" element={<Home />}></Route>
-          <Route path="/tai-khoan" element={<Auth />}></Route>
+          <Route path="/dang-nhap" element={<Auth />}></Route>
+          {/* <Route path="/tai-khoan" element={<Auth />}> </Route> */}
+          <Route path="edit-account" element={<h1>edit account</h1>}></Route>
           <Route path="/gioi-thieu" element={<h2>GIOI THIEU</h2>}></Route>
           <Route path="/giay-nu" element={<h2>GIÀY NỮ</h2>}></Route>
           <Route path="/giay-nam" element={<h2>GIÀY NAM</h2>}></Route>

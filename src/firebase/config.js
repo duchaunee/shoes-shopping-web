@@ -19,5 +19,3 @@ export const db = getFirestore(app)
 export const storage = getStorage(app)
 export default app;
 
-
-// convert "transition: all 0.6s ease-in-out" to tailwindcss

@@ -2,21 +2,26 @@ import React, { useState } from 'react';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { NavLink } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+//firebase
+import { createUserWithEmailAndPassword } from "firebase/auth"
+import { auth } from '../../firebase/config';
+import { Spinning } from '../../animation-loading';
 
-const SignUp = ({ signUp }) => {
+const SignUp = ({ signUp, setSignUp, signInWithGoogle }) => {
+  const [loading, setLoading] = useState(false);
   const [regInfo, setRegInfo] = useState({
-    username: "",
     email: "",
     password: "",
+    Cpassword: "",
   })
-
+  //viết regex check Username phải dài từ 3 đến 16 ký tự và chỉ chứa các ký tự chữ và khoảng trắng,kết quả trả về chỉ chứa đoạn rege, không chứa bất cứ cái gì khác
   //viết regex kiểm tra Password phải dài ít nhất 8 ký tự và không chứa các ký tự đặc biệt, kết quả trả về chỉ chứa đoạn rege, không chứa bất cứ cái gì khác
   const checkInvalidUser = () => {
-    if (!(/^[a-zA-Z0-9]{3,16}$/).test(regInfo.username)) {
+    if (!(/^[a-zA-Z\s]{3,16}$/).test(regInfo.username)) {
       return {
-        notify: "Username phải dài từ 3 đến 16 ký tự và chỉ chứa các ký tự chữ và số",
+        notify: "Username phải dài từ 3 đến 16 ký tự và chỉ chứa các ký tự chữ và khoảng trắng",
         status: false,
       };
     }
@@ -50,11 +55,33 @@ const SignUp = ({ signUp }) => {
     e.preventDefault();
 
     const { notify, status } = checkInvalidUser();
-    if (!status) console.log(notify);
-    else {
+    if (!status) {
+      toast.warn(notify, {
+        autoClose: 1500,
+      });
+    }
+    //neu status la true, tuc la input hop le het thi cho phep dang ky
+    // !loading la chi khi nao quay xong cai spinnig (dang ky xong) thi moi dc phep nhan vao button dang ky tiep
+    else if (status && !loading) {
       handleInput(e);
-      console.log(regInfo);
-      toast("Success!");
+      setLoading(true)
+      //tu dong chuyen sang dang nhap sau khi dang ky thanh cong
+      //save user data on firebase
+      createUserWithEmailAndPassword(auth, regInfo.email, regInfo.password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          setLoading(false);
+          toast.success('Đăng ký tài khoản thành công', {
+            autoClose: 1200,
+          });
+          setSignUp(false)
+        })
+        .catch((e) => {
+          setLoading(false);
+          toast.error('Tài khoản đã tồn tại', {
+            autoClose: 1200,
+          });
+        });
     };
   }
 
@@ -63,7 +90,9 @@ const SignUp = ({ signUp }) => {
       <div className={`absolute top-0 transition-all duration-[0.6s] ease-in-out w-1/2 h-full left-0 opacity-0 z-[1] ${signUp ? " translate-x-[100%] opacity-100 z-[5] animate-showSignUp" : ""}`}>
         <form onSubmit={handleSignUp} className='bg-white flex justify-center flex-col px-[50px] h-full text-center'>
           <h1 className="font-bold m-0 text-[30px]">Tạo tài khoản</h1>
-          <NavLink className="w-full my-3 flex text-white gap-[15px] items-center justify-center cursor-pointer bg-[#dd4b39]">
+          <NavLink
+            onClick={signInWithGoogle}
+            className="w-full my-3 flex text-white gap-[15px] items-center justify-center cursor-pointer bg-[#dd4b39]">
             <span className="no-underline flex h-[40px] text-[18px] items-center justify-center" href="#" >
               <FontAwesomeIcon className='icon' icon={faGoogle} />
             </span>
@@ -75,10 +104,6 @@ const SignUp = ({ signUp }) => {
             <div className="flex-grow flex-shrink w-[30px] h-[2px] inline-block bg-[#ccc]"></div>
           </span>
           <input
-            name="username"
-            className='bg-[#eee] focus:outline-none focus:shadow-shadowPrimary border-none py-3 px-[15px] my-2 w-full' type="text" placeholder="Name"
-            onChange={handleInput} />
-          <input
             name="email"
             className='bg-[#eee] focus:outline-none focus:shadow-shadowPrimary border-none py-3 px-[15px] my-2 w-full' type="text" placeholder="Email"
             onChange={handleInput} />
@@ -86,14 +111,17 @@ const SignUp = ({ signUp }) => {
             name="password"
             className='bg-[#eee] focus:outline-none focus:shadow-shadowPrimary border-none py-3 px-[15px] my-2 w-full' type="password" placeholder="Password"
             onChange={handleInput} />
+          <input
+            name="Cpassword"
+            className='bg-[#eee] focus:outline-none focus:shadow-shadowPrimary border-none py-3 px-[15px] my-2 w-full' type="password" placeholder="Nhập lại Password"
+            onChange={handleInput} />
           <button
             type="submit"
-            className='mt-[10px] bg-primary text-white text-[12px] font-bold py-3 px-[45px] tracking-[1px] uppercase transition-transform ease-in delay-[80ms] focus:outline-none'>
-            Đăng ký
+            className='mt-[10px] disabled:bg-blue-400 bg-primary text-white text-[13px] leading-5 font-bold py-3 px-[45px] tracking-[1px] uppercase transition-transform ease-in delay-[80ms] focus:outline-none'>
+            {loading ? <Spinning /> : "Đăng ký"}
           </button>
         </form>
       </div>
-      <ToastContainer />
     </>
   );
 };

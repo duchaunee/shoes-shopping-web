@@ -1,18 +1,56 @@
-import React, { useState } from 'react';
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { auth } from '../../firebase/config';
 import "./auth.scss"
 import SignIn from './SignIn';
 import SignUp from './SignUp';
+import Reset from './Reset';
 
 // Responsive: Truyền cả 2 thằng là false để nó đều cùng ở bên trái dễ responsive
 // - signIn: Truyền <SignIn signUp={false} /> là false để nó bay sang bên phải (để cùng bên phải với signUp tiện cho việc làm responsive)
 // - signUp: Truyền <SignUp signUp={false} /> là false và đổi opacity-0 thành opacity-100 ở thằng cha để nó hiện
+
+//setSignUp thành true để hiện ra sign up, thành false để hiện ra sign in
 const Auth = () => {
+  const [resetPassword, setResetPassword] = useState(false);
   const [signUp, setSignUp] = useState(false);
+  const navigate = useNavigate();
+
+  // useEffect(() => {
+  //   if (signUp) setResetPassword(false);
+  // })
+
+  const provider = new GoogleAuthProvider();
+  const signInWithGoogle = () => {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+        const user = result.user;
+        console.log('user: ', user);
+        toast.success('Đăng nhập thành công', {
+          autoClose: 1200,
+        });
+        navigate("/")
+      }).catch((e) => {
+        console.log(e.message);
+        toast.error(e.message, {
+          autoClose: 1200,
+        })
+      });
+  }
+
   return (
     <>
       <div className={`my-[35px] mx-auto bg-white shadow-shadowAuth relative overflow-hidden w-[768px] max-w-full min-h-[480px] ${signUp ? "right-panel-active" : ""}`} id="container">
-        <SignIn signUp={signUp} />
-        <SignUp signUp={signUp} />
+        {
+          resetPassword
+            ? <Reset signUp={signUp} setResetPassword={setResetPassword} />
+            : <SignIn signUp={signUp} signInWithGoogle={signInWithGoogle} setResetPassword={setResetPassword} />
+        }
+        <SignUp signUp={signUp} setSignUp={setSignUp} signInWithGoogle={signInWithGoogle} />
         {/* overlay */}
         <div className="overlay-container">
           <div className="overlay">
@@ -21,7 +59,7 @@ const Auth = () => {
               <p className="text-[14px] font-[300] leading-5 tracking-[0.5px] mt-5 mb-[30px]">Đã có tài khoản? Vui lòng đăng nhập ở đây</p>
               <button
                 onClick={() => setSignUp(false)}
-                className="  border border-solid border-white bg-transparent text-white text-[13px] font-bold py-3 px-[45px] tracking-[1px] uppercase transition-transform ease-in delay-[80ms] active:scale-95 focus:outline-none"
+                className="  border border-solid border-white bg-transparent text-white text-[13px] font-bold py-3 px-[45px] tracking-[1px] uppercase transition-transform ease-in duration-[80ms] active:scale-95 focus:outline-none"
                 id="signIn"
               >
                 Đăng nhập
@@ -32,7 +70,7 @@ const Auth = () => {
               <p className="text-[14px] font-[300] leading-5 tracking-[0.5px] mt-5 mb-[30px]">Nhập thông tin của bạn để thỏa sức mua sắm với Shoes Plus</p>
               <button
                 onClick={() => setSignUp(true)}
-                className="border border-solid border-white bg-transparent text-white text-[13px] font-bold py-3 px-[45px] tracking-[1px] uppercase transition-transform ease-in delay-[80ms] active:scale-95 focus:outline-none"
+                className="border border-solid border-white bg-transparent text-white text-[13px] font-bold py-3 px-[45px] tracking-[1px] uppercase transition-transform ease-in duration-[80ms] active:scale-95 focus:outline-none"
                 id="signUp"
               >
                 Đăng ký

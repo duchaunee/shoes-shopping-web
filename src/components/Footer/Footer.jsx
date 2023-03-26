@@ -35,11 +35,11 @@ const Footer = () => {
               </li>
               <li className='flex gap-[10px] mb-[6px] list-none'>
                 <FontAwesomeIcon className='text-white/75 text-[18px] mt-[5px]' icon={faEnvelope} />
-                <p><a className='hover:text-primary transition-all' href="mailto:group14LTW@gmail.com">group14LTW@gmail.com</a></p>
+                <p><a className='hover:text-primary transition-all' href="mailto:ThucTapCS@gmail.com">ThucTapCS@gmail.com</a></p>
               </li>
               <li className='flex gap-[10px] mb-[6px] list-none'>
                 <FontAwesomeIcon className='text-white/75 text-[18px] mt-[5px]' icon={faTwitter} />
-                <p><a className='hover:text-primary transition-all' href="skype:group14LTW?chat">group14LTW</a></p>
+                <p><a className='hover:text-primary transition-all' href="skype:ThucTapCS?chat">ThucTapCS</a></p>
               </li>
             </ul>
           </div>

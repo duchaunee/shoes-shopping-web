@@ -1,22 +1,23 @@
 //confidureStore.js
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import counterSlice, { increment } from "./counter";
+import authSlice from "./slice/authSlice";
 
-const reducer = combineReducers({
-  counter: counterSlice,
+const rootReducer = combineReducers({
+  auth: authSlice,
   // counter1: counterReducer1
 });
 
+const store = configureStore({
+  reducer: rootReducer,
+  // middleware: (gDM) => gDM().concat(loggerMiddleware)
+})
 // const loggerMiddleware = (store) => (next) => (action) => {
 //   console.log(action);
 //   //call next(action) to transfer action to reducer to update state and re-rennder
 //   next(action)
 // }
 
-const store = configureStore({
-  reducer,
-  // middleware: (gDM) => gDM().concat(loggerMiddleware)
-})
+
 
 // store.subscribe(() => {
 //   console.log(`current state ${store.getState().counter.count}`);

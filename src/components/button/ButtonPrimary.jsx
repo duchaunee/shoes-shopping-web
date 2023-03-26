@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Spinning } from '../../animation-loading';
 import "./ButtonPrimary.scss"
 
-const ButtonHover = ({ text, loading, onClick }) => {
+const ButtonPrimary = ({ text, loading, onClick }) => {
   return (
     <div>
       <div className="mt-[10px] button-hover">
@@ -18,4 +18,4 @@ const ButtonHover = ({ text, loading, onClick }) => {
   );
 };
 
-export default ButtonHover;
+export default ButtonPrimary;
