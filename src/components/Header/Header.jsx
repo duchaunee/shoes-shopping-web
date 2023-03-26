@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Nav from './Nav';
 import './headerScroll.css'
 import { navData } from './navData';
-import ProductItem from '../product/ProductItem';
+import { NavLink } from 'react-router-dom';
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -28,15 +28,17 @@ const Header = () => {
 
   return (
     <>
-      <div className={`${scrolled ? "" : "absolute"} h-[133px] w-full`}></div>
-      <header className={`${scrolled ? "stuck fixed" : "relative"} h-[133px] w-full text-white/80`}>
+      <div className={`${scrolled ? "" : "absolute"} z-[1000] h-[133px] w-full`}></div>
+      <header className={`${scrolled ? "stuck fixed" : "relative"} z-[1000] h-[133px] w-full text-white/80`}>
         <div className="h-[80px] bg-[#020202]">
           <div className="h-full flex items-center justify-between mx-auto px-[15px] max-w-[1230px]">
             <div>
-              <a className='text-[13px] py-[10px] font-bold tracking-[0.32px] no-underline uppercase text-white/80' href="">Đăng nhập / Đăng ký</a>
+              <NavLink
+                to="/tai-khoan"
+                className='text-[13px] py-[10px] font-bold tracking-[0.32px] no-underline uppercase text-white/80' href="">Đăng nhập / Đăng ký</NavLink>
             </div>
             <div className="py-[10px]">
-              DUCHAU LOGO
+              ShoesPlus LOGO
             </div>
             <div className="flex gap-[15px] items-center">
               <div className="relative">

@@ -86,11 +86,11 @@ import './App.css' //reset css
 
 import { Cascade, Spinning } from './animation-loading';
 
-import { Header, Footer, ProductItem } from "./components"
+import { Header, Footer, ProductItem, Card, Auth } from "./components"
 import { Home, Contact, Login, Cart, Admin, Checkout, Product, ProductCategory } from './pages';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import ButtonHover from './components/button/ButtonPrimary';
-
+import SignUp from './components/auth/SignUp';
+import SignIn from './components/auth/SignIn';
 
 // const Child = () => {
 //   console.log('re-render child');
@@ -113,18 +113,17 @@ const App = () => {
     <>
       <BrowserRouter>
         <Header />
-        <ProductItem />
+        {/* <Card><ProductItem /></Card>
+        <Card><ProductItem /></Card> */}
         <Routes>
           <Route path="/" element={<Home />}></Route>
+          <Route path="/tai-khoan" element={<Auth />}></Route>
           <Route path="/gioi-thieu" element={<h2>GIOI THIEU</h2>}></Route>
           <Route path="/giay-nu" element={<h2>GIÀY NỮ</h2>}></Route>
           <Route path="/giay-nam" element={<h2>GIÀY NAM</h2>}></Route>
           <Route path="/giay-tre-em" element={<h2>GIÀY TRẺ EM</h2>}></Route>
           <Route path="/tin-tuc" element={<h2>TIN TỨC</h2>}></Route>
           <Route path="/lien-he" element={<h2>LIÊN HỆ</h2>}></Route>
-          {/* <Route path="/cart/*" element={<Cart />}>
-            <Route path="contact" element={<Contact />}></Route>
-          </Route> */}
         </Routes>
         <Footer />
       </BrowserRouter>

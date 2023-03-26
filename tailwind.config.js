@@ -10,10 +10,14 @@ module.exports = {
         'secondary': '#d26e4b'
       },
       boxShadow: {
-        'shadowPrimary': 'inset 0 0 0 100px rgba(0,0,0,0.2)',
-      }
+        'shadowPrimary': '0 2px 3px -2px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.24)',
+        'shadowHover': '0 4px 10px -4px rgba(0,0,0,0.16), 0 4px 10px rgba(0,0,0,0.23)',
+        'shadowAuth': '0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22)'
+      },
+      animation: {
+        'showSignUp': 'show 0.6s',
+      },
     }
   },
   plugins: [],
 }
-
