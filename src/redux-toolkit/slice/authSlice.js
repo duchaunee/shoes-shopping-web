@@ -2,9 +2,9 @@ import { createSlice } from "@reduxjs/toolkit"
 
 const initialState = {
   isLoggedIn: false,
-  email: null,
-  userName: null,
-  userID: null,
+  email: "",
+  userName: "",
+  userID: "",
 }
 
 export const authSlice = createSlice({
@@ -17,13 +17,14 @@ export const authSlice = createSlice({
       state.email = email;
       state.userName = userName;
       state.userID = userID;
+      console.log(action.payload);
     },
     REMOVE_ACTIVE_USER: (state, action) => {
       state.isLoggedIn = false;
-      state.email = null;
-      state.userName = null;
-      state.userID = null;
-    }
+      state.email = "";
+      state.userName = "";
+      state.userID = "";
+    },
   }
 })
 

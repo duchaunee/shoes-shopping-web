@@ -1,25 +1,23 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { faSearch, faShoppingCart, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Nav from './Nav';
 import './headerScroll.scss'
 import { navData } from './navData';
 import DropDownAccount from './DropDownAccount';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { onAuthStateChanged, signOut, updateEmail } from 'firebase/auth';
 import { auth } from '../../firebase/config';
 import { toast, ToastContainer } from 'react-toastify';
 import { NavLink } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { REMOVE_ACTIVE_USER, SET_ACTIVE_USER } from '../../redux-toolkit/slice/authSlice';
 
-const Header = () => {
+const Header = ({ logined, setLogined }) => {
   // khi reload lại window, logined bị chạy lại const [logined, setLogined] = useState(false) nên nó sẽ nhấp nháy ở "Đăng nhập/đăng xuất" (logined = false) rồi mới chuyển qua Tài khoản (logined = false), do đó phải khởi tạo lấy giá trị từ localstrogate
-  const [logined, setLogined] = useState(localStorage.getItem('logined') === 'true' ? true : false)
+  // const [logined, setLogined] = useState(localStorage.getItem('logined') === 'true' ? true : false)
   const [scrolled, setScrolled] = useState(false);
   const [hoverAccount, setHoverAccount] = useState(false)
-  const [displayName, setDisplayName] = useState("")
   const dispatch = useDispatch()
-
 
   const logoutUser = () => {
     signOut(auth).then(() => {
@@ -39,33 +37,35 @@ const Header = () => {
     //Nhận diện người dùng đã log in vào hay chưa
     onAuthStateChanged(auth, (user) => {
       if (user) {
+        // if (user.emailVerified) {
+        //   console.log(user.email);
+        //   updateEmail(user, user.email).then(() => {
+        //     console.error("Thay đổi email thành công");
+        //   }).catch((error) => {
+        //     console.error("Thay đổi email thất bại:", error);
+        //   });
+        // } else {
+        //   console.log("Please verify your email address to update your email.");
+        // }
+
         const uid = user.uid;
         setLogined(true)
         setHoverAccount(false)
         localStorage.setItem('logined', true);
-
         //login bằng gg thì nó có displayname là tên gg, còn login bằng mail thì nó là null, khi đó setusername là tên gmail luôn
-
-        if (user.displayName == null) {
-          setDisplayName(user.email.slice(0, -10).charAt(0).toUpperCase() + (user.email.slice(0, -10)).slice(1))
-        }
-        else setDisplayName(user.displayName)
-
         dispatch(
           SET_ACTIVE_USER({
             email: user.email,
-            userName: user.displayName || displayName,
+            userName: user.displayName || (user.email.slice(0, -10).charAt(0).toUpperCase() + (user.email.slice(0, -10)).slice(1)),
             userID: user.uid,
           })
         )
-
-        //Nhận diện người dùng đã log out vào hay chưa
+        //Nhận diện người dùng đã log out hay chưa
       } else {
-        setDisplayName("")
         dispatch(REMOVE_ACTIVE_USER())
       }
     });
-  }, [dispatch, displayName])
+  }, [])
 
   const handleScroll = useCallback(() => {
     if (window.pageYOffset > 222) {
@@ -99,7 +99,7 @@ const Header = () => {
                     className='cursor-pointer text-[13px] py-[10px] font-bold tracking-[0.32px] no-underline  text-white/80 hover:text-white transition-all ease-linear duration-200 relative'>
                     <FontAwesomeIcon icon={faUser} className='cursor-pointer pr-[10px] text-[18px]' />
                     <p className='uppercase inline-block'>Tài khoản</p>
-                    {hoverAccount ? <DropDownAccount logined={logined} logoutUser={logoutUser} /> : ""}
+                    {hoverAccount ? <DropDownAccount logined={logined} logoutUser={logoutUser} setHoverAccount={setHoverAccount} /> : ""}
                   </div>
                   : <NavLink
                     to="/dang-nhap"
@@ -119,7 +119,7 @@ const Header = () => {
               <div className="flex gap-[10px] cursor-pointer py-[10px] text-[13px] font-bold items-center no-underline tracking-[0.32px] uppercase hover:text-white transition-all ease-linear duration-200">
                 <span className="header-cart-title">
                   Giỏ hàng /
-                  <span className="header-cart-price">1,250,000</span>
+                  <span className="header-cart-price">{logined ? "1,250,000" : "0"} </span>
                   ₫
                 </span>
                 <span className="text-[22px]">
@@ -147,4 +147,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default memo(Header);

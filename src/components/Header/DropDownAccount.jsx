@@ -4,13 +4,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { NavLink } from 'react-router-dom';
 import './headerScroll.scss'
 
-const DropDownAccount = ({ logined, logoutUser }) => {
+const DropDownAccount = ({ logined, logoutUser, setHoverAccount }) => {
+
   return (
     <>
       <ul
         className="absolute top-full text-[16px] min-w-[240px] rounded-[3px] bg-white shadow-shadowAccount drop-down-account z-[2] mt-3">
         <li className='hover:text-black transition-all ease-linear duration-100 font-medium text-[#838586] px-5 py-[13px] rounded-[3px]'>
-          <NavLink className='flex items-center gap-1'>
+          <NavLink
+            onClick={() => setHoverAccount(false)}
+            className='flex items-center gap-1'>
             <FontAwesomeIcon
               icon={faTruckMoving}
               className='cursor-pointer pr-[10px] text-[18px]' />
@@ -19,7 +22,10 @@ const DropDownAccount = ({ logined, logoutUser }) => {
         </li>
 
         <li className='hover:text-black transition-all ease-linear duration-100 font-medium text-[#838586] px-5 py-[13px] rounded-[3px]'>
-          <NavLink className='flex items-center gap-1'>
+          <NavLink
+            to="/tai-khoan"
+            onClick={() => setHoverAccount(false)}
+            className='flex items-center gap-1'>
             <FontAwesomeIcon
               icon={faInfoCircle}
               className='cursor-pointer pr-[10px] text-[18px]' />
@@ -29,7 +35,7 @@ const DropDownAccount = ({ logined, logoutUser }) => {
 
         <li className='hover:text-black transition-all ease-linear duration-100 font-medium text-[#838586] px-5 py-[13px] rounded-[3px]'>
           <NavLink
-            to='/tai-khoan'
+            to='/'
             onClick={logoutUser}
             className='flex items-center gap-1'>
             <FontAwesomeIcon

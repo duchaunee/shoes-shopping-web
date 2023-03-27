@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, { memo, useState } from 'react';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { NavLink } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 //firebase
-import { createUserWithEmailAndPassword } from "firebase/auth"
+import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth"
 import { auth } from '../../firebase/config';
 import { Spinning } from '../../animation-loading';
+
 
 const SignUp = ({ signUp, setSignUp, signInWithGoogle }) => {
   const [loading, setLoading] = useState(false);
@@ -19,12 +20,13 @@ const SignUp = ({ signUp, setSignUp, signInWithGoogle }) => {
   //viết regex check Username phải dài từ 3 đến 16 ký tự và chỉ chứa các ký tự chữ và khoảng trắng,kết quả trả về chỉ chứa đoạn rege, không chứa bất cứ cái gì khác
   //viết regex kiểm tra Password phải dài ít nhất 8 ký tự và không chứa các ký tự đặc biệt, kết quả trả về chỉ chứa đoạn rege, không chứa bất cứ cái gì khác
   const checkInvalidUser = () => {
-    if (!(/^[a-zA-Z\s]{3,16}$/).test(regInfo.username)) {
+    if (regInfo.password != regInfo.Cpassword) {
       return {
-        notify: "Username phải dài từ 3 đến 16 ký tự và chỉ chứa các ký tự chữ và khoảng trắng",
+        notify: "Mật khẩu mới không chính xác",
         status: false,
       };
     }
+
     if (!(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/).test(regInfo.email)) {
       return {
         notify: "Hãy nhập đúng định dạng email",
@@ -34,12 +36,13 @@ const SignUp = ({ signUp, setSignUp, signInWithGoogle }) => {
     // 
     if (!(/^[a-zA-Z0-9]{8,}$/).test(regInfo.password)) {
       return {
-        notify: "Password phải dài ít nhất 8 ký tự và không chứa các ký tự đặc biệt",
+        notify: "Mật khẩu phải dài ít nhất 8 ký tự và không chứa các ký tự đặc biệt",
         status: false,
       };
     }
+    //
     return {
-      notify: "Sign up success",
+      notify: "Đăng nhập thành công",
       status: true,
     };
   }
@@ -56,17 +59,17 @@ const SignUp = ({ signUp, setSignUp, signInWithGoogle }) => {
 
     const { notify, status } = checkInvalidUser();
     if (!status) {
-      toast.warn(notify, {
+      toast.error(notify, {
         autoClose: 1500,
       });
     }
     //neu status la true, tuc la input hop le het thi cho phep dang ky
     // !loading la chi khi nao quay xong cai spinnig (dang ky xong) thi moi dc phep nhan vao button dang ky tiep
+    //TỰ ĐỘNG ĐĂNG NHẬP SAU KHI TẠO XONG TÀI KHOẢN
     else if (status && !loading) {
+      // console.log('createUserWithEmailAndPassword');
       handleInput(e);
       setLoading(true)
-      //tu dong chuyen sang dang nhap sau khi dang ky thanh cong
-      //save user data on firebase
       createUserWithEmailAndPassword(auth, regInfo.email, regInfo.password)
         .then((userCredential) => {
           const user = userCredential.user;
@@ -126,4 +129,4 @@ const SignUp = ({ signUp, setSignUp, signInWithGoogle }) => {
   );
 };
 
-export default SignUp;
+export default memo(SignUp);

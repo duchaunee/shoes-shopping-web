@@ -1,5 +1,5 @@
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import React, { useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { auth } from '../../firebase/config';
@@ -18,18 +18,13 @@ const Auth = () => {
   const [signUp, setSignUp] = useState(false);
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   if (signUp) setResetPassword(false);
-  // })
-
   const provider = new GoogleAuthProvider();
-  const signInWithGoogle = () => {
+  const signInWithGoogle = useCallback(() => {
     signInWithPopup(auth, provider)
       .then((result) => {
         const credential = GoogleAuthProvider.credentialFromResult(result);
         const token = credential.accessToken;
         const user = result.user;
-        console.log('user: ', user);
         toast.success('Đăng nhập thành công', {
           autoClose: 1200,
         });
@@ -40,7 +35,7 @@ const Auth = () => {
           autoClose: 1200,
         })
       });
-  }
+  })
 
   return (
     <>
@@ -84,4 +79,4 @@ const Auth = () => {
   );
 };
 
-export default Auth;
+export default memo(Auth);

@@ -1,9 +1,11 @@
 import React from 'react';
+import { Card, ProductItem } from '../../components';
 
 const Home = () => {
   return (
-    <div>
-      <h1>Home Page</h1>
+    <div className='m-6'>
+      <Card><ProductItem /></Card>
+      <Card><ProductItem /></Card>
     </div>
   );
 };

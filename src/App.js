@@ -80,18 +80,17 @@
 //     </div>
 //   )
 // };
-import React, { useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import './index.scss' //tailwindcss
 import './App.css' //reset css
 
-import { Cascade, Spinning } from './animation-loading';
-
 import { Header, Footer, ProductItem, Card, Auth } from "./components"
 import { Home, Contact, Login, Cart, Admin, Checkout, Product, ProductCategory } from './pages';
-import { BrowserRouter, Route, Routes, Redirect1 } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import SignUp from './components/auth/SignUp';
 import SignIn from './components/auth/SignIn';
 import { ToastContainer } from 'react-toastify';
+import InfoAccount from './pages/infoAccount/InfoAccount';
 
 // const Child = () => {
 //   console.log('re-render child');
@@ -110,33 +109,30 @@ import { ToastContainer } from 'react-toastify';
 
 //LƯU Ý: đang set height cho body là 300vh để xuất hiện thanh scroll
 const App = () => {
-  const isAuthenticated = true;
-  console.log(React.version);
+  const [logined, setLogined] = useState(localStorage.getItem('logined') === 'true' ? true : false)
+  // console.log('logined afer app ', logined);
 
   return (
     <>
       <BrowserRouter>
         <ToastContainer />
-        <Header />
-        {/* <Card><ProductItem /></Card>
-        <Card><ProductItem /></Card> */}
-        {/* <Cart></Cart> */}
+        <Header logined={logined} setLogined={setLogined} />
+
         <Routes>
-
-          {/* <Route path='/dang-nhap'>
-            {isAuthenticated ? <Redirect to="/" /> : <Auth />}
-          </Route> */}
-
           <Route path="/" element={<Home />}></Route>
-          <Route path="/dang-nhap" element={<Auth />}></Route>
-          {/* <Route path="/tai-khoan" element={<Auth />}> </Route> */}
-          <Route path="edit-account" element={<h1>edit account</h1>}></Route>
+          {/* khi dang nhap roi khong dc phep vao trang dang-nhap nữa */}
+          <Route path='/dang-nhap' element={logined ? <Navigate to="/" /> : <Auth />} />;
+          {/* Khi dang xuat roi thi khong duoc phep vao trang tai-khoan */}
+          <Route path='/tai-khoan' element={logined ? <InfoAccount /> : <Navigate to="/" />} />;
+
+          <Route path="/edit-account" element={<h1>edit account</h1>}></Route>
           <Route path="/gioi-thieu" element={<h2>GIOI THIEU</h2>}></Route>
           <Route path="/giay-nu" element={<h2>GIÀY NỮ</h2>}></Route>
           <Route path="/giay-nam" element={<h2>GIÀY NAM</h2>}></Route>
           <Route path="/giay-tre-em" element={<h2>GIÀY TRẺ EM</h2>}></Route>
           <Route path="/tin-tuc" element={<h2>TIN TỨC</h2>}></Route>
           <Route path="/lien-he" element={<h2>LIÊN HỆ</h2>}></Route>
+          <Route path="/*" element={<h2>404 page</h2>}></Route>
         </Routes>
         <Footer />
       </BrowserRouter>

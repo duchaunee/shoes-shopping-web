@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { memo, useState } from 'react';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -24,9 +24,8 @@ const SignIn = ({ signUp, signInWithGoogle, setResetPassword }) => {
 
   const handleSignIn = (e) => {
     e.preventDefault();
-
     setLoading(true)
-    // console.log(loginInfo);
+
     if (!loading) {
       signInWithEmailAndPassword(auth, loginInfo.email, loginInfo.password)
         .then((userCredential) => {
@@ -88,4 +87,4 @@ const SignIn = ({ signUp, signInWithGoogle, setResetPassword }) => {
   );
 };
 
-export default SignIn;
+export default memo(SignIn);
