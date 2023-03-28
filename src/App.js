@@ -91,6 +91,8 @@ import SignUp from './components/auth/SignUp';
 import SignIn from './components/auth/SignIn';
 import { ToastContainer } from 'react-toastify';
 import InfoAccount from './pages/infoAccount/InfoAccount';
+import { PermissionDenied } from './components/admin';
+import HomeAdmin from './components/admin/home/HomeAdmin';
 
 // const Child = () => {
 //   console.log('re-render child');
@@ -110,21 +112,23 @@ import InfoAccount from './pages/infoAccount/InfoAccount';
 //LƯU Ý: đang set height cho body là 300vh để xuất hiện thanh scroll
 const App = () => {
   const [logined, setLogined] = useState(localStorage.getItem('logined') === 'true' ? true : false)
+  // const admin = localStorage.getItem('admin') === 'true' ? true : false
   const [admin, setAdmin] = useState(localStorage.getItem('admin') === 'true' ? true : false)
+
+  const [isGoogleUser, setIsGoogleUser] = useState(localStorage.getItem('isGoogleUser') === 'true' ? true : false)
   // console.log('logined afer app ', logined);
 
   return (
     <>
       <BrowserRouter>
         <ToastContainer />
-        <Header logined={logined} setLogined={setLogined} admin={admin} setAdmin={setAdmin} />
+        <Header logined={logined} setLogined={setLogined} admin={admin} setAdmin={setAdmin} isGoogleUser={isGoogleUser} setIsGoogleUser={setIsGoogleUser} />
 
         <Routes>
           <Route path="/" element={<Home />}></Route>
           <Route path='/dang-nhap' element={logined ? <Navigate to="/" /> : <Auth />} />;
           <Route path='/tai-khoan' element={logined ? <InfoAccount /> : <Navigate to="/" />} />;
           {/* Lam them trang "quyen han bi tu choi khi vao /admin bang khach hang" */}
-          <Route path='/admin' element={admin ? <Admin /> : <Navigate to="/" />} />;
 
           <Route path="/edit-account" element={<h1>edit account</h1>}></Route>
           <Route path="/gioi-thieu" element={<h2>GIOI THIEU</h2>}></Route>
@@ -133,6 +137,10 @@ const App = () => {
           <Route path="/giay-tre-em" element={<h2>GIÀY TRẺ EM</h2>}></Route>
           <Route path="/tin-tuc" element={<h2>TIN TỨC</h2>}></Route>
           <Route path="/lien-he" element={<h2>LIÊN HỆ</h2>}></Route>
+
+
+          <Route path='/admin/*' element={admin ? <Admin /> : <PermissionDenied />} />;
+
           <Route path="/*" element={<h2>404 page</h2>}></Route>
         </Routes>
 

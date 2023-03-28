@@ -20,6 +20,20 @@ const SignUp = ({ signUp, setSignUp, signInWithGoogle }) => {
   //viết regex check Username phải dài từ 3 đến 16 ký tự và chỉ chứa các ký tự chữ và khoảng trắng,kết quả trả về chỉ chứa đoạn rege, không chứa bất cứ cái gì khác
   //viết regex kiểm tra Password phải dài ít nhất 8 ký tự và không chứa các ký tự đặc biệt, kết quả trả về chỉ chứa đoạn rege, không chứa bất cứ cái gì khác
   const checkInvalidUser = () => {
+    if (!(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/).test(regInfo.email)) {
+      return {
+        notify: "Hãy nhập đúng định dạng email",
+        status: false,
+      };
+    }
+
+    if (!(/^[a-zA-Z0-9]{8,}$/).test(regInfo.password)) {
+      return {
+        notify: "Mật khẩu phải dài ít nhất 8 ký tự và không chứa các ký tự đặc biệt",
+        status: false,
+      };
+    }
+
     if (regInfo.password != regInfo.Cpassword) {
       return {
         notify: "Mật khẩu mới không chính xác",
@@ -27,22 +41,9 @@ const SignUp = ({ signUp, setSignUp, signInWithGoogle }) => {
       };
     }
 
-    if (!(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/).test(regInfo.email)) {
-      return {
-        notify: "Hãy nhập đúng định dạng email",
-        status: false,
-      };
-    }
-    // 
-    if (!(/^[a-zA-Z0-9]{8,}$/).test(regInfo.password)) {
-      return {
-        notify: "Mật khẩu phải dài ít nhất 8 ký tự và không chứa các ký tự đặc biệt",
-        status: false,
-      };
-    }
     //
     return {
-      notify: "Đăng nhập thành công",
+      notify: "Đăng ký tài khoản thành công",
       status: true,
     };
   }
@@ -74,7 +75,7 @@ const SignUp = ({ signUp, setSignUp, signInWithGoogle }) => {
         .then((userCredential) => {
           const user = userCredential.user;
           setLoading(false);
-          toast.success('Đăng ký tài khoản thành công', {
+          toast.success(notify, {
             autoClose: 1200,
           });
           setSignUp(false)

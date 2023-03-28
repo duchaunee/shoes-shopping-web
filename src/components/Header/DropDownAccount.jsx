@@ -5,7 +5,6 @@ import { NavLink } from 'react-router-dom';
 import './headerScroll.scss'
 
 const DropDownAccount = ({ logined, logoutUser, setHoverAccount, admin }) => {
-
   return (
     <>
       <ul

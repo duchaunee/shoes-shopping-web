@@ -14,11 +14,14 @@ import {
   REMOVE_ACTIVE_USER,
   SET_ACTIVE_USER,
   selectEmail,
+  SET_ACTIVE_ADMIN,
+  REMOVE_ACTIVE_ADMIN,
+  SET_GOOGLE_USER,
 } from '../../redux-toolkit/slice/authSlice';
 import Admin from '../admin/Admin';
 import { adminAccount } from '../../AdminAccount';
 
-const Header = ({ logined, setLogined, admin, setAdmin }) => {
+const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogleUser }) => {
   // khi reload lại window, logined bị chạy lại const [logined, setLogined] = useState(false) nên nó sẽ nhấp nháy ở "Đăng nhập/đăng xuất" (logined = false) rồi mới chuyển qua Tài khoản (logined = false), do đó phải khởi tạo lấy giá trị từ localstrogate
   // const [logined, setLogined] = useState(localStorage.getItem('logined') === 'true' ? true : false)
   const [scrolled, setScrolled] = useState(false);
@@ -33,6 +36,13 @@ const Header = ({ logined, setLogined, admin, setAdmin }) => {
       });
       setLogined(false)
       localStorage.setItem('logined', false);
+
+      setAdmin(false)
+      localStorage.setItem('admin', false);
+
+      setIsGoogleUser(false)
+      localStorage.setItem('isGoogleUser', false);
+
     }).catch((e) => {
       toast.error(e.message, {
         autoClose: 1200,
@@ -45,10 +55,27 @@ const Header = ({ logined, setLogined, admin, setAdmin }) => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         const uid = user.uid;
+        const providerData = user.providerData;
+        const isGoogleUser = providerData.some(provider => provider.providerId === 'google.com');
+
+        // Nếu tài khoản đăng nhập là Google
+        if (isGoogleUser) {
+          localStorage.setItem('isGoogleUser', true);
+          dispatch(SET_GOOGLE_USER(true))
+          setIsGoogleUser(true)
+          console.log('Không thể đổi mật khẩu cho tài khoản đăng nhập bằng Google');
+          // xử lý khác (ví dụ hiển thị thông báo lỗi, ẩn form đổi mật khẩu, v.v.)
+        }
+
         setLogined(true)
         setHoverAccount(false)
         localStorage.setItem('logined', true);
         //login bằng gg thì nó có displayname là tên gg, còn login bằng mail thì nó là null, khi đó setusername là tên gmail luôn
+
+        //lưu trên localStorage để xử lí TH mất mạng, phương thức onAuthStateChanged không được gọi vì thế dislayName, displayEmail SẼ BỊ RỖNG (do lúc này dispatch ở dingf 61 không được thực hiện nên nó sẽ lấy giá trị khởi tạo của redux), VẬY NÊN để xử lí thì lưu trên localstrogate
+        localStorage.setItem('displayName', user.displayName || (user.email.slice(0, -10).charAt(0).toUpperCase() + (user.email.slice(0, -10)).slice(1)));
+        localStorage.setItem('displayEmail', user.email);
+
         dispatch(
           SET_ACTIVE_USER({
             email: user.email,
@@ -58,16 +85,33 @@ const Header = ({ logined, setLogined, admin, setAdmin }) => {
         )
 
         if (user.email === adminAccount) {
+          //
+          dispatch(SET_ACTIVE_ADMIN(true))
           setAdmin(true)
           localStorage.setItem('admin', true);
         }
+
+        // const isGoogleUser = firebase.auth().currentUser.providerData.some((provider) => {
+        //   return provider.providerId === "google.com";
+        // });
+
+        // if (isGoogleUser) {
+        //   console.log("User logged in with Google account");
+        // } else {
+        //   console.log("User logged in with email and password");
+        // }
+
         //Nhận diện người dùng đã log out hay chưa
       } else {
-        setAdmin(false)
-        localStorage.setItem('admin', false);
+        console.log('nhan dien logout'); //mat mang thi no tu dong chay vao day luon :v thoi met qua k solve cai nay nua
+        localStorage.removeItem('displayName');
+        localStorage.removeItem('displayEmail');
+
+        dispatch(REMOVE_ACTIVE_ADMIN())
         dispatch(REMOVE_ACTIVE_USER())
       }
     });
+
   }, [userEmail]) //khi useSelector(selectEmail) thì redux lúc này vẫn là "" hết, vậy nên khi dispatch thằng email, phải truyền userEmail để dispatch xong re-render nó lại chạy vào thằng useEffect này để check userEmail === adminAccount ?
 
   const handleScroll = useCallback(() => {
@@ -121,7 +165,7 @@ const Header = ({ logined, setLogined, admin, setAdmin }) => {
             {
               admin
                 ? <NavLink
-                  to='/admin'
+                  to='/admin/home'
                   className=" cursor-pointer py-[10px] text-[13px] font-bold items-center no-underline tracking-[0.32px] uppercase hover:text-white transition-all ease-linear duration-200">
                   <FontAwesomeIcon icon={faShapes} className='cursor-pointer pr-[10px] text-[18px]' />
                   Dashboard
