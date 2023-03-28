@@ -62,6 +62,9 @@ const InfoAccount = () => {
     updateProfile(currentUser, { displayName: infoChange.name })
       .then(() => {
         setLoading(false);
+        toast.success('Thông tin tài khoản đã được cập nhật', {
+          autoClose: 1200,
+        });
         // console.log("Thay đổi displayName thành công!");
       })
       .catch((error) => {
@@ -76,10 +79,6 @@ const InfoAccount = () => {
     //   .catch(function (error) {
     //     console.log(error.message);
     //   })
-
-    toast.success('Thông tin tài khoản đã được cập nhật', {
-      autoClose: 1200,
-    });
   }
 
   return (

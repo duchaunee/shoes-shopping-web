@@ -1,11 +1,14 @@
-import React from 'react';
+import { getAuth } from 'firebase/auth';
+import React, { useEffect } from 'react';
 import { Card, ProductItem } from '../../components';
+import Admin from '../../components/admin/Admin';
+import app, { firebaseConfig } from '../../firebase/config';
 
 const Home = () => {
+
   return (
-    <div className='m-6'>
-      <Card><ProductItem /></Card>
-      <Card><ProductItem /></Card>
+    <div className=''>
+      <ProductItem></ProductItem>
     </div>
   );
 };

@@ -84,8 +84,8 @@ import React, { useState } from 'react';
 import './index.scss' //tailwindcss
 import './App.css' //reset css
 
-import { Header, Footer, ProductItem, Card, Auth } from "./components"
-import { Home, Contact, Login, Cart, Admin, Checkout, Product, ProductCategory } from './pages';
+import { Header, Footer, ProductItem, Card, Auth, Admin } from "./components"
+import { Home, Contact, Login, Cart, Checkout, Product, ProductCategory } from './pages';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import SignUp from './components/auth/SignUp';
 import SignIn from './components/auth/SignIn';
@@ -110,20 +110,21 @@ import InfoAccount from './pages/infoAccount/InfoAccount';
 //LƯU Ý: đang set height cho body là 300vh để xuất hiện thanh scroll
 const App = () => {
   const [logined, setLogined] = useState(localStorage.getItem('logined') === 'true' ? true : false)
+  const [admin, setAdmin] = useState(localStorage.getItem('admin') === 'true' ? true : false)
   // console.log('logined afer app ', logined);
 
   return (
     <>
       <BrowserRouter>
         <ToastContainer />
-        <Header logined={logined} setLogined={setLogined} />
+        <Header logined={logined} setLogined={setLogined} admin={admin} setAdmin={setAdmin} />
 
         <Routes>
           <Route path="/" element={<Home />}></Route>
-          {/* khi dang nhap roi khong dc phep vao trang dang-nhap nữa */}
           <Route path='/dang-nhap' element={logined ? <Navigate to="/" /> : <Auth />} />;
-          {/* Khi dang xuat roi thi khong duoc phep vao trang tai-khoan */}
           <Route path='/tai-khoan' element={logined ? <InfoAccount /> : <Navigate to="/" />} />;
+          {/* Lam them trang "quyen han bi tu choi khi vao /admin bang khach hang" */}
+          <Route path='/admin' element={admin ? <Admin /> : <Navigate to="/" />} />;
 
           <Route path="/edit-account" element={<h1>edit account</h1>}></Route>
           <Route path="/gioi-thieu" element={<h2>GIOI THIEU</h2>}></Route>
@@ -134,6 +135,7 @@ const App = () => {
           <Route path="/lien-he" element={<h2>LIÊN HỆ</h2>}></Route>
           <Route path="/*" element={<h2>404 page</h2>}></Route>
         </Routes>
+
         <Footer />
       </BrowserRouter>
     </>

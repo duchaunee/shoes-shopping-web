@@ -19,3 +19,5 @@ export const db = getFirestore(app)
 export const storage = getStorage(app)
 export default app;
 
+// viết regex kiểm tra password phải chứa ít nhất 1 chữ thường, 1 chữ hoa, không được chứa dấu cách, không chứa các kí tự đặc biệt và có đồ dài từ 8-16 kí tự, kết quả trả ra chỉ gồm đoạn regex, không bao gồm gì khác
+

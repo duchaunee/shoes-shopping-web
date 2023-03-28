@@ -7,7 +7,8 @@ module.exports = {
     extend: {
       colors: {
         'primary': '#c30005',
-        'secondary': '#d26e4b'
+        'secondary': '#d26e4b',
+        'bgPrimary': '#1f2028',
       },
       boxShadow: {
         'shadowPrimary': '0 2px 3px -2px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.24)',

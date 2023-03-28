@@ -8,7 +8,7 @@ import Social from './Social';
 
 const Footer = () => {
   return (
-    <footer className="w-full bg-[#171717]">
+    <footer className="w-full bg-bgPrimary">
       <div className="w-full h-full pt-[70px]">
         <div className="flex gap-[20px] h-full mx-auto max-w-[1230px] border-solid border-b-[1px] border-[#dae1e7]">
           <div className="w-[25%] px-[25px] pb-[30px]">
@@ -73,7 +73,7 @@ const Footer = () => {
       </div>
       <div className="footer-cre">
         <p className='w-full text-center pt-[10px] pb-[15px] text-white/50'>
-          © Bản quyền thuộc về <a className='text-white/80' href="https://fb.com/duchaudeyy"> Group14LTW</a>
+          © Bản quyền thuộc về <a className='text-white/80' href="https://fb.com/duchaudeyy"> GroupTTCS</a>
         </p>
       </div>
     </footer>

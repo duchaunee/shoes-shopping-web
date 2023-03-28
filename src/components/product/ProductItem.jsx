@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Spinning } from '../../animation-loading';
-import ButtonHover from '../button/ButtonPrimary';
+import ButtonPrimary from '../button/ButtonPrimary';
 
 const ProductItem = ({ img, name, price, text }) => {
   const [loading, setLoading] = useState(false)
@@ -37,7 +37,7 @@ const ProductItem = ({ img, name, price, text }) => {
             1,250,000 <p className='inline'>₫</p>
           </div>
           <div className='text-center'>
-            <ButtonHover
+            <ButtonPrimary
               loading={loading}
               onClick={handleAddToCart}
               text={'Add to cart'} />
