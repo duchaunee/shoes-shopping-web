@@ -29,6 +29,7 @@ export const authSlice = createSlice({
 
     SET_DISPLAY_NAME: (state, action) => {
       state.userName = action.payload
+      console.log(action.payload);
     },
 
     SET_ACTIVE_USER: (state, action) => {

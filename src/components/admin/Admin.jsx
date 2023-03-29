@@ -14,7 +14,7 @@ const Admin = () => {
       <div className="max-w-[1230px] bg-[#fff] mx-auto rounded-[12px] flex shadow-shadowAuth">
         <NavAdmin />
         {/* ////////////////////////////////////////////////////////////////////////////// */}
-        <div className="rounded-tr-[12px] rounded-br-[12px] flex-shrink flex-grow px-[25px] pt-[20px] pb-5">
+        <div className="rounded-tr-[12px] rounded-br-[12px] flex-1 px-[25px] pt-[20px] pb-5">
           <Routes>
             <Route path='' element={<HomeAdmin />} />
             <Route path='home' element={<HomeAdmin />} />

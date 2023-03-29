@@ -103,8 +103,8 @@ const InfoAccount = () => {
   //khi cập nhật phải reset các ô input và update các thông tin, mở ra để đọc
   const resetAndUpdateInput = () => {
     setLoading(false);
-
     //reset value về ô trống
+    console.log('reset');
     setInfoChange({
       ...infoChange,
       password: "",

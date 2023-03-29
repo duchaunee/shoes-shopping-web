@@ -114,7 +114,7 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
   }, [userEmail]) //khi useSelector(selectEmail) thì redux lúc này vẫn là "" hết, vậy nên khi dispatch thằng email, phải truyền userEmail để dispatch xong re-render nó lại chạy vào thằng useEffect này để check userEmail === adminAccount ?
 
   const handleScroll = useCallback(() => {
-    if (window.pageYOffset > 222) {
+    if (window.pageYOffset > 333) {
       setScrolled(true);
     } else if (window.pageYOffset == 0) {
       setScrolled(false);
