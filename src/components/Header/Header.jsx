@@ -63,7 +63,6 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
           localStorage.setItem('isGoogleUser', true);
           dispatch(SET_GOOGLE_USER(true))
           setIsGoogleUser(true)
-          console.log('Không thể đổi mật khẩu cho tài khoản đăng nhập bằng Google');
           // xử lý khác (ví dụ hiển thị thông báo lỗi, ẩn form đổi mật khẩu, v.v.)
         }
 

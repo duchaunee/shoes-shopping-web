@@ -38,7 +38,7 @@ const SignIn = ({ signUp, signInWithGoogle, setResetPassword }) => {
         })
         .catch((e) => {
           setLoading(false)
-          toast.error("Email hoặc password chưa đúng", {
+          toast.error("Tài khoản đã tồn tại hoặc email, password chưa đúng", {
             autoClose: 1200,
           })
         });

@@ -15,7 +15,7 @@ const Footer = () => {
             <h3 className='text-white text-[20px] font-semibold mb-[10px] uppercase'>Giới thiệu</h3>
             <div className="w-[35px] h-[3px] my-[16px] bg-red-600"></div>
             <ul className='text-[14px] text-[#a4a4a4]'>
-              Chào mừng bạn đến với Group14LTW! Tại đây, mỗi một dòng chữ, mỗi chi tiết và hình
+              Chào mừng bạn đến với GroupTTCS! Tại đây, mỗi một dòng chữ, mỗi chi tiết và hình
               ảnh đều là những bằng chứng mang dấu ấn lịch sử Converse 100 năm, và đang không ngừng
               phát triển lớn mạnh.
             </ul>

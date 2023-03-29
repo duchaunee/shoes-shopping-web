@@ -17,7 +17,7 @@ const SignUp = ({ signUp, setSignUp, signInWithGoogle }) => {
     password: "",
     Cpassword: "",
   })
-  //viết regex check Username phải dài từ 3 đến 16 ký tự và chỉ chứa các ký tự chữ và khoảng trắng,kết quả trả về chỉ chứa đoạn rege, không chứa bất cứ cái gì khác
+  //viết regex check Username phải dài từ 3 đến 16 ký tự và chỉ chứa các ký tự chữ và khoảng trắng, chứa cả tiếng việt, kết quả trả về chỉ chứa đoạn regex, không chứa bất cứ cái gì khác (tôi dùng ES6) /^[\p{L} ]{3,16}$/u
   //viết regex kiểm tra Password phải dài ít nhất 8 ký tự và không chứa các ký tự đặc biệt, kết quả trả về chỉ chứa đoạn rege, không chứa bất cứ cái gì khác
   const checkInvalidUser = () => {
     if (!(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/).test(regInfo.email)) {
