@@ -174,11 +174,11 @@ const AddProduct = () => {
                   placeholder='Thương hiệu sản phẩm'
                   id='product-brand'>
                   <option key='0' value="choose">Chọn thương hiệu</option>
-                  <option key='1' value="Classic">Classic</option>
-                  <option key='2' value="Sunbaked">Sunbaked</option>
-                  <option key='3' value="Chuck 07S">Chuck 07S</option>
-                  <option key='4' value="One Star">One Star</option>
-                  <option key='5' value="PSY Kicks">PSY Kicks</option>
+                  <option key='1' value="classic">Classic</option>
+                  <option key='2' value="sunbaked">Sunbaked</option>
+                  <option key='3' value="chuck-07s">Chuck 07S</option>
+                  <option key='4' value="one-star">One Star</option>
+                  <option key='5' value="psy-kicks">PSY Kicks</option>
                 </InputForm>
               </div>
             </div>

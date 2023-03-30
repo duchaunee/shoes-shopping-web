@@ -10,8 +10,8 @@ import ViewOrders from './viewOrders/ViewOrders';
 const Admin = () => {
 
   return (
-    <div className='w-full h-full bg-white py-[35px] px-[15px]'>
-      <div className="max-w-[1230px] bg-[#fff] mx-auto rounded-[12px] flex shadow-shadowAuth">
+    <div className='w-full bg-white py-[35px] px-[15px]'>
+      <div className="max-w-[1230px] min-h-[600px] bg-[#fff] mx-auto rounded-[12px] flex shadow-shadowAuth">
         <NavAdmin />
         {/* ////////////////////////////////////////////////////////////////////////////// */}
         <div className="rounded-tr-[12px] rounded-br-[12px] flex-1 px-[25px] pt-[20px] pb-5">

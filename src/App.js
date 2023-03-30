@@ -130,7 +130,6 @@ const App = () => {
           <Route path='/tai-khoan' element={logined ? <InfoAccount /> : <Navigate to="/" />} />;
           {/* Lam them trang "quyen han bi tu choi khi vao /admin bang khach hang" */}
 
-          <Route path="/edit-account" element={<h1>edit account</h1>}></Route>
           <Route path="/gioi-thieu" element={<h2>GIOI THIEU</h2>}></Route>
           <Route path="/giay-nu" element={<h2>GIÀY NỮ</h2>}></Route>
           <Route path="/giay-nam" element={<h2>GIÀY NAM</h2>}></Route>
