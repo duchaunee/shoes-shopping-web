@@ -86,7 +86,6 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
         // console.log(user.email);
         // console.log(adminAccount);
         if (user.email === adminAccount) {
-          console.log('in');
           dispatch(SET_ACTIVE_ADMIN(true))
           setAdmin(true)
           localStorage.setItem('admin', true);

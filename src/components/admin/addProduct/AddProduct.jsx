@@ -52,8 +52,8 @@ const AddProduct = () => {
     uploadTask.on('state_changed',
       (snapshot) => {//process ( % tien trinh load xong img )
         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        if (progress == 100) setLoading(false)  //tải xong rồi thì tắt loading và hiện ảnh
-        else setLoading(true) //nếu chưa tải xong ảnh thì loading vẫn quay
+        if (progress === 100) setLoading(false) //nếu chưa tải xong ảnh thì loading vẫn quay
+        else setLoading(true)
       },
       (e) => {
         toast.error(e.message, {
@@ -62,10 +62,15 @@ const AddProduct = () => {
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setProduct({
-            ...product,
-            [event.target.name]: downloadURL
+
+          //dùng Object.assign chỉ để ghi đè thuộc tính mong muốn mà không cần rải state cũ như dòng 87
+          setProduct(prevState => {
+            return Object.assign({}, prevState, { [event.target.name]: downloadURL });
           })
+          // setProduct({
+          //   ...product,
+          //   [event.target.name]: downloadURL
+          // })
         });
       }
     );
