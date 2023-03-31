@@ -19,7 +19,7 @@ const ViewProducts = () => {
 
   const getProducts = async () => {
     setLoading(true)
-    // const productsRef = query(collection(db, "products"), where("category", "==", 'giay-tre-em'));
+    // const productsRef = query(collection(db, "products"), where("name", "==", 'Chuck Taylor All'));
     const productsRef = collection(db, "products");
     const q = query(productsRef, orderBy("creatAt"));
     try {
@@ -67,7 +67,7 @@ const ViewProducts = () => {
   return (
     <>
       <div className='w-full'>
-        <div className={`flex items-center justify-between ${loading && 'mb-[80px]'}`}>
+        <div className={`border border-transparent pb-6 border-b-bgPrimary flex items-center justify-between ${loading && 'mb-[80px]'}`}>
           <span className='text-bgPrimary flex-1 text-[18px]'>
             <p className='font-bold inline-block text-[18px]'>Số lượng</p>
             : {products.length} sản phẩm
@@ -94,7 +94,11 @@ const ViewProducts = () => {
           </div>
         </div>
 
-        <div className="w-full mt-10 text-bgPrimary">
+        <div
+          style={{
+            height: `${itemsPerPage * 148 + 44}px`
+          }}
+          className="w-full mt-10 text-bgPrimary">
           {loading
             ? <Spinning color='#1f2028' size='32px' />
             : (
@@ -147,12 +151,14 @@ const ViewProducts = () => {
         </div>
 
         {!loading &&
-          (<Pagination
-            products={products}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            itemsPerPage={itemsPerPage}
-            setPageProducts={setPageProducts} />)
+          (<div className="">
+            <Pagination
+              products={products}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              itemsPerPage={itemsPerPage}
+              setPageProducts={setPageProducts} />
+          </div>)
         }
 
       </div>

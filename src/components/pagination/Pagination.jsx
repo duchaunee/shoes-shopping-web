@@ -10,7 +10,7 @@ const Pagination = ({
   setCurrentPage
 }) => {
 
-  const quantity = 4;
+  const quantity = 5;
   const totalPages = Math.ceil(products.length / itemsPerPage);
 
   useEffect(() => {
@@ -22,7 +22,7 @@ const Pagination = ({
 
   return (
     <>
-      <ol className="flex items-center justify-center gap-6 text-[18px] font-medium mt-4">
+      <ol className="flex items-center justify-center gap-6 text-[18px] font-medium mt-6">
         <li>
           <button
             onClick={() => (currentPage > 1 && setCurrentPage(currentPage - 1))}
@@ -44,12 +44,13 @@ const Pagination = ({
               <li
                 key={idx}
                 className=''>
-                <button
-                  className={`${currentPage === idx + activeNumber ? 'bg-bgPrimary text-white' : ''} block rounded px-4 py-2 border border-gray-100 text-center leading-8`} >
-                  {idx + activeNumber < totalPages + 1 ? idx + activeNumber : (
-                    <FontAwesomeIcon className='text-[15px]' icon={faBan} />
-                  )}
-                </button>
+                {idx + activeNumber < totalPages + 1
+                  ? <button
+                    onClick={() => setCurrentPage(idx + activeNumber)}
+                    className={`${currentPage === idx + activeNumber ? 'bg-bgPrimary text-white' : ''} w-[48px] aspect-square block rounded py-2 border border-gray-100 text-center leading-8`} >
+                    {idx + activeNumber}
+                  </button>
+                  : <FontAwesomeIcon className='text-[15px] block rounded w-[48px] aspect-square py-2 border border-gray-100 text-center leading-8' icon={faBan} />}
               </li>
             )
           }
