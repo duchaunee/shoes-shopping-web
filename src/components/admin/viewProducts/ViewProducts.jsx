@@ -9,6 +9,7 @@ import "./lineClamp.scss"
 import Pagination from '../../pagination/Pagination';
 import { NavLink } from 'react-router-dom';
 import { deleteObject, ref } from 'firebase/storage';
+import Notiflix from 'notiflix';
 
 const ViewProducts = () => {
   const itemsPerPage = 3;
@@ -37,9 +38,40 @@ const ViewProducts = () => {
     }
     catch (e) {
       toast.error(e.message, {
-        autoClose: 1200
+        autoClose: 1000
       })
     }
+  }
+
+  const confirmDelete = (id, imgURL) => {
+    Notiflix.Confirm.show(
+      'Xóa sản phẩm',
+      'Bạn có muốn xóa sản phẩm này ?',
+      'Xóa',
+      'Hủy bỏ',
+      function okCb() {
+        handleDeleteProduct(id, imgURL)
+      },
+      function cancelCb() {
+        console.log();
+      },
+      {
+        zindex: 2000,
+        width: '320px',
+        fontFamily: 'Roboto',
+        borderRadius: '4px',
+        titleFontSize: '20px',
+        titleColor: '#c30005',
+        messageFontSize: '18px',
+        cssAnimationDuration: 300,
+        cssAnimationStyle: 'zoom',
+        buttonsFontSize: '16px',
+        okButtonBackground: '#c30005',
+        cancelButtonBackground: '#a5a3a3',
+        backgroundColor: '##d8d8d8',
+        backOverlayColor: 'rgba(0,0,0,0.4)',
+      },
+    );
   }
 
   const handleDeleteProduct = async (id, imgURL) => {
@@ -63,11 +95,11 @@ const ViewProducts = () => {
       setPageProducts(newProducts.slice(startIndex, endIndex));
 
       toast.success('Xóa sản phẩm thành công', {
-        autoClose: 1200
+        autoClose: 1000
       })
     } catch (e) {
       toast.error('Sản phẩm đã bị xóa', {
-        autoClose: 1200
+        autoClose: 1000
       })
     }
   }
@@ -169,12 +201,12 @@ const ViewProducts = () => {
                       </td>
                       <td className='col-span-2 flex items-center gap-5'>
                         <NavLink to='/admin/add-product'>
-                          <FontAwesomeIcon className='text-[20px] cursor-pointer text-bgPrimary' icon={faEdit} />
+                          <FontAwesomeIcon className='text-[20px] cursor-pointer text-bgPrimary hover:text-green-600 transition-all ease-linear duration-100' icon={faEdit} />
                         </NavLink>
                         <button
-                          onClick={() => handleDeleteProduct(product.id, product.imgURL)}
+                          onClick={() => confirmDelete(product.id, product.imgURL)}
                           className=''>
-                          <FontAwesomeIcon className='text-[20px] cursor-pointer text-bgPrimary' icon={faTrashAlt} />
+                          <FontAwesomeIcon className='text-[20px] cursor-pointer text-bgPrimary hover:text-primary transition-all ease-linear duration-100' icon={faTrashAlt} />
                         </button>
                       </td>
                     </tr>
