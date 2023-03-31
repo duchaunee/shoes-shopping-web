@@ -9,7 +9,7 @@ import "./lineClamp.scss"
 import Pagination from '../../pagination/Pagination';
 
 const ViewProducts = () => {
-  const itemsPerPage = 4;
+  const itemsPerPage = 3;
 
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]); //all products
@@ -126,7 +126,7 @@ const ViewProducts = () => {
                       <td className='col-span-5 flex gap-4'>
                         {console.log(product.imgURL)}
                         <img
-                          className='rounded-[4px] h-[100px] object-cover'
+                          className='rounded-[4px] h-[100px] w-[157px] object-cover'
                           src={product.imgURL} alt="" />
                         <div className="flex flex-col mt-4">
                           <span className='text-[20px] font-medium text-bgPrimary line-clamp-1'>{product.name}</span>
