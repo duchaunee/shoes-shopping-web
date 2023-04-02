@@ -1,9 +1,12 @@
 //confidureStore.js
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authSlice from "./slice/authSlice";
+import productSlice from "./slice/productSlice";
+
 
 const rootReducer = combineReducers({
   auth: authSlice,
+  product: productSlice,
   // counter1: counterReducer1
 });
 

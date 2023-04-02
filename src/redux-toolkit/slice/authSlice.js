@@ -38,8 +38,7 @@ export const authSlice = createSlice({
       state.email = email;
       state.userName = userName;
       state.userID = userID;
-
-      console.log(action.payload);
+      // console.log(action.payload);
     },
 
     REMOVE_ACTIVE_USER: (state, action) => {

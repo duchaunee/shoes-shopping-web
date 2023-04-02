@@ -1,39 +1,72 @@
-import { addDoc, collection, Timestamp } from 'firebase/firestore';
-import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
+import { addDoc, collection, doc, getDocs, orderBy, query, setDoc, Timestamp } from 'firebase/firestore';
+import { deleteObject, getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { Spinning } from '../../../animation-loading';
 import { db, storage } from '../../../firebase/config';
 import InputForm from '../../inputForm/InputForm';
 import UploadSquare from './UploadSquare';
+import { useNavigate, useParams } from 'react-router-dom';
+import { selectProducts, STORE_PRODUCTS } from '../../../redux-toolkit/slice/productSlice';
+import { useDispatch, useSelector } from 'react-redux';
+
+const initializeFireBase = {
+  name: "",
+  imgURL: "",
+  price: 0,
+  category: "", //neu khong chon thi de default la giay nam
+  brand: "", //neu khong chon thi de default la Classic
+  desc: "",
+  //day la link img tren firebase, khong phai link img khi upload len giao dien
+  imgPreviewURL1: "",
+  imgPreviewURL2: "",
+  imgPreviewURL3: "",
+  imgPreviewURL4: "",
+}
+
+//src đây là link ảnh, tại sao phải để ở thằng cha là vì khi thêm sản phẩm xong, phải setSrc về rỗng để ảnh ở trong khung biến mất
+const initializeSrc = {
+  imgURL: null,
+  imgPreviewURL1: null,
+  imgPreviewURL2: null,
+  imgPreviewURL3: null,
+  imgPreviewURL4: null,
+}
 
 const AddProduct = () => {
-  const initializeFireBase = {
-    name: "",
-    imgURL: "",
-    price: 0,
-    category: "", //neu khong chon thi de default la giay nam
-    brand: "", //neu khong chon thi de default la Classic
-    desc: "",
-    //day la link img tren firebase, khong phai link img khi upload len giao dien
-    imgPreviewURL1: "",
-    imgPreviewURL2: "",
-    imgPreviewURL3: "",
-    imgPreviewURL4: "",
-  }
-
-  //src đây là link ảnh, tại sao phải để ở thằng cha là vì khi thêm sản phẩm xong, phải setSrc về rỗng để ảnh ở trong khung biến mất
-  const initializeSrc = {
-    imgURL: null,
-    imgPreviewURL1: null,
-    imgPreviewURL2: null,
-    imgPreviewURL3: null,
-    imgPreviewURL4: null,
-  }
 
   const [loading, setLoading] = useState(false);
-  const [src, setSrc] = useState(initializeSrc)
-  const [product, setProduct] = useState(initializeFireBase)
+  const navigate = useNavigate()
+  const dispatch = useDispatch();
+  //
+  const { id } = useParams()
+  // console.log('id: ', id);
+  const products = useSelector(selectProducts)
+
+  //lí do tại sao lại cần lưu products trên local: Khi ấn vào edit sản phẩm thì chắc chắn phải ở View Products thì mới ấn đc đúng k, khi ở view thì products sẽ đc tải trên firebase. NHƯNG, nếu như đang ở 1 link sửa sản phẩm vd:  http://localhost:3000/admin/add-product/ZvCAHm5iTRonenNuX63g mà lại đi ấn reload lại trang, thì lúc này products lại k đc tải mất r, vì nó đang ở Add Product với id là ZvCAHm5iTRonenNuX63g do đó dẫn tới product.name. product.imgURL,... bị lỗi, nên phải lưu trên local strogate để phòng tránh TH này, về sau lưu trên server thì chắc k bị lỗi này
+  const productLocal = JSON.parse(localStorage.getItem('products'))
+  const productEdit = products.length !== 0 ? products.find(item => item.id === id) : productLocal.find(item => item.id === id)
+
+  const [src, setSrc] = useState(detectForm(id, initializeSrc, {
+    imgURL: productEdit?.imgURL,
+    imgPreviewURL1: productEdit?.imgPreviewURL1,
+    imgPreviewURL2: productEdit?.imgPreviewURL2,
+    imgPreviewURL3: productEdit?.imgPreviewURL3,
+    imgPreviewURL4: productEdit?.imgPreviewURL4,
+  }))
+  const [product, setProduct] = useState(detectForm(id, initializeFireBase, productEdit))
+
+  //tại sao phải cần thằng useEffect này ? vì khi ấn vào edit -> chuyển qua edit, sau đó ấn vào 'Thêm sản phẩm' thì src với product không bị chạy lại cái logic bên trong useState để khởi tạo lại giá trị là rỗng (do ở trang edit với trang add đểu là đang ở component AddProduct vậy nên nó không bị re-render lại khi chuyển qua lại giữa 2 thằng. Chỉ khi re-render thì nó mới chạy lại đc logic trong thằng useState)
+  useEffect(() => {
+    setSrc(detectForm(id, initializeSrc, {
+      imgURL: productEdit?.imgURL,
+      imgPreviewURL1: productEdit?.imgPreviewURL1,
+      imgPreviewURL2: productEdit?.imgPreviewURL2,
+      imgPreviewURL3: productEdit?.imgPreviewURL3,
+      imgPreviewURL4: productEdit?.imgPreviewURL4,
+    }))
+    setProduct(detectForm(id, initializeFireBase, productEdit))
+  }, [id])
 
   const handleInputChange = (e) => {
     e.preventDefault()
@@ -43,18 +76,67 @@ const AddProduct = () => {
     })
   }
 
+  //phát hiện xem form là 'Thêm sản phẩm' hay 'edit sản phẩm' dựa vào id
+  //id là ADD thì alf thêm sản phẩm, còn k thì là edit sản phẩm
+  function detectForm(id, add, edit) {
+    if (id === 'add') {
+      // console.log(add);
+      return add;
+    }
+    return edit;
+  }
+
+  const handleEditProduct = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    try {
+      console.log(product);
+      await setDoc(doc(db, "products", id), {
+        name: product.name,
+        imgURL: product.imgURL,
+        price: Number(product.price),
+        category: product.category,
+        brand: product.brand,
+        desc: product.desc,
+        imgPreviewURL1: product.imgPreviewURL1,
+        imgPreviewURL2: product.imgPreviewURL2,
+        imgPreviewURL3: product.imgPreviewURL3,
+        imgPreviewURL4: product.imgPreviewURL4,
+        creatAt: product.creatAt,
+        editedAt: Timestamp.now().toDate().toString()
+      });
+      setLoading(false)
+      toast.success("Sửa sản phẩm thành công", {
+        autoClose: 1200
+      })
+      navigate('/admin/view-products')
+
+    } catch (e) {
+      toast.error(e.message, {
+        autoClose: 1200
+      })
+    }
+  }
+
   //Khi 1 ảnh được mở lên, thì sẽ tải ảnh đó lên Strogate của firebase để khi thực hiện thao tác "Thêm sản phẩm" thì ảnh sản phẩm sẽ đc kéo ra từ trong Strogate của firebase đó
   //NHƯNG CÓ 1 VẤN ĐỀ LÀ: bug memory leak: Chọn 1 ảnh ok rồi, nhưng khi chọn qua ảnh khác, thì ảnh 1 không bị xóa bởi firebase mà nó sẽ lấy cả 2 ảnh 
   const handleImageChange = (event, fileImg, setLoading) => {
     const storageRef = ref(storage, `shoesPlus/${Date.now()}${fileImg.name}`);
     const uploadTask = uploadBytesResumable(storageRef, fileImg);
+    //xử lí việc nếu chọn 1 ảnh khác thì phải xóa ảnh cũ đi
+    if (product[event.target.name]) {
+      const desertRef = ref(storage, product[event.target.name]);
+      deleteObject(desertRef).then(() => {
+        console.log('xoa anh thanh cong');
+      }).catch((error) => {
+        console.log(error.message);
+        console.log('xoa anh that bai');
+      });
+    }
 
+    setLoading(true)
     uploadTask.on('state_changed',
-      (snapshot) => {//process ( % tien trinh load xong img )
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        if (progress === 100) setLoading(false) //nếu chưa tải xong ảnh thì loading vẫn quay
-        else setLoading(true)
-      },
+      (snapshot) => { },
       (e) => {
         toast.error(e.message, {
           autoClose: 1200
@@ -62,8 +144,8 @@ const AddProduct = () => {
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-
           //dùng Object.assign chỉ để ghi đè thuộc tính mong muốn mà không cần rải state cũ như dòng 87
+          setLoading(false)
           setProduct(prevState => {
             return Object.assign({}, prevState, { [event.target.name]: downloadURL });
           })
@@ -76,11 +158,12 @@ const AddProduct = () => {
     );
   }
 
+
+
   //Khi ấn "Thêm sản phẩm" thì sẽ tải sản phẩm đó lên firebase ở trong firestore database, còn các link ảnh là do nó kéo từ bên Strogate của firebase mà ở handleImageChange function đã xử lí
   const handleAddProduct = (e) => {
     e.preventDefault()
     setLoading(true)
-    // Add a new document with a generated id.
     try {
       const docRef = addDoc(collection(db, "products"), {
         name: product.name,
@@ -93,7 +176,7 @@ const AddProduct = () => {
         imgPreviewURL2: product.imgPreviewURL2,
         imgPreviewURL3: product.imgPreviewURL3,
         imgPreviewURL4: product.imgPreviewURL4,
-        creatAt: Timestamp.now().toDate()
+        creatAt: Timestamp.now().toDate().toString()
       });
 
       setLoading(false)
@@ -109,13 +192,15 @@ const AddProduct = () => {
         autoClose: 1200
       })
     }
-    console.log(product);
   }
+  useEffect(() => {
+    console.log(product);
+  }, [product])
 
   return (
     <>
       <form
-        onSubmit={handleAddProduct}
+        onSubmit={detectForm(id, handleAddProduct, handleEditProduct)}
         className="w-full">
         <div className="w-full flex gap-6">
           <div className="w-1/2 flex flex-col gap-6">
@@ -238,7 +323,7 @@ const AddProduct = () => {
         <button
           type="submit"
           className='mt-[20px] w-[180px] px-[10px] h-10 bg-primary text-white text-[15px] leading-[37px] font-bold tracking-[1px] uppercase transition-transform ease-in duration-500 focus:outline-none hover:bg-[#a40206]'>
-          {loading ? <Spinning /> : "Thêm sản phẩm"}
+          {loading ? <Spinning /> : `${detectForm(id, 'Thêm sản phẩm', 'Sửa sản phẩm')}`}
         </button>
       </form>
 

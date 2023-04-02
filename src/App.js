@@ -116,7 +116,6 @@ const App = () => {
   const [admin, setAdmin] = useState(localStorage.getItem('admin') === 'true' ? true : false)
 
   const [isGoogleUser, setIsGoogleUser] = useState(localStorage.getItem('isGoogleUser') === 'true' ? true : false)
-  // console.log('logined afer app ', logined);
 
   return (
     <>
