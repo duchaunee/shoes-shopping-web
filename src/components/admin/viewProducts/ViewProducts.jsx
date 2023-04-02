@@ -38,10 +38,10 @@ const ViewProducts = () => {
     try {
       const querySnapshot = await getDocs(q);
       const allProducts = querySnapshot.docs.map((doc) => {
-        const productItem = Object.assign({}, doc.data(), { creatAt: doc.data().creatAt.toString() })
+        // const productItem = Object.assign({}, doc.data(), { creatAt: doc.data().creatAt.toString() })
         return {
           id: doc.id,
-          ...productItem
+          ...doc.data()
         }
       })
       //init
@@ -208,6 +208,7 @@ const ViewProducts = () => {
 
   useEffect(() => {
     getProducts() //async
+    console.log(products);
   }, [queryProduct])
 
   useEffect(() => {

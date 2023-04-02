@@ -159,7 +159,6 @@ const AddProduct = () => {
   }
 
 
-
   //Khi ấn "Thêm sản phẩm" thì sẽ tải sản phẩm đó lên firebase ở trong firestore database, còn các link ảnh là do nó kéo từ bên Strogate của firebase mà ở handleImageChange function đã xử lí
   const handleAddProduct = (e) => {
     e.preventDefault()
