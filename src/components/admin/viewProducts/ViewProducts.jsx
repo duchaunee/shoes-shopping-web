@@ -127,7 +127,7 @@ const ViewProducts = () => {
   }
 
   const handleSearchByName = () => {
-    const searchProducts = productsRedux.filter(product => product.name.toLowerCase().includes(searchByName))
+    const searchProducts = productsRedux.filter(product => product.name.toLowerCase().includes(searchByName.toLowerCase()))
     setLoading(true)
     //vì thằng getProducts là async nên chưa kịp get về thì nó đã chạy handleSearchByName rồi nên phải có điều kiện products.length !== 0 (sản phẩm đâ được get về)
     if (searchProducts.length === 0 && products.length !== 0) {
@@ -217,7 +217,7 @@ const ViewProducts = () => {
   return (
     <>
       <div className='w-full'>
-        <div className={`border border-transparent pb-6 border-b-bgPrimary flex items-center justify-between ${loading && 'mb-[80px]'}`}>
+        <div className={`border border-transparent pb-6 border-b-[#bbb] flex items-center justify-between ${loading && 'mb-[80px]'}`}>
           <span className='text-bgPrimary flex-1 text-[18px]'>
             <p className='font-bold inline-block text-[18px]'>Số lượng</p>
             : {notFound ? "0" : products.length} sản phẩm
@@ -256,16 +256,16 @@ const ViewProducts = () => {
             : <>
               <div
                 style={{
-                  height: `${itemsPerPage * 148 + 44}px`
+                  height: `${itemsPerPage * 148 + 55}px`
                 }}
-                className="w-full mt-10 text-bgPrimary">
+                className="w-full mt-6 text-bgPrimary">
                 {loading
                   ? <Spinning color='#1f2028' size='32px' />
                   : (
                     <table className='w-full'>
                       <thead>
                         <tr
-                          className='grid gap-6 grid-cols-12 mb-4 text-[18px] font-bold py-2'>
+                          className='border border-transparent pb-6 border-b-[#bbb] grid gap-5 grid-cols-12 mb-4 text-[18px] font-bold py-2'>
                           <td className='col-span-1'>Thứ tự</td>
                           <td className='col-span-5'>Thông tin sản phẩm</td>
                           <td className='col-span-2'>Phân loại</td>
@@ -277,7 +277,7 @@ const ViewProducts = () => {
                         {pageProducts.map((product, idx) => (
                           <tr
                             key={product.id}
-                            className='grid gap-6 grid-cols-12 mb-4 rounded-[4px] py-4 shadow-md'>
+                            className='grid gap-5 grid-cols-12 mb-4 rounded-[4px] py-4 shadow-md'>
                             <td className='col-span-1 flex items-center justify-center'>
                               <span className='text-[18px] font-medium'>
                                 {(idx + 1) + itemsPerPage * (currentPage - 1)}

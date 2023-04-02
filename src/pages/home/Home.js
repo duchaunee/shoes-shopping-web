@@ -8,7 +8,7 @@ const Home = () => {
 
   return (
     <div className=''>
-      <ProductItem></ProductItem>
+      <Card><ProductItem></ProductItem></Card>
     </div>
   );
 };
