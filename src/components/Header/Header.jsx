@@ -179,7 +179,9 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
                   <div className="relative">
                     <FontAwesomeIcon icon={faSearch} className='cursor-pointer py-[10px] text-[18px]' />
                   </div>
-                  <div className="flex gap-[10px] cursor-pointer py-[10px] text-[13px] font-bold items-center no-underline tracking-[0.32px] uppercase hover:text-white transition-all ease-linear duration-200">
+                  <NavLink
+                    to={`${logined ? '/go to cart' : "/dang-nhap"} `}
+                    className="flex gap-[10px] cursor-pointer py-[10px] text-[13px] font-bold items-center no-underline tracking-[0.32px] uppercase hover:text-white transition-all ease-linear duration-200">
                     <span className="header-cart-title">
                       Giỏ hàng /
                       <span className="header-cart-price">{logined ? "1,250,000" : "0"} </span>
@@ -188,7 +190,7 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
                     <span className="text-[22px]">
                       <FontAwesomeIcon icon={faShoppingCart} className='' />
                     </span>
-                  </div>
+                  </NavLink>
                 </div>
             }
 

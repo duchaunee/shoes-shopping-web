@@ -23,6 +23,7 @@ const PageProducts = ({ currentName, fieldValue }) => {
   const [productDemo, setProductDemo] = useState([])
   const [productPreview, setProductPreview] = useState([])
   const [queryProduct, setQueryProduct] = useState({
+    value: "latest",
     field: "price", //default la moi nhat
     order: -1
   });
@@ -66,36 +67,42 @@ const PageProducts = ({ currentName, fieldValue }) => {
     switch (q) {
       case 'latest':
         setQueryProduct({
+          value: "latest",
           field: 'creatAt',
           order: -1
         })
         break;
       case 'oldest':
         setQueryProduct({
+          value: "oldest",
           field: 'creatAt',
           order: 1
         })
         break;
       case 'lowest-price':
         setQueryProduct({
+          value: "lowest-price",
           field: 'price',
           order: 1
         })
         break;
       case 'highest-price':
         setQueryProduct({
+          value: "highest-price",
           field: 'price',
           order: -1
         })
         break;
       case 'a-z':
         setQueryProduct({
+          value: "a-z",
           field: 'name',
           order: 1
         })
         break;
       case 'z-a':
         setQueryProduct({
+          value: "z-a",
           field: 'name',
           order: -1
         })
@@ -139,6 +146,7 @@ const PageProducts = ({ currentName, fieldValue }) => {
             <span className='font-bold'>Số lượng</span>: {productPreview.length} sản phẩm
           </p>
           <select
+            value={queryProduct.value}
             onChange={(e) => solveQuery(e.target.value)}
             className='outline-none mr-[12px] rounded-[4px] px-3 py-3 pr-16 text-bgPrimary cursor-pointer border-[2px] border-solid border-[#ddd] shadow-shadowSearch'
             name="sort-by" id="">
@@ -160,6 +168,7 @@ const PageProducts = ({ currentName, fieldValue }) => {
               <ValueFilter
                 productPreview={productPreview}
                 setProductPreview={setProductPreview}
+                setQueryProduct={setQueryProduct}
               />
               {loading
                 ? <Spinning color='#1f2028' size='32px' mt='mt-[100px]' />
@@ -171,7 +180,8 @@ const PageProducts = ({ currentName, fieldValue }) => {
           {loading
             ? <Spinning color='#1f2028' size='32px' mt='mt-[150px]' />
             : <div className="flex-1">
-              <div className="px-[15px] grid grid-cols-4">
+              <div className="px-[15px] min-h-[555px] grid grid-cols-4">
+                {console.log(pageProducts)}
                 {pageProducts.map((item) => (
                   <div
                     key={item.id}

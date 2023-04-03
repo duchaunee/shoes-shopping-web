@@ -7,7 +7,7 @@ import { selectGirlProducts } from '../../redux-toolkit/slice/productSlice';
 const minValueFilter = 500000
 const maxValueFilter = 3000000;
 
-const ValueFilter = ({ productPreview, setProductPreview }) => {
+const ValueFilter = ({ productPreview, setProductPreview, setQueryProduct }) => {
   const girlProduct = useSelector(selectGirlProducts)
 
   const [errorRange, setErrorRange] = useState(false)
@@ -26,6 +26,13 @@ const ValueFilter = ({ productPreview, setProductPreview }) => {
       //khi lọc thì luôn lấy thằng gốc nhé :v (lấy trên redux)
       const girlProductFilter = girlProduct.filter((item) => (item.price >= Number(priceRange.from || minValueFilter) && item.price <= Number(priceRange.to || maxValueFilter)))
       setProductPreview(girlProductFilter)
+
+      //reset
+      setQueryProduct({
+        value: "latest",
+        field: "price", //default la moi nhat
+        order: -1
+      })
       setPriceRange({
         from: null,
         to: null
