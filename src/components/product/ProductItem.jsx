@@ -28,7 +28,7 @@ const ProductItem = ({ img, name, price, text, width }) => {
         className={`bg-white ${width}`}>
         <div className=''>
           <NavLink
-            className='min-h-[130px]'
+            className='block min-h-[130px]'
             to="/">
             <img src={img} alt="" />
           </NavLink>
