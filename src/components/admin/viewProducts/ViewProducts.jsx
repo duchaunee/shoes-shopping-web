@@ -285,7 +285,6 @@ const ViewProducts = () => {
 
   return (
     <>
-      {pageProducts.length}
       <div className='w-full'>
         <div className='border border-transparent pb-6 border-b-[#bbb] flex items-center justify-between'>
           <span className='text-bgPrimary flex-1 text-[18px]'>
