@@ -85,7 +85,7 @@ import './index.scss' //tailwindcss
 import './App.css' //reset css
 
 import { Header, Footer, ProductItem, Card, Auth, Admin } from "./components"
-import { Home, Contact, Login, Cart, Checkout, Product, ProductCategory, GirlShoes, BoyShoes, ChildShoes } from './pages';
+import { Home, Contact, Login, Cart, Checkout, Product, ProductCategory, GirlShoes, BoyShoes, ChildShoes, Page404 } from './pages';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import SignUp from './components/auth/SignUp';
 import SignIn from './components/auth/SignIn';
@@ -138,7 +138,7 @@ const App = () => {
 
           <Route path='/admin/*' element={admin ? <Admin /> : <PermissionDenied />} />;
 
-          <Route path="/*" element={<h2>404 page</h2>}></Route>
+          <Route path="/*" element={<Page404></Page404>}></Route>
         </Routes>
 
         <Footer />

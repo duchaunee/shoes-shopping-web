@@ -210,9 +210,9 @@ const PageProducts = ({ currentName, fieldValue }) => {
                 && <div className='flex flex-col items-center'>
                   <img
                     className='w-[350px] object-cover'
-                    src="./no-product-found.jpg" alt=""
+                    src="./notFound.jpg" alt=""
                   />
-                  <h1 className='text-[22px] text-center text-bgPrimary'>Không tìm thấy sản phẩm nào :(</h1>
+                  <h1 className='text-[26px] text-center text-bgPrimary font-mono'>Không tìm thấy sản phẩm nào</h1>
                 </div>
 
               }
