@@ -236,7 +236,7 @@ const ViewProducts = () => {
           <div className="flex-1 ">
             <select
               onChange={(e) => solveQuery(e.target.value)}
-              className='outline-none mr-[12px] float-right rounded-[4px] bg-slate-100 px-3 py-3 text-bgPrimary cursor-pointer  shadow-sm'
+              className='outline-none mr-[12px] float-right rounded-[4px] bg-slate-100 px-3 py-3 text-bgPrimary cursor-pointer border border-solid border-[#ddd] shadow-shadowSearch'
               name="sort-by" id="">
               <option key='0' value="">Sắp xếp theo</option>
               <option key='1' value="latest">Mới nhất</option>

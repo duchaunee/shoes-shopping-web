@@ -85,7 +85,7 @@ import './index.scss' //tailwindcss
 import './App.css' //reset css
 
 import { Header, Footer, ProductItem, Card, Auth, Admin } from "./components"
-import { Home, Contact, Login, Cart, Checkout, Product, ProductCategory } from './pages';
+import { Home, Contact, Login, Cart, Checkout, Product, ProductCategory, GirlShoes } from './pages';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import SignUp from './components/auth/SignUp';
 import SignIn from './components/auth/SignIn';
@@ -130,7 +130,7 @@ const App = () => {
           {/* Lam them trang "quyen han bi tu choi khi vao /admin bang khach hang" */}
 
           <Route path="/gioi-thieu" element={<h2>GIOI THIEU</h2>}></Route>
-          <Route path="/giay-nu" element={<h2>GIÀY NỮ</h2>}></Route>
+          <Route path="/giay-nu" element={<GirlShoes></GirlShoes>}></Route>
           <Route path="/giay-nam" element={<h2>GIÀY NAM</h2>}></Route>
           <Route path="/giay-tre-em" element={<h2>GIÀY TRẺ EM</h2>}></Route>
           <Route path="/tin-tuc" element={<h2>TIN TỨC</h2>}></Route>

@@ -1,6 +1,4 @@
 export { default as Home } from "./home/Home"
-export { default as Contact } from "./contact/Contact"
-export { default as Cart } from "./cart/Cart"
-export { default as Checkout } from "./checkout/CheckOut"
-export { default as Product } from "./productDetail/ProductDetails"
-export { default as ProductCategory } from "./productCategory/ProductCategory"
+export { default as InfoAccount } from "./infoAccount/InfoAccount"
+export { default as GirlShoes } from "./girlShoes/GirlShoes"
+
