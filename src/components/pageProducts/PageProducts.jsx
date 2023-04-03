@@ -180,7 +180,7 @@ const PageProducts = ({ currentName, fieldValue }) => {
           {loading
             ? <Spinning color='#1f2028' size='32px' mt='mt-[150px]' />
             : <div className="flex-1">
-              <div className="px-[15px] min-h-[555px] grid grid-cols-4">
+              <div className={`px-[15px] ${productPreview.length > 0 && 'min-h-[555px]'} grid grid-cols-4`}>
                 {console.log(pageProducts)}
                 {pageProducts.map((item) => (
                   <div

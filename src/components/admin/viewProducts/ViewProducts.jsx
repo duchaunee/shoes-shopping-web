@@ -19,8 +19,9 @@ const ViewProducts = () => {
 
   const [loading, setLoading] = useState(false);
   const [queryProduct, setQueryProduct] = useState({
-    field: "creatAt", //default la moi nhat
-    order: 'desc'
+    value: "default",
+    field: "price", //default la moi nhat
+    order: -1
   });
   const [notFound, setNotFound] = useState(false);
   const [searchByName, setSearchByName] = useState('');
@@ -35,7 +36,7 @@ const ViewProducts = () => {
     setLoading(true)
     // const productsRef = query(collection(db, "products"), where("name", "==", 'Chuck Taylor All'));
     const productsRef = collection(db, "products");
-    const q = query(productsRef, orderBy(queryProduct.field, queryProduct.order));
+    const q = query(productsRef, orderBy('creatAt', 'desc'));
     try {
       const querySnapshot = await getDocs(q);
       const allProducts = querySnapshot.docs.map((doc) => {
@@ -269,6 +270,12 @@ const ViewProducts = () => {
   // }, [queryProduct])
 
   useEffect(() => {
+    //khi nhap thi reset query ve default
+    setQueryProduct({
+      value: "default",
+      field: "price",
+      order: -1
+    })
     handleSearchByName(searchByName) //thằng này sẽ chạy trước getProducts()
   }, [searchByName])
 
@@ -278,6 +285,7 @@ const ViewProducts = () => {
 
   return (
     <>
+      {pageProducts.length}
       <div className='w-full'>
         <div className='border border-transparent pb-6 border-b-[#bbb] flex items-center justify-between'>
           <span className='text-bgPrimary flex-1 text-[18px]'>
@@ -296,10 +304,11 @@ const ViewProducts = () => {
           </div>
           <div className="flex-1 ">
             <select
+              value={queryProduct.value}
               onChange={(e) => solveQuery(e.target.value)}
               className='outline-none mr-[12px] float-right rounded-[4px] bg-slate-100 px-3 py-3 text-bgPrimary cursor-pointer border border-solid border-[#ddd] shadow-shadowSearch'
               name="sort-by" id="">
-              <option key='0' value="">Sắp xếp theo</option>
+              <option key='0' value="default">Sắp xếp theo</option>
               <option key='1' value="latest">Mới nhất</option>
               <option key='2' value="oldest">Cũ nhất</option>
               <option key='3' value="lowest-price">Giá tăng dần</option>
