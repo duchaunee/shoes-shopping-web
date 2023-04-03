@@ -52,9 +52,11 @@ const ValueFilter = ({ productPreview, setProductPreview }) => {
   }
 
   useEffect(() => {
-    if (Number(priceRange.from) > Number(priceRange.to)
-      && priceRange.from !== null && priceRange.from !== ""
-      && priceRange.to !== null && priceRange.to !== "") setErrorRange(true)
+    if ((Number(priceRange.from) > Number(priceRange.to) && priceRange.from !== null && priceRange.from !== "" && priceRange.to !== null && priceRange.to !== "")
+      || ((priceRange.from === "" || priceRange.from === null) && priceRange.to && Number(priceRange.to) < minValueFilter)
+      || ((priceRange.to === "" || priceRange.to === null) && priceRange.from && Number(priceRange.from) > maxValueFilter)) {
+      setErrorRange(true)
+    }
     else setErrorRange(false)
   }, [priceRange])
 
@@ -72,7 +74,7 @@ const ValueFilter = ({ productPreview, setProductPreview }) => {
             width='w-1/2'
             py='py-2'
             labelName='Từ'
-            placeholder='Đơn vị ₫'
+            placeholder='VNĐ'
             bg='bg-white'
             id='min'
             maxLength={7}
@@ -87,7 +89,7 @@ const ValueFilter = ({ productPreview, setProductPreview }) => {
             width='w-1/2'
             py='py-2'
             labelName='Đến'
-            placeholder='Đơn vị ₫'
+            placeholder='VNĐ'
             bg='bg-white'
             id='max'
             maxLength={7}

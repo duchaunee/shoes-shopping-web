@@ -2,12 +2,12 @@ import React from 'react';
 import PageProducts from '../../components/pageProducts/PageProducts';
 
 
-const GirlShoes = () => {
+const BoyShoes = () => {
   return (
     <>
-      <PageProducts currentName='Nữ' fieldValue='giay-nu' />
+      <PageProducts currentName='Nam' fieldValue='giay-nam' />
     </>
   );
 };
 
-export default GirlShoes;
+export default BoyShoes;

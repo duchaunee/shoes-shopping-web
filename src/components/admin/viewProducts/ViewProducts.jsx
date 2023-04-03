@@ -312,9 +312,13 @@ const ViewProducts = () => {
 
         {
           notFound
-            ? <h1 className='text-[20px] text-center mt-20'>
-              Không có sản phẩm nào cho tìm kiếm "{searchByName}"
-            </h1>
+            ? <div className='flex flex-col items-center'>
+              <img
+                className='w-[350px] object-cover'
+                src="../no-product-found.jpg" alt=""
+              />
+              <h1 className='text-[20px] text-center text-bgPrimary'>Không có sản phẩm nào cho tìm kiếm "{searchByName}"</h1>
+            </div>
             : <>
               <div
                 style={{
