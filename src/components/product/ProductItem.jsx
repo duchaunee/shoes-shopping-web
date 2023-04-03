@@ -2,14 +2,16 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Spinning } from '../../animation-loading';
 import ButtonPrimary from '../button/ButtonPrimary';
+import "../../components/lineClamp.scss"
 
-const ProductItem = ({ img, name, price, text }) => {
+const ProductItem = ({ img, name, price, text, width }) => {
   const [loading, setLoading] = useState(false)
 
   const handleAddToCart = useCallback(() => {
     setLoading(true);
   })
 
+  //load 1,2s roi moi them vao gio hang, neu ve sau co dung tren firebase thi k can cai nay vi tai tren firebase can tgian
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
@@ -21,26 +23,28 @@ const ProductItem = ({ img, name, price, text }) => {
 
   return (
     <>
+      {/* w-[280px] */}
       <div
-        // h-[394.299px]
-        className="w-[280px] bg-white">
+        className={`bg-white ${width}`}>
         <div className=''>
-          <NavLink to="/">
-            <img src="http://mauweb.monamedia.net/converse/wp-content/uploads/2019/05/sale-off-6.jpg" alt="" />
+          <NavLink
+            className='min-h-[130px]'
+            to="/">
+            <img src={img} alt="" />
           </NavLink>
         </div>
         <div className="pt-[10px] px-[10px] pb-[20px]">
-          <div className="w-full text-center mb-[10px] text-[#334862]">
-            <NavLink to='/'>Chuck Taylor Classic</NavLink>
+          <div className="w-full text-center mb-[10px] text-[#334862] line-clamp-1">
+            <NavLink to='/'>{name}</NavLink>
           </div>
           <div className="w-full text-primary font-bold text-center">
-            1,250,000 <p className='inline'>₫</p>
+            {price} <p className='inline'>₫</p>
           </div>
           <div className='text-center'>
             <ButtonPrimary
               loading={loading}
               onClick={handleAddToCart}
-              text={'Add to cart'} />
+              text={text} />
           </div>
         </div>
       </div>

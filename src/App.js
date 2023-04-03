@@ -136,7 +136,6 @@ const App = () => {
           <Route path="/tin-tuc" element={<h2>TIN TỨC</h2>}></Route>
           <Route path="/lien-he" element={<h2>LIÊN HỆ</h2>}></Route>
 
-
           <Route path='/admin/*' element={admin ? <Admin /> : <PermissionDenied />} />;
 
           <Route path="/*" element={<h2>404 page</h2>}></Route>

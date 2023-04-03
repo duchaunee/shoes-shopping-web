@@ -1,3 +1,4 @@
+//nếu dài hơn 1 dòng thì xuống dòng
 .line-clamp-1 {
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -6,7 +7,7 @@
   text-overflow: ellipsis;
 }
 
-
+//nếu dài hơn 2 dòng thì xuống dòng
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-box-orient: vertical;

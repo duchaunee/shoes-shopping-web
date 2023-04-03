@@ -1,16 +1,16 @@
 import { faBan, faLongArrowAltLeft, faLongArrowAltRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
 const Pagination = ({
   products,
   itemsPerPage,
   setPageProducts,
+  quantity,
   currentPage,
   setCurrentPage
 }) => {
 
-  const quantity = 5;
   const totalPages = Math.ceil(products.length / itemsPerPage);
 
   useEffect(() => {
@@ -18,7 +18,7 @@ const Pagination = ({
     const endIndex = Math.min(startIndex + itemsPerPage, products.length);
     const productsSlice = products.slice(startIndex, endIndex)
     setPageProducts(productsSlice);
-  }, [currentPage])
+  }, [currentPage, products])
 
   return (
     <>
@@ -50,7 +50,7 @@ const Pagination = ({
                     className={`${currentPage === idx + activeNumber ? 'bg-bgPrimary text-white' : ''} w-[48px] aspect-square block rounded py-2 border border-gray-100 text-center leading-8`} >
                     {idx + activeNumber}
                   </button>
-                  : <FontAwesomeIcon className='text-[15px] block rounded w-[48px] aspect-square py-2 border border-gray-100 text-center leading-8' icon={faBan} />}
+                  : <FontAwesomeIcon className='text-[15px] text-primary block rounded w-[48px] aspect-square py-2 border border-gray-100 text-center leading-8' icon={faBan} />}
               </li>
             )
           }

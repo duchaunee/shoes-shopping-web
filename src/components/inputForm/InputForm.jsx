@@ -1,12 +1,11 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 
-const InputForm = ({ numberType, type, width, labelName, placeholder, bg, id, children, value, onChange, name }) => {
-
+const InputForm = ({ numberType, type, py, borderColor, width, labelName, placeholder, bg, id, children, value, onChange, name, maxLength }) => {
   return (
     <div className={`${width} relative ${type === "textarea" ? "flex-1" : ""}`}>
       <label
         htmlFor={id}
-        className={`${bg} absolute inline-block font-medium cursor-pointer top-0 left-[10px] py-[1px] px-[5px] text-[16px] translate-y-[-50%] text-bgPrimary`}>
+        className={`${bg} absolute inline-block font-medium cursor-pointer top-0 left-[10px] px-[5px] text-[16px] translate-y-[-50%] text-bgPrimary`}>
         {labelName}
       </label>
       {type === 'input'
@@ -15,11 +14,12 @@ const InputForm = ({ numberType, type, width, labelName, placeholder, bg, id, ch
           value={value}
           onChange={onChange}
           name={name}
-          className='px-[15px] py-[12px] block w-full text-[16px] border border-solid border-bgPrimary rounded-[4px] bg-transparent text-bgPrimary outline-none'
+          className={`px-[15px] ${py || 'py-[12px]'} block w-full text-[16px] border border-solid  rounded-[4px] ${borderColor || 'border-bgPrimary'} bg-transparent text-bgPrimary outline-none `}
           autoComplete="off"
           type={numberType || "text"}
           id={id}
-          placeholder={placeholder} />
+          placeholder={placeholder}
+          maxLength={maxLength} />
         : ""}
 
       {type === 'textarea'
@@ -28,7 +28,7 @@ const InputForm = ({ numberType, type, width, labelName, placeholder, bg, id, ch
           value={value}
           onChange={onChange}
           name={name}
-          className='px-[15px] py-[12px] block w-full h-full text-[16px] border border-solid border-bgPrimary rounded-[4px] bg-transparent text-bgPrimary outline-none'
+          className={`px-[15px] ${py || 'py-[12px]'} block w-full h-full text-[16px] border border-solid border-bgPrimary rounded-[4px] bg-transparent text-bgPrimary outline-none`}
           cols="30"
           autoComplete="off"
           type="text"
@@ -42,7 +42,7 @@ const InputForm = ({ numberType, type, width, labelName, placeholder, bg, id, ch
           value={value}
           onChange={onChange}
           name={name}
-          className='cursor-pointer px-[15px] py-[12px] block w-full text-[16px] border border-solid border-bgPrimary rounded-[4px] bg-transparent text-bgPrimary outline-none'
+          className={`cursor-pointer px-[15px] ${py || 'py-[12px]'} block w-full text-[16px] border border-solid border-bgPrimary rounded-[4px] bg-transparent text-bgPrimary outline-none`}
           autoComplete="off"
           type="text"
           id={id}
@@ -50,11 +50,6 @@ const InputForm = ({ numberType, type, width, labelName, placeholder, bg, id, ch
           {children}
         </select>
         : ""}
-
-
-
-
-
 
     </div >
   );

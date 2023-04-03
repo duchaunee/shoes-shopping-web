@@ -1,10 +1,10 @@
 import React from 'react';
 import "./spinning.scss"
 
-const Spinning = ({ color, size }) => {
+const Spinning = ({ color, size, mt = "" }) => {
   return (
     <div
-      className='flex w-full h-full items-center justify-center relative'>
+      className={`flex w-full h-full items-center justify-center relative ${mt}`}>
       <div className='mx-auto' id="preloader">
         <div
           style={{

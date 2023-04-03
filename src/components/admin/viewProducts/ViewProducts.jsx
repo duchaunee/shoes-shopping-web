@@ -11,10 +11,11 @@ import { deleteObject, ref } from 'firebase/storage';
 import { useDispatch, useSelector } from 'react-redux';
 import Notiflix from 'notiflix';
 import { STORE_PRODUCTS, selectProducts } from '../../../redux-toolkit/slice/productSlice';
-import "./lineClamp.scss"
+import "../../lineClamp.scss"
 
 const ViewProducts = () => {
   const itemsPerPage = 3;
+  const quantity = 5;
 
   const [loading, setLoading] = useState(false);
   const [queryProduct, setQueryProduct] = useState({
@@ -126,68 +127,117 @@ const ViewProducts = () => {
     }
   }
 
-  const handleSearchByName = () => {
+  const handleSearchByName = (searchByName) => {
     const searchProducts = productsRedux.filter(product => product.name.toLowerCase().includes(searchByName.toLowerCase()))
-    setLoading(true)
+    console.log(searchProducts);
+    // setLoading(true)
     //vì thằng getProducts là async nên chưa kịp get về thì nó đã chạy handleSearchByName rồi nên phải có điều kiện products.length !== 0 (sản phẩm đâ được get về)
     if (searchProducts.length === 0 && products.length !== 0) {
       setNotFound(true)
       return;
     }
+
+    // else if (searchByName === "" && ) {
+
+    // }
     //Có 2 TH searchByName bị rỗng: 1 là khi mới vào thì searchByName == "", 2 là khi nhập xong xóa thì searchByName == ""
     // 1. Nếu sản phẩm đã get về thành công và nhập vào ô search by name, mà có searchProducts.length > 0 thì hiển thị
     // 2. Nếu sản phẩm đã get về thành công và nhập vào ô search by name XONG XÓA đi làm cho ô search bị rỗng, mà có searchProducts.length > 0 thì hiển thị
     else if (searchByName !== "" && products.length !== 0 && searchProducts.length > 0
       || (searchByName === "" && searchProducts.length > 0)) {
       setNotFound(false)
-      setLoading(false)
+      // setLoading(false)
       setProducts(searchProducts)
-      setPageProducts(searchProducts.slice(0, itemsPerPage))
+      // setPageProducts(searchProducts.slice(0, itemsPerPage))
     }
   }
-
   const solveQuery = (q) => {
+    //1 la a[..] > b[...]
+    //-1 ..
     switch (q) {
       case 'latest':
         setQueryProduct({
           field: 'creatAt',
-          order: 'desc'
+          order: -1
         })
         break;
       case 'oldest':
         setQueryProduct({
           field: 'creatAt',
-          order: 'asc'
+          order: 1
         })
         break;
       case 'lowest-price':
         setQueryProduct({
           field: 'price',
-          order: 'asc'
+          order: 1
         })
         break;
       case 'highest-price':
         setQueryProduct({
           field: 'price',
-          order: 'desc'
+          order: -1
         })
         break;
       case 'a-z':
         setQueryProduct({
           field: 'name',
-          order: 'asc'
+          order: 1
         })
         break;
       case 'z-a':
         setQueryProduct({
           field: 'name',
-          order: 'desc'
+          order: -1
         })
         break;
       default:
         break;
     }
   }
+
+  // const solveQuery = (q) => {
+  //   switch (q) {
+  //     case 'latest':
+  //       setQueryProduct({
+  //         field: 'creatAt',
+  //         order: 'desc'
+  //       })
+  //       break;
+  //     case 'oldest':
+  //       setQueryProduct({
+  //         field: 'creatAt',
+  //         order: 'asc'
+  //       })
+  //       break;
+  //     case 'lowest-price':
+  //       setQueryProduct({
+  //         field: 'price',
+  //         order: 'asc'
+  //       })
+  //       break;
+  //     case 'highest-price':
+  //       setQueryProduct({
+  //         field: 'price',
+  //         order: 'desc'
+  //       })
+  //       break;
+  //     case 'a-z':
+  //       setQueryProduct({
+  //         field: 'name',
+  //         order: 'asc'
+  //       })
+  //       break;
+  //     case 'z-a':
+  //       setQueryProduct({
+  //         field: 'name',
+  //         order: 'desc'
+  //       })
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // }
 
   const solveCategory = (category) => {
     switch (category) {
@@ -203,22 +253,33 @@ const ViewProducts = () => {
   }
 
   const solvePrice = (price) => {
-    return Math.floor(price).toLocaleString('en-US').replace(',', '.');
+    return Math.floor(price).toLocaleString('en-US')
   }
-
   useEffect(() => {
-    getProducts() //async
-    console.log(products);
+    // setLoading(true)
+    setProducts([...products].sort((a, b) => {
+      if (a[queryProduct.field] > b[queryProduct.field]) return queryProduct.order
+      return (queryProduct.order) * (-1)
+    }));
   }, [queryProduct])
 
+  // useEffect(() => {
+  //   getProducts() //async
+  //   // console.log(products);
+  // }, [queryProduct])
+
   useEffect(() => {
-    handleSearchByName() //thằng này sẽ chạy trước getProducts()
+    handleSearchByName(searchByName) //thằng này sẽ chạy trước getProducts()
   }, [searchByName])
+
+  useEffect(() => {
+    getProducts()
+  }, [])
 
   return (
     <>
       <div className='w-full'>
-        <div className={`border border-transparent pb-6 border-b-[#bbb] flex items-center justify-between ${loading && 'mb-[80px]'}`}>
+        <div className='border border-transparent pb-6 border-b-[#bbb] flex items-center justify-between'>
           <span className='text-bgPrimary flex-1 text-[18px]'>
             <p className='font-bold inline-block text-[18px]'>Số lượng</p>
             : {notFound ? "0" : products.length} sản phẩm
@@ -323,6 +384,7 @@ const ViewProducts = () => {
                     currentPage={currentPage}
                     setCurrentPage={setCurrentPage}
                     itemsPerPage={itemsPerPage}
+                    quantity={quantity}
                     setPageProducts={setPageProducts} />
                 </div>)
               }
