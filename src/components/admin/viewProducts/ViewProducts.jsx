@@ -128,19 +128,24 @@ const ViewProducts = () => {
     }
   }
 
-  const handleSearchByName = (searchByName) => {
+  const handleSearchByName = (e) => {
+    e.preventDefault()
+    //reset input and query
+    setSearchByName('');
+    setQueryProduct({
+      value: "default",
+      field: "price",
+      order: -1
+    })
+    //
     const searchProducts = productsRedux.filter(product => product.name.toLowerCase().includes(searchByName.toLowerCase()))
-    console.log(searchProducts);
-    // setLoading(true)
+
     //vì thằng getProducts là async nên chưa kịp get về thì nó đã chạy handleSearchByName rồi nên phải có điều kiện products.length !== 0 (sản phẩm đâ được get về)
     if (searchProducts.length === 0 && products.length !== 0) {
       setNotFound(true)
       return;
     }
 
-    // else if (searchByName === "" && ) {
-
-    // }
     //Có 2 TH searchByName bị rỗng: 1 là khi mới vào thì searchByName == "", 2 là khi nhập xong xóa thì searchByName == ""
     // 1. Nếu sản phẩm đã get về thành công và nhập vào ô search by name, mà có searchProducts.length > 0 thì hiển thị
     // 2. Nếu sản phẩm đã get về thành công và nhập vào ô search by name XONG XÓA đi làm cho ô search bị rỗng, mà có searchProducts.length > 0 thì hiển thị
@@ -197,49 +202,6 @@ const ViewProducts = () => {
     }
   }
 
-  // const solveQuery = (q) => {
-  //   switch (q) {
-  //     case 'latest':
-  //       setQueryProduct({
-  //         field: 'creatAt',
-  //         order: 'desc'
-  //       })
-  //       break;
-  //     case 'oldest':
-  //       setQueryProduct({
-  //         field: 'creatAt',
-  //         order: 'asc'
-  //       })
-  //       break;
-  //     case 'lowest-price':
-  //       setQueryProduct({
-  //         field: 'price',
-  //         order: 'asc'
-  //       })
-  //       break;
-  //     case 'highest-price':
-  //       setQueryProduct({
-  //         field: 'price',
-  //         order: 'desc'
-  //       })
-  //       break;
-  //     case 'a-z':
-  //       setQueryProduct({
-  //         field: 'name',
-  //         order: 'asc'
-  //       })
-  //       break;
-  //     case 'z-a':
-  //       setQueryProduct({
-  //         field: 'name',
-  //         order: 'desc'
-  //       })
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // }
-
   const solveCategory = (category) => {
     switch (category) {
       case 'giay-nam':
@@ -257,7 +219,6 @@ const ViewProducts = () => {
     return Math.floor(price).toLocaleString('en-US')
   }
   useEffect(() => {
-    // setLoading(true)
     setProducts([...products].sort((a, b) => {
       if (a[queryProduct.field] > b[queryProduct.field]) return queryProduct.order
       return (queryProduct.order) * (-1)
@@ -269,15 +230,15 @@ const ViewProducts = () => {
   //   // console.log(products);
   // }, [queryProduct])
 
-  useEffect(() => {
-    //khi nhap thi reset query ve default
-    setQueryProduct({
-      value: "default",
-      field: "price",
-      order: -1
-    })
-    handleSearchByName(searchByName) //thằng này sẽ chạy trước getProducts()
-  }, [searchByName])
+  // useEffect(() => {
+  //   //khi nhap thi reset query ve default
+  //   setQueryProduct({
+  //     value: "default",
+  //     field: "price",
+  //     order: -1
+  //   })
+  //   handleSearchByName(searchByName) //thằng này sẽ chạy trước getProducts()
+  // }, [searchByName])
 
   useEffect(() => {
     getProducts()
@@ -286,22 +247,31 @@ const ViewProducts = () => {
   return (
     <>
       <div className='w-full'>
-        <div className='border border-transparent pb-6 border-b-[#bbb] flex items-center justify-between'>
-          <span className='text-bgPrimary flex-1 text-[18px]'>
+        <div className='border border-transparent pb-6 border-b-[#bbb] grid grid-cols-12'>
+          <span className='text-bgPrimary col-span-4 text-[18px]'>
             <p className='font-bold inline-block text-[18px]'>Số lượng</p>
             : {notFound ? "0" : products.length} sản phẩm
           </span>
-          <div className="flex-1 px-[15px] overflow-hidden inline-flex gap-2 items-center border border-solid border-bgPrimary rounded-[4px]">
-            <FontAwesomeIcon icon={faSearch} />
-            <input
-              value={searchByName}
-              onChange={(e) => setSearchByName(e.target.value)}
-              className='block flex-1 py-[6px] text-[18px] text-bgPrimary outline-none'
-              placeholder='Tìm kiếm theo tên'
-              autoComplete='off'
-              type="text" name="" id="" />
-          </div>
-          <div className="flex-1 ">
+          <form
+            onSubmit={handleSearchByName}
+            className="col-span-6 flex gap-4 items-center">
+            <div className="px-[15px] overflow-hidden inline-flex gap-2 items-center border border-solid border-bgPrimary ">
+              <input
+                required
+                value={searchByName}
+                onChange={(e) => setSearchByName(e.target.value)}
+                className='block py-[6px] text-[18px] text-bgPrimary outline-none'
+                placeholder='Tìm kiếm theo tên'
+                autoComplete='off'
+                type="text" name="" id="" />
+            </div>
+            <button
+              type='submit'
+              className='text-white  bg-bgPrimary opacity-80 hover:opacity-100 transition-all ease-linear duration-300 px-4 py-[8px] text-[18px]'>
+              <FontAwesomeIcon icon={faSearch} />
+            </button>
+          </form>
+          <div className="col-span-2">
             <select
               value={queryProduct.value}
               onChange={(e) => solveQuery(e.target.value)}
@@ -325,7 +295,7 @@ const ViewProducts = () => {
                 className='w-[350px] object-cover'
                 src="../notFound.jpg" alt=""
               />
-              <h1 className='text-[20px] text-center text-bgPrimary'>Không có sản phẩm nào cho tìm kiếm "{searchByName}"</h1>
+              <h1 className='text-[20px] text-center text-bgPrimary'>Không tìm thấy sản phẩm phù hợp</h1>
             </div>
             : <>
               <div
