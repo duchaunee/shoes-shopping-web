@@ -2,13 +2,18 @@ import React, { useEffect, useState } from 'react';
 import InputForm from '../inputForm/InputForm';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
-import { selectGirlProducts } from '../../redux-toolkit/slice/productSlice';
 
 const minValueFilter = 500000
 const maxValueFilter = 3000000;
 
-const ValueFilter = ({ productPreview, setProductPreview, setQueryProduct }) => {
-  const girlProduct = useSelector(selectGirlProducts)
+const ValueFilter = ({
+  productPreview,
+  setProductPreview,
+  setQueryProduct,
+  setFilterProduct,
+  selectNameProduct }) => {
+
+  const productsCategoryRedux = useSelector(selectNameProduct) //trai, gai, tre em
 
   const [errorRange, setErrorRange] = useState(false)
   const [priceRange, setPriceRange] = useState({
@@ -24,10 +29,10 @@ const ValueFilter = ({ productPreview, setProductPreview, setQueryProduct }) => 
     else {
       //thằng nào k điền (null thì lấy giá trị mặc định)
       //khi lọc thì luôn lấy thằng gốc nhé :v (lấy trên redux)
-      const girlProductFilter = girlProduct.filter((item) => (item.price >= Number(priceRange.from || minValueFilter) && item.price <= Number(priceRange.to || maxValueFilter)))
-      setProductPreview(girlProductFilter)
-
+      const ProductFilter = productsCategoryRedux.filter((item) => (item.price >= Number(priceRange.from || minValueFilter) && item.price <= Number(priceRange.to || maxValueFilter)))
+      setProductPreview(ProductFilter)
       //reset
+      setFilterProduct('default')
       setQueryProduct({
         value: "latest",
         field: "price", //default la moi nhat

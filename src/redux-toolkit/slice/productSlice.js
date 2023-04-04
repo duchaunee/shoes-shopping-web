@@ -19,10 +19,18 @@ export const productSlice = createSlice({
       state.girlProducts = action.payload
       // console.log(state.girlProducts);
     },
+    STORE_BOY_PRODUCTS: (state, action) => {
+      state.boyProducts = action.payload
+      // console.log(state.boyProducts);
+    },
+    STORE_CHILD_PRODUCTS: (state, action) => {
+      state.childProducts = action.payload
+      // console.log(state.childProducts);
+    },
   }
 })
 
-export const { STORE_PRODUCTS, STORE_GIRL_PRODUCTS } = productSlice.actions
+export const { STORE_PRODUCTS, STORE_GIRL_PRODUCTS, STORE_BOY_PRODUCTS, STORE_CHILD_PRODUCTS } = productSlice.actions
 export const selectProducts = (state) => state.product.products
 export const selectGirlProducts = (state) => state.product.girlProducts
 export const selectBoyProducts = (state) => state.product.boyProducts

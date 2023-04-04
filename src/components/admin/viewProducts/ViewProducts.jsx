@@ -18,6 +18,7 @@ const ViewProducts = () => {
   const quantity = 5;
 
   const [loading, setLoading] = useState(false);
+  const [filterProduct, setFilterProduct] = useState('default');
   const [queryProduct, setQueryProduct] = useState({
     value: "default",
     field: "price", //default la moi nhat
@@ -132,6 +133,7 @@ const ViewProducts = () => {
     e.preventDefault()
     //reset input and query
     setSearchByName('');
+    setFilterProduct('default')
     setQueryProduct({
       value: "default",
       field: "price",
@@ -139,6 +141,7 @@ const ViewProducts = () => {
     })
     //
     const searchProducts = productsRedux.filter(product => product.name.toLowerCase().includes(searchByName.toLowerCase()))
+    console.log('searchProducts: ', searchProducts);
 
     //vì thằng getProducts là async nên chưa kịp get về thì nó đã chạy handleSearchByName rồi nên phải có điều kiện products.length !== 0 (sản phẩm đâ được get về)
     if (searchProducts.length === 0 && products.length !== 0) {
@@ -157,6 +160,7 @@ const ViewProducts = () => {
       // setPageProducts(searchProducts.slice(0, itemsPerPage))
     }
   }
+
   const solveQuery = (q) => {
     //1 la a[..] > b[...]
     //-1 ..
@@ -218,6 +222,7 @@ const ViewProducts = () => {
   const solvePrice = (price) => {
     return Math.floor(price).toLocaleString('en-US')
   }
+
   useEffect(() => {
     setProducts([...products].sort((a, b) => {
       if (a[queryProduct.field] > b[queryProduct.field]) return queryProduct.order
@@ -225,20 +230,19 @@ const ViewProducts = () => {
     }));
   }, [queryProduct])
 
-  // useEffect(() => {
-  //   getProducts() //async
-  //   // console.log(products);
-  // }, [queryProduct])
-
-  // useEffect(() => {
-  //   //khi nhap thi reset query ve default
-  //   setQueryProduct({
-  //     value: "default",
-  //     field: "price",
-  //     order: -1
-  //   })
-  //   handleSearchByName(searchByName) //thằng này sẽ chạy trước getProducts()
-  // }, [searchByName])
+  useEffect(() => {
+    //reset init
+    setQueryProduct({
+      value: "default",
+      field: "price",
+      order: -1
+    })
+    //
+    if (filterProduct !== 'default') {
+      if (filterProduct == 'all') setProducts(productsRedux)
+      else setProducts([...productsRedux].filter(item => (item.brand === filterProduct)));
+    }
+  }, [filterProduct])
 
   useEffect(() => {
     getProducts()
@@ -247,11 +251,26 @@ const ViewProducts = () => {
   return (
     <>
       <div className='w-full'>
-        <div className='border border-transparent pb-6 border-b-[#bbb] grid grid-cols-12'>
-          <span className='text-bgPrimary col-span-4 text-[18px]'>
-            <p className='font-bold inline-block text-[18px]'>Số lượng</p>
-            : {notFound ? "0" : products.length} sản phẩm
-          </span>
+        <span className='text-bgPrimary block text-[18px] mb-4'>
+          <p className='font-bold inline-block text-[18px]'>Số lượng</p>
+          : {notFound ? "0" : products.length} sản phẩm
+        </span>
+        <div className='border border-transparent pb-6 border-b-[#bbb] grid grid-cols-12 items-center'>
+          <div className="col-span-4 w-full">
+            <select
+              value={filterProduct}
+              onChange={(e) => setFilterProduct(e.target.value)}
+              className='outline-none float-left bg-slate-100 px-3 py-3 text-bgPrimary cursor-pointer border border-solid border-[#ddd] shadow-shadowSearch'
+              name="sort-by" id="">
+              <option key='0' value="default">Lọc sản phẩm theo</option>
+              <option key='1' value="all">Tất cả</option>
+              <option key='2' value="classic">Classic</option>
+              <option key='3' value="sunbaked">Sunbaked</option>
+              <option key='4' value="chuck-07s">Chuck 07S</option>
+              <option key='5' value="one-star">One Star</option>
+              <option key='6' value="psy-kicks">PSY Kicks</option>
+            </select>
+          </div>
           <form
             onSubmit={handleSearchByName}
             className="col-span-6 flex gap-4 items-center">
@@ -275,9 +294,9 @@ const ViewProducts = () => {
             <select
               value={queryProduct.value}
               onChange={(e) => solveQuery(e.target.value)}
-              className='outline-none mr-[12px] float-right rounded-[4px] bg-slate-100 px-3 py-3 text-bgPrimary cursor-pointer border border-solid border-[#ddd] shadow-shadowSearch'
+              className='outline-none float-right bg-slate-100 px-3 py-3 text-bgPrimary cursor-pointer border border-solid border-[#ddd] shadow-shadowSearch'
               name="sort-by" id="">
-              <option key='0' value="default">Sắp xếp theo</option>
+              <option key='0' value="default">Sắp xếp sản phẩm theo</option>
               <option key='1' value="latest">Mới nhất</option>
               <option key='2' value="oldest">Cũ nhất</option>
               <option key='3' value="lowest-price">Giá tăng dần</option>
@@ -302,14 +321,14 @@ const ViewProducts = () => {
                 style={{
                   height: `${itemsPerPage * 148 + 55}px`
                 }}
-                className="w-full mt-6 text-bgPrimary">
+                className="w-full mt-2 text-bgPrimary">
                 {loading
                   ? <Spinning color='#1f2028' size='32px' />
                   : (
                     <table className='w-full'>
                       <thead>
                         <tr
-                          className='border border-transparent pb-6 border-b-[#bbb] grid gap-5 grid-cols-12 mb-4 text-[18px] font-bold py-2'>
+                          className='border border-transparent pb-4 border-b-[#bbb] grid gap-5 grid-cols-12 mb-4 text-[18px] font-bold py-2'>
                           <td className='col-span-1'>Thứ tự</td>
                           <td className='col-span-5'>Thông tin sản phẩm</td>
                           <td className='col-span-2'>Phân loại</td>

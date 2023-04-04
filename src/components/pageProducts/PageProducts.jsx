@@ -6,7 +6,6 @@ import { collection, getDocs, limit, orderBy, query, where } from 'firebase/fire
 import { toast } from 'react-toastify';
 import { db } from '../../firebase/config';
 import { useDispatch, useSelector } from 'react-redux';
-import { STORE_GIRL_PRODUCTS, selectGirlProducts } from '../../redux-toolkit/slice/productSlice';
 import { Spinning } from '../../animation-loading';
 import Pagination from '../pagination/Pagination';
 import OverlayLoading from '../overlayLoading/OverlayLoading';
@@ -18,17 +17,19 @@ const solvePrice = (price) => {
 const itemsPerPage = 8;
 const quantity = 3;
 
-const PageProducts = ({ currentName, fieldValue }) => {
+const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectNameProduct }) => {
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(false);
   const [productDemo, setProductDemo] = useState([])
   const [productPreview, setProductPreview] = useState([])
+  const [filterProduct, setFilterProduct] = useState('default');
   const [queryProduct, setQueryProduct] = useState({
     value: "latest",
     field: "price", //default la moi nhat
     order: -1
   });
-  // const girlProduct = useSelector(selectGirlProducts)
+
+  const productsCategoryRedux = useSelector(selectNameProduct) //trai, gai, tre em
 
   const [currentPage, setCurrentPage] = useState(1)
   const [pageProducts, setPageProducts] = useState([]); //products every page (use slice to cut all prod
@@ -58,7 +59,7 @@ const PageProducts = ({ currentName, fieldValue }) => {
         setLoading(false);
         setProductPreview(allProducts) //san pham giay nu
         setPageProducts(allProducts.slice(0, itemsPerPage))
-        dispatch(STORE_GIRL_PRODUCTS(allProducts))
+        dispatch(STORE_NAME_PRODUCTS(allProducts))
       }
     }
     catch (e) {
@@ -125,12 +126,28 @@ const PageProducts = ({ currentName, fieldValue }) => {
   }, [])
 
   useEffect(() => {
-    // setLoading(true)
-    setProductPreview([...productPreview].sort((a, b) => {
-      if (a[queryProduct.field] > b[queryProduct.field]) return queryProduct.order
-      return (queryProduct.order) * (-1)
-    }));
+    if (queryProduct.value !== 'default') {
+      setProductPreview([...productPreview].sort((a, b) => {
+        if (a[queryProduct.field] > b[queryProduct.field]) return queryProduct.order
+        return (queryProduct.order) * (-1)
+      }));
+    }
   }, [queryProduct])
+
+  useEffect(() => {
+    console.log(productPreview);
+    //reset init
+    setQueryProduct({
+      value: "default",
+      field: "price",
+      order: -1
+    })
+    //
+    if (filterProduct !== 'default') {
+      if (filterProduct == 'all') setProductPreview(productsCategoryRedux)
+      else setProductPreview([...productsCategoryRedux].filter(item => (item.brand === filterProduct)));
+    }
+  }, [filterProduct])
 
   //có thể để bên Pagination luôn, Nhưng chỉ khi size của productPreview sau khi lọc > 8 (itemsPerPage) t mới cho hiện ra thằng Pagination :v tức là nếu size của productPreview < 8 thì sẽ không hiện Pagination và sẽ không bắt đc thời điểm productPreview thay đổi nên thôi chày cối ném sang bên này vậy :v
   useEffect(() => {
@@ -150,7 +167,11 @@ const PageProducts = ({ currentName, fieldValue }) => {
       <div className="">
         <div className=" max-w-[1230px] px-[15px] mx-auto min-h-[60px] pt-5 flex items-center justify-between">
           <div className="flex-1">
-            <NavLink className='uppercase text-[18px] text-[#95959f]'>Trang chủ</NavLink>
+            <NavLink
+              to='/'
+              className='uppercase text-[18px] text-[#95959f]'>
+              Trang chủ
+            </NavLink>
             <div className="mx-2 inline-block">/</div>
             <span className='uppercase text-[18px] font-bold '>{currentName}</span>
           </div>
@@ -163,13 +184,27 @@ const PageProducts = ({ currentName, fieldValue }) => {
               onChange={(e) => solveQuery(e.target.value)}
               className='outline-none mr-[12px] rounded-[4px] px-3 py-3 pr-16 text-bgPrimary cursor-pointer border-[2px] border-solid border-[#ddd] shadow-shadowSearch'
               name="sort-by" id="">
-              <option key='0' value="">Sắp xếp theo</option>
+              <option key='0' value="default">Sắp xếp theo</option>
               <option key='1' value="latest">Mới nhất</option>
               <option key='2' value="oldest">Cũ nhất</option>
               <option key='3' value="lowest-price">Giá tăng dần</option>
               <option key='4' value="highest-price">Giá giảm dần</option>
               <option key='5' value="a-z">A - Z</option>
               <option key='6' value="z-a">Z - A</option>
+            </select>
+
+            <select
+              value={filterProduct}
+              onChange={(e) => setFilterProduct(e.target.value)}
+              className='outline-none mr-[12px] rounded-[4px] px-3 py-3 pr-16 text-bgPrimary cursor-pointer border-[2px] border-solid border-[#ddd] shadow-shadowSearch'
+              name="sort-by" id="">
+              <option key='0' value="default">Lọc sản phẩm theo</option>
+              <option key='1' value="all">Tất cả</option>
+              <option key='2' value="classic">Classic</option>
+              <option key='3' value="sunbaked">Sunbaked</option>
+              <option key='4' value="chuck-07s">Chuck 07S</option>
+              <option key='5' value="one-star">One Star</option>
+              <option key='6' value="psy-kicks">PSY Kicks</option>
             </select>
           </div>
         </div>
@@ -182,6 +217,8 @@ const PageProducts = ({ currentName, fieldValue }) => {
                   productPreview={productPreview}
                   setProductPreview={setProductPreview}
                   setQueryProduct={setQueryProduct}
+                  setFilterProduct={setFilterProduct}
+                  selectNameProduct={selectNameProduct}
                 />
                 <NewestProduct productDemo={productDemo}></NewestProduct>
               </div>

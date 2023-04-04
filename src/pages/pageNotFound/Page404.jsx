@@ -9,7 +9,7 @@ const Page404 = () => {
       <div className="max-w-full h-auto mx-auto mb-20 flex flex-col items-center">
         <img
           className='max-w-[520px] h-full object-cover'
-          src="./404.png" alt="" />
+          src="../404.png" alt="" />
         <h1 className='text-center text-[46px] font-bold mb-4 text-bgPrimary font-mono leading-[32px] uppercase'>Bạn đã bị lạc lối 404</h1>
         <div className="">
           <p className='font-mono text-[24px] text-center'>Trang này hiện không tồn tại hoặc đã bị xóa</p>
