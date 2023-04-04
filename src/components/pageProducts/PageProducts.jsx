@@ -135,6 +135,7 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
   }, [queryProduct])
 
   useEffect(() => {
+    setCurrentPage(1)
     console.log(productPreview);
     //reset init
     setQueryProduct({

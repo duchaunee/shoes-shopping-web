@@ -239,6 +239,7 @@ const ViewProducts = () => {
     })
     //
     if (filterProduct !== 'default') {
+      setCurrentPage(1)
       if (filterProduct == 'all') setProducts(productsRedux)
       else setProducts([...productsRedux].filter(item => (item.brand === filterProduct)));
     }
