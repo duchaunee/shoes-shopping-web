@@ -76,7 +76,7 @@
 //         <button onClick={handleDecrement} className='transition-all duration-500 hover:bg-green-600 hover:shadow-2xl outline-none border-[2px] bg-green-500 rounded-lg px-4 py-3 text-white text-[20px]'>
 //           Increament
 //         </button>
-//       </div>
+//       </div>ta
 //     </div>
 //   )
 // };
