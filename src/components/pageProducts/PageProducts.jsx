@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Spinning } from '../../animation-loading';
 import Pagination from '../pagination/Pagination';
 import OverlayLoading from '../overlayLoading/OverlayLoading';
+// import OverlayLoading from '../overlayLoading/OverlayLoading';
 
 const solvePrice = (price) => {
   return Math.floor(price).toLocaleString('en-US')
@@ -19,7 +20,7 @@ const quantity = 3;
 
 const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectNameProduct }) => {
   const dispatch = useDispatch()
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [productDemo, setProductDemo] = useState([])
   const [productPreview, setProductPreview] = useState([])
   const [filterProduct, setFilterProduct] = useState('default');
@@ -50,16 +51,16 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
       //init
       if (detectProduct == 'setDemo') setProductDemo(allProducts) //demo ben trai
       if (detectProduct == 'setPreview') {
-        // setTimeout(() => {
-        //   setLoading(false);
-        //   setProductPreview(allProducts) //san pham giay nu
-        //   setPageProducts(allProducts.slice(0, itemsPerPage))
-        //   dispatch(STORE_GIRL_PRODUCTS(allProducts))
-        // }, 0);
-        setLoading(false);
-        setProductPreview(allProducts) //san pham giay nu
-        setPageProducts(allProducts.slice(0, itemsPerPage))
-        dispatch(STORE_NAME_PRODUCTS(allProducts))
+        setTimeout(() => {
+          setLoading(false);
+          setProductPreview(allProducts) //san pham giay nu
+          setPageProducts(allProducts.slice(0, itemsPerPage))
+          dispatch(STORE_NAME_PRODUCTS(allProducts))
+        }, 800);
+        // setLoading(false);
+        // setProductPreview(allProducts) //san pham giay nu
+        // setPageProducts(allProducts.slice(0, itemsPerPage))
+        // dispatch(STORE_NAME_PRODUCTS(allProducts))
       }
     }
     catch (e) {
@@ -135,9 +136,8 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
   }, [queryProduct])
 
   useEffect(() => {
-    setCurrentPage(1)
-    console.log(productPreview);
     //reset init
+    setCurrentPage(1)
     setQueryProduct({
       value: "default",
       field: "price",
@@ -160,74 +160,77 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
 
   return (
     <>
-      {/* {loading
-        ? ""
-        : (
-          
-        ) } */}
+
       <div className="">
-        <div className=" max-w-[1230px] px-[15px] mx-auto min-h-[60px] pt-5 flex items-center justify-between">
-          <div className="flex-1">
-            <NavLink
-              to='/'
-              className='uppercase text-[18px] text-[#95959f]'>
-              Trang chủ
-            </NavLink>
-            <div className="mx-2 inline-block">/</div>
-            <span className='uppercase text-[18px] font-bold '>{currentName}</span>
-          </div>
-          <div className="flex items-center">
-            <p className='inline-block text-[16px] text-[#353535] mr-8'>
-              <span className='font-bold'>Số lượng</span>: {productPreview.length} sản phẩm
-            </p>
-            <select
-              value={queryProduct.value}
-              onChange={(e) => solveQuery(e.target.value)}
-              className='outline-none mr-[12px] rounded-[4px] px-3 py-3 pr-16 text-bgPrimary cursor-pointer border-[2px] border-solid border-[#ddd] shadow-shadowSearch'
-              name="sort-by" id="">
-              <option key='0' value="default">Sắp xếp theo</option>
-              <option key='1' value="latest">Mới nhất</option>
-              <option key='2' value="oldest">Cũ nhất</option>
-              <option key='3' value="lowest-price">Giá tăng dần</option>
-              <option key='4' value="highest-price">Giá giảm dần</option>
-              <option key='5' value="a-z">A - Z</option>
-              <option key='6' value="z-a">Z - A</option>
-            </select>
+        {/* top */}
+        {loading || (
+          <div className=" max-w-[1230px] px-[15px] mx-auto min-h-[60px] pt-5 flex items-center justify-between">
+            <div className="flex-1">
+              <NavLink
+                to='/'
+                className='uppercase text-[18px] text-[#95959f]'>
+                Trang chủ
+              </NavLink>
+              <div className="mx-2 inline-block">/</div>
+              <span className='uppercase text-[18px] font-bold '>{currentName}</span>
+            </div>
+            <div className="flex items-center">
+              <p className='inline-block text-[16px] text-[#353535] mr-8'>
+                <span className='font-bold'>Số lượng</span>: {productPreview.length} sản phẩm
+              </p>
+              <select
+                value={queryProduct.value}
+                onChange={(e) => solveQuery(e.target.value)}
+                className='outline-none mr-[12px] rounded-[4px] px-3 py-3 pr-16 text-bgPrimary cursor-pointer border-[2px] border-solid border-[#ddd] shadow-shadowSearch'
+                name="sort-by" id="">
+                <option key='0' value="default">Sắp xếp theo</option>
+                <option key='1' value="latest">Mới nhất</option>
+                <option key='2' value="oldest">Cũ nhất</option>
+                <option key='3' value="lowest-price">Giá tăng dần</option>
+                <option key='4' value="highest-price">Giá giảm dần</option>
+                <option key='5' value="a-z">A - Z</option>
+                <option key='6' value="z-a">Z - A</option>
+              </select>
 
-            <select
-              value={filterProduct}
-              onChange={(e) => setFilterProduct(e.target.value)}
-              className='outline-none mr-[12px] rounded-[4px] px-3 py-3 pr-16 text-bgPrimary cursor-pointer border-[2px] border-solid border-[#ddd] shadow-shadowSearch'
-              name="sort-by" id="">
-              <option key='0' value="default">Lọc sản phẩm theo</option>
-              <option key='1' value="all">Tất cả</option>
-              <option key='2' value="classic">Classic</option>
-              <option key='3' value="sunbaked">Sunbaked</option>
-              <option key='4' value="chuck-07s">Chuck 07S</option>
-              <option key='5' value="one-star">One Star</option>
-              <option key='6' value="psy-kicks">PSY Kicks</option>
-            </select>
+              <select
+                value={filterProduct}
+                onChange={(e) => setFilterProduct(e.target.value)}
+                className='outline-none mr-[12px] rounded-[4px] px-3 py-3 pr-16 text-bgPrimary cursor-pointer border-[2px] border-solid border-[#ddd] shadow-shadowSearch'
+                name="sort-by" id="">
+                <option key='0' value="default">Lọc sản phẩm theo</option>
+                <option key='1' value="all">Tất cả</option>
+                <option key='2' value="classic">Classic</option>
+                <option key='3' value="sunbaked">Sunbaked</option>
+                <option key='4' value="chuck-07s">Chuck 07S</option>
+                <option key='5' value="one-star">One Star</option>
+                <option key='6' value="psy-kicks">PSY Kicks</option>
+              </select>
+            </div>
           </div>
-        </div>
+        )}
 
+        {/* bot */}
         <div className="w-full">
           <div className='max-w-[1230px] min-h-[666px] pt-[30px] mx-auto flex'>
-            <div className='max-w-[25%] px-[15px] pb-[30px]'>
-              <div className="w-full ">
-                <ValueFilter
-                  productPreview={productPreview}
-                  setProductPreview={setProductPreview}
-                  setQueryProduct={setQueryProduct}
-                  setFilterProduct={setFilterProduct}
-                  selectNameProduct={selectNameProduct}
-                />
-                <NewestProduct productDemo={productDemo}></NewestProduct>
+            {/* left */}
+            {loading || (
+              <div className='max-w-[25%] px-[15px] pb-[30px]'>
+                <div className="w-full ">
+                  <ValueFilter
+                    productPreview={productPreview}
+                    setProductPreview={setProductPreview}
+                    setQueryProduct={setQueryProduct}
+                    setFilterProduct={setFilterProduct}
+                    selectNameProduct={selectNameProduct}
+                  />
+                  <NewestProduct productDemo={productDemo}></NewestProduct>
+                </div>
               </div>
-            </div>
+            )}
 
-
+            {/* right */}
             {loading
-              ? <Spinning color='#1f2028' size='32px' mt='mt-[150px]' />
+              ? <OverlayLoading />
               : <div className="flex-1">
                 <div className={`px-[15px] ${productPreview.length > 0 && 'min-h-[555px]'} grid grid-cols-4`}>
                   {console.log(pageProducts)}
@@ -263,7 +266,6 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
                     />
                     <h1 className='text-[26px] text-center text-bgPrimary font-mono'>Không tìm thấy sản phẩm nào</h1>
                   </div>
-
                 }
               </div>
             }

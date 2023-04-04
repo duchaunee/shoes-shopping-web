@@ -5,17 +5,49 @@ import "../../animation-loading/spinning/spinning.scss"
 const OverlayLoading = () => {
   return (
     <>
-      <div className="loading text-center flex flex-col justify-center">
-        <div className="loading-text mt-4">
-          <span className="loading-text-words text-[26px]">L</span>
-          <span className="loading-text-words text-[26px]">O</span>
-          <span className="loading-text-words text-[26px]">A</span>
-          <span className="loading-text-words text-[26px]">D</span>
-          <span className="loading-text-words text-[26px]">I</span>
-          <span className="loading-text-words text-[26px]">N</span>
-          <span className="loading-text-words text-[26px]">G</span>
+
+      <div className="flex w-full max-h-[800px] items-center justify-center mb-20">
+        <div className="boxes">
+          <div className="box">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <div className="box">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <div className="box">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <div className="box">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
         </div>
+
+        {/* <div className="">
+          <div className="loading-text flex justify-center mt-28">
+            <span className="loading-text-words font-medium text-[30px]">L</span>
+            <span className="loading-text-words font-medium text-[30px]">O</span>
+            <span className="loading-text-words font-medium text-[30px]">A</span>
+            <span className="loading-text-words font-medium text-[30px]">D</span>
+            <span className="loading-text-words font-medium text-[30px]">I</span>
+            <span className="loading-text-words font-medium text-[30px]">N</span>
+            <span className="loading-text-words font-medium text-[30px]">G</span>
+          </div>
+        </div> */}
       </div>
+
+
     </>
   );
 };
