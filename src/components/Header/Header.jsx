@@ -141,8 +141,8 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
       <div className={`${scrolled ? "" : "absolute"} z-[1000] h-[133px] w-full`}></div>
       <header className={`${scrolled ? "stuck fixed" : "relative"} z-[1000] h-[133px] w-full text-white/80`}>
         <div className="h-[80px] bg-bgPrimary">
-          <div className="h-full flex items-center justify-between mx-auto px-[15px] max-w-[1230px]">
-            <div>
+          <div className=" grid grid-cols-12 grid-rows-1 h-[80px] px-[15px] max-w-[1230px]  mx-auto">
+            <div className='col-span-4 flex items-center'>
               {
                 logined
                   ? <div
@@ -163,19 +163,19 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
             </div>
             <NavLink
               to="/"
-              className="py-[10px] h-full">
-              <img className='w-full h-full object-cover' src="/logo.png" alt="" />
+              className="col-span-4 py-[10px] h-full">
+              <img className='w-full h-full object-contain' src="/logo.png" alt="" />
             </NavLink>
 
             {
               admin
                 ? <NavLink
                   to='/admin/home'
-                  className=" cursor-pointer py-[10px] text-[13px] font-bold items-center no-underline tracking-[0.32px] uppercase hover:text-white transition-all ease-linear duration-200">
+                  className="col-span-4 flex items-center ml-auto cursor-pointer py-[10px] text-[13px] font-bold no-underline tracking-[0.32px] uppercase hover:text-white transition-all ease-linear duration-200">
                   <FontAwesomeIcon icon={faShapes} className='cursor-pointer pr-[10px] text-[18px]' />
                   Dashboard
                 </NavLink>
-                : <div className="flex gap-[15px] items-center">
+                : <div className="col-span-4 ml-auto flex gap-[15px] items-center">
                   <div className="relative">
                     <FontAwesomeIcon icon={faSearch} className='cursor-pointer py-[10px] text-[18px]' />
                   </div>

@@ -9,7 +9,7 @@ const PermissionDenied = () => {
       <div className="max-w-full h-auto mx-auto mb-20 flex flex-col items-center">
         <img
           className='max-w-[700px] h-full object-cover'
-          src="../permission-denied.png" alt="" />
+          src="../../permissionDenied.png" alt="" />
         <h1 className='text-center text-[46px] font-bold mb-4 text-bgPrimary font-mono leading-[32px] uppercase'>Quyền truy cập bị từ chối</h1>
         <div className="">
           <p className='font-mono text-[24px] text-center'>Trang bạn đang cố gắng truy cập yêu cầu quyền hạn lớn nhất</p>

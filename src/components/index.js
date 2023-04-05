@@ -1,6 +1,6 @@
 export { default as Header } from "./header/Header"
 export { default as Footer } from "./footer/Footer"
-export { default as ProductItem } from "./product/ProductItem"
+export { default as ProductItem } from "./productItem/ProductItem"
 export { default as ButtonPrimary } from "./button/ButtonPrimary"
 export { default as Card } from "./card/Card"
 export { default as Auth } from "./auth/Auth"
