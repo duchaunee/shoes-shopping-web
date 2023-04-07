@@ -38,7 +38,7 @@ const ViewProducts = () => {
     setLoading(true)
     // const productsRef = query(collection(db, "products"), where("name", "==", 'Chuck Taylor All'));
     const productsRef = collection(db, "products");
-    const q = query(productsRef, orderBy('creatAt', 'desc'));
+    const q = query(productsRef, orderBy('creatAt', 'asc'));
     try {
       const querySnapshot = await getDocs(q);
       const allProducts = querySnapshot.docs.map((doc) => {

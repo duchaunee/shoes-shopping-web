@@ -42,7 +42,7 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
     setLoading(true)
     const productsRef = query(collection(db, "products"), where(field, "==", fieldValue));
     // const productsRef = collection(db, "products");
-    const q = query(productsRef, orderBy('creatAt', 'desc'), limit(limitNumber));
+    const q = query(productsRef, orderBy('creatAt', 'asc'), limit(limitNumber));
     try {
       const querySnapshot = await getDocs(q);
       const allProducts = querySnapshot.docs.map((doc) => {

@@ -31,6 +31,7 @@ const SignIn = ({ signUp, signInWithGoogle, setResetPassword }) => {
       signInWithEmailAndPassword(auth, loginInfo.email, loginInfo.password)
         .then((userCredential) => {
           const user = userCredential.user;
+          if (user.photoURL) localStorage.setItem('imgAvatar', user.photoURL); //set avatar cho user login by google
           setLoading(false)
           toast.success('Đăng nhập thành công', {
             autoClose: 1200,

@@ -14,7 +14,7 @@ const solvePrice = (price) => {
 
 const ProductDetail = () => {
   const { id } = useParams()
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [product, setProduct] = useState({})
   const navigate = useNavigate()
   const admin = useSelector(selectIsAdmin) || JSON.parse(localStorage.getItem('admin'))
@@ -47,7 +47,7 @@ const ProductDetail = () => {
     }
   }
 
-  //đếm xem cái product có mấy ảnh preview
+  //đếm xem cái product có mấy ảnh preview để Array(count).fill...
   const countImgPriview = () => {
     let count = 0;
     Array(4).fill().map((_, idx) => {
@@ -58,11 +58,28 @@ const ProductDetail = () => {
   const solveCategory = (category) => {
     switch (category) {
       case 'giay-nam':
-        return 'Nam'
+        return 'Giày nam'
       case 'giay-nu':
-        return 'Nữ'
+        return 'Giày nữ'
       case 'giay-tre-em':
-        return 'Trẻ em'
+        return 'Giày trẻ em'
+      default:
+        break;
+    }
+  }
+
+  const solveBrand = (brand) => {
+    switch (brand) {
+      case 'classic':
+        return 'Classic'
+      case 'sunbaked':
+        return 'Sunbaked'
+      case 'chuck-07s':
+        return 'Chuck 07S'
+      case 'one-star':
+        return 'One Star'
+      case 'psy-kicks':
+        return 'PSY Kicks'
       default:
         break;
     }
@@ -107,7 +124,7 @@ const ProductDetail = () => {
                 {/* left */}
                 <div className="flex-1 px-[15px]">
                   <img className='w-[600px] h-[425px] cursor-pointer mb-[15px]' src={product.imgURL} alt="" />
-                  <div className="w-full h-[70px] min-[1024px]:h-[95px] "> {/* cai nay de tao margin am, phai co 1 the cha boc no moi dung dc */}
+                  <div className="w-full h-[70px] min-[1024px]:h-[95px] mb-6"> {/* cai nay de tao margin am, phai co 1 the cha boc no moi dung dc */}
                     <div className="h-full mx-[-10px] grid grid-cols-4 grid-rows-1">
                       {Array(countImgPriview()).fill().map((_, idx) => (
                         <div
@@ -122,7 +139,6 @@ const ProductDetail = () => {
                       ))}
                     </div>
                   </div>
-                  {/* <div className="w-full flex-grow bg-red-500"></div> */}
                 </div>
 
                 {/* right */}
@@ -212,21 +228,67 @@ const ProductDetail = () => {
           </div>
 
           {/* bottom */}
-          <div className="w-full ">
+          <div className="w-full">
             <div className="max-w-[1230px] h-full px-[15px] mx-auto">
-              {/* danh gia */}
-              <div className="w-full h-full py-[30px] ">
-                <div className="w-full h-full p-[30px] shadow-xl">
-                  <div className="pb-[46px]">
-                    <h1 className='font-bold text-[20px] leading-[32px]'>Đánh giá</h1>
-                    <h3 className='text-[18px] leading-[32px]'>Chưa có đánh giá nào</h3>
+              {/* thong tin bo sung */}
+              <div className="w-full h-full py-[20px] border border-transparent border-t-[#ddd]">
+                <div className="w-full h-full p-[20px] border border-[#ddd]">
+                  <div className="pb-[8px]">
+                    <h1 className='font-bold text-[18px] leading-[32px] text-[#1c1c1c] uppercase'>Thông tin bổ sung</h1>
                   </div>
-                  <div className="w-full py-[15px] px-[30px] border-[2px] border-primary">
-                    <h1 className='font-bold text-[20px] leading-[32px]'>Đánh giá</h1>
+                  <div className="w-[50px] h-[3px] mt-1 mb-3 bg-red-600"></div>
+                  <div className="flex flex-col w-full">
+                    <div className="grid grid-cols-12 justify-between py-[12px] border border-transparent border-b-[#ddd]">
+                      <h1 className='col-span-3 font-bold text-[14px] uppercase leading-[15x] text-[#353535]'>Danh mục</h1>
+                      <p className='col-span-9 leading-[24px] text-[#666]'>{solveCategory(product.category)}</p>
+                    </div>
+                    <div className="grid grid-cols-12 justify-between py-[12px] border border-transparent border-b-[#ddd]">
+                      <h1 className='col-span-3 font-bold text-[14px] uppercase leading-[15x] text-[#353535]'>Thương hiệu</h1>
+                      <p className='col-span-9 leading-[24px] text-[#666]'>{solveBrand(product.brand)}</p>
+                    </div>
+                    <div className="grid grid-cols-12 justify-between pt-[12px]">
+                      <h1 className='col-span-3 font-bold text-[14px] uppercase leading-[15x] text-[#353535]'>Mô tả sản phẩm</h1>
+                      <p className='col-span-9 leading-[24px] text-[#666]'>{product.desc}</p>
+                    </div>
                   </div>
                 </div>
               </div>
+              {/* danh gia */}
+              <div className="w-full h-full py-[20px] mt-2">
+                <div className="w-full h-full p-[20px] border border-[#ddd]">
+                  <div className="pb-2">
+                    <h1 className='font-bold text-[18px] leading-[32px] text-[#1c1c1c] uppercase'>Đánh giá sản phẩm</h1>
+                  </div>
+                  <div className="w-[50px] h-[3px] my-2 bg-red-600"></div>
+                  <div className="flex flex-col w-full">
+                    {/* no have comment */}
+                    {/* <div className="w-full min-h-[200px] flex flex-col gap-4 items-center justify-center">
+                      <img src="../../noHaveComment.png" alt="" />
+                      <p className='text-[18px] font-medium opacity-75'>Chưa có đánh giá</p>
+                    </div> */}
+                    {/* 1 comment */}
+                    <div className="flex gap-4 pt-5 pb-8 border border-transparent border-b-[#ddd]">
+                      <div className="w-[50px] h-[50px] rounded-full border border-[#ddd] overflow-hidden">
+                        <img className='w-full h-full object-cover' src={localStorage.getItem('imgAvatar')} alt="" />
+                      </div>
+                      <div className="flex-1 flex flex-col">
+                        <span className='font-medium'>{localStorage.getItem('displayName')}</span>
+                        <div className="">
+                          <FontAwesomeIcon className='text-[#f9dc4b] text-[14px]' icon={faStar} />
+                        </div>
+                        <div className="text-black opacity-50 text-[14px]">
+                          {`Phân loại hàng: ${product.name} - ${solveCategory(product.category)}`}
+                        </div>
+                        <div className="mt-2  ">Chất vải dày dặn, form đẹp. Mình 1m6 mặc size M vẫn ok nhé, ko có bị ngắn đâu nè. Rcm mng nên mua, shop còn tặng ktrang vải nữa, rất tốt...Chất vải dày dặn, form đẹp. Mình 1m6 mặc size M vẫn ok nhé, ko có bị ngắn đâu nè. Rcm mng nên mua, shop còn tặng ktrang vải nữa, rất tốt...</div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
               {/* sp tuong tu */}
+              <div className=""></div>
             </div>
           </div>
         </>

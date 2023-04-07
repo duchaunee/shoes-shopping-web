@@ -63,10 +63,7 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
     //Nhận diện người dùng đã log in vào hay chưa
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        // console.log(user.photoURL);
-        // if ((/^https?:\/\/(?:[^./?#]+\.)?googleusercontent\.com\/.*(?:png|jpe?g|gif)$/).test(user.photoURL)) {
-        //   console.log('this"s img get from gg account');
-        // }
+        if (user.photoURL) localStorage.setItem('imgAvatar', user.photoURL); //set avatar cho user login by google
 
         const uid = user.uid;
         const providerData = user.providerData;

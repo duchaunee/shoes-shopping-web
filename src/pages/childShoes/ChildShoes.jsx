@@ -7,7 +7,7 @@ const ChildShoes = () => {
   return (
     <>
       <PageProducts
-        currentName='Trẻ em'
+        currentName='Giày trẻ em'
         fieldValue='giay-tre-em'
         STORE_NAME_PRODUCTS={STORE_CHILD_PRODUCTS}
         selectNameProduct={selectChildProducts} />
