@@ -101,7 +101,12 @@ const ProductDetail = () => {
   }
 
   useEffect(() => {
-    getProduct()
+    getProduct() //lấy ra sản phẩm đó lúc vào trang
+    //xử lí trường hợp nếu ở cuối trang productDetail ấn reload thì nó k lên đầu 
+    //=> ảnh hưởng thẩm mĩ
+    window.scrollTo({
+      top: 0,
+    });
   }, [])
 
   useEffect(() => {
@@ -269,7 +274,8 @@ const ProductDetail = () => {
                     {/* 1 comment */}
                     <div className="flex gap-4 pt-5 pb-8 border border-transparent border-b-[#ddd]">
                       <div className="w-[50px] h-[50px] rounded-full border border-[#ddd] overflow-hidden">
-                        <img className='w-full h-full object-cover' src={localStorage.getItem('imgAvatar')} alt="" />
+                        {/* phải xử lí nếu nó không có avatar thì cho avatar mặc định */}
+                        <img className='w-full h-full object-cover' src={localStorage.getItem('imgAvatar') || 'https://source.unsplash.com/random'} alt="" />
                       </div>
                       <div className="flex-1 flex flex-col">
                         <span className='font-medium'>{localStorage.getItem('displayName')}</span>

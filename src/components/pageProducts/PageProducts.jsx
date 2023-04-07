@@ -127,6 +127,9 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
   useEffect(() => {
     getProducts('category', 'giay-nu', 5, 'setDemo')
     getProducts('category', fieldValue, undefined, 'setPreview')
+    window.scrollTo({
+      top: 0,
+    });
   }, [])
 
   useEffect(() => {

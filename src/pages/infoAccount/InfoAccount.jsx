@@ -14,6 +14,12 @@ const InfoAccount = () => {
   const isGoogleUser = localStorage.getItem('isGoogleUser') === 'true' ? true : false
   //khi reload cần thời gian xác thực xem có đăng nhập hay không thì mới trả về current đc nha
   const currentUser = auth.currentUser;
+  let checkInputDone = {
+    name: false,
+    imgAvatar: false,
+    password: false,
+    passwordError: false
+  }
 
   const [loading, setLoading] = useState(false);
   const [haveChangeImg, setHaveChangeImg] = useState(false);
@@ -59,9 +65,9 @@ const InfoAccount = () => {
   //kiểm tra đầu vào có đúng chưa, nếu ok hết thì mới cho submit
   const checkInvalidUser = (e) => {
     //Check tên trước, nếu hợp lệ thì mới check 3 ô input password
-    if (!(/^[\p{L}\s]{3,16}$/u).test(infoChange.name)) {
+    if (!(infoChange.name.length >= 5 && infoChange.name.length <= 20)) {
       return {
-        notify: "Tên hiển thị phải dài từ 3 đến 16 ký tự và không chứa các ký tự đặc biệt",
+        notify: "Tên hiển thị phải dài từ 5 đến 20 ký tự",
         status: false,
         changePass: false
       };
@@ -144,72 +150,85 @@ const InfoAccount = () => {
   //sovle việc cập nhật avatar của user trên firebase
   //chỉ khi nào ấn cập nhật thì mới up ảnh lên firebase nhé :v tẹo về xử lí nốt că thằng add product
   const handleUpdateAvatar = () => {
-    const storageRef = ref(storage, `shoesPlus-avatar/${Date.now()}${fileImg.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, fileImg);
+    //nếu có thay đổi avatar (kéo vào ảnh mới thì mới xử lí)
+    if (haveChangeImg) {
+      const storageRef = ref(storage, `shoesPlus-avatar/${Date.now()}${fileImg.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, fileImg);
 
-    //xử lí việc nếu chọn 1 ảnh khác thì phải xóa ảnh cũ đi
-    // if ((infoChange.imgAvatar || avatar) && haveChangeImg && avatar !== 'avt-google') {
-    //   const desertRef = ref(storage, (infoChange.imgAvatar || avatar));
-    //   deleteObject(desertRef).then(() => {
-    //     console.log('xoa anh thanh cong');
-    //     setHaveChangeImg(false)
-    //   }).catch((error) => {
-    //     console.log(error.message);
-    //     console.log('xoa anh that bai');
-    //   });
-    // }
-    uploadTask.on('state_changed',
-      (snapshot) => { },
-      (e) => {
-        toast.error(e.message, {
-          autoClose: 1200
-        })
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          //mục đích lưu vào local strogate để khi reload lại nó hiển thị luôn mà không cần tgian load cái ảnh => gây mất thiện cảm người dùng
-          //downloadURL là link của ảnh trên firebase
-          localStorage.setItem('imgAvatar', downloadURL);
-          updateProfile(currentUser, { photoURL: downloadURL })
-          setInfoChange(prevState => {
-            return Object.assign({}, prevState, { imgAvatar: downloadURL });
-          })
-          setLoading(false);
-          toast.success('Thông tin tài khoản đã được cập nhật', {
+      //xử lí việc nếu chọn 1 ảnh khác thì phải xóa ảnh cũ đi
+      // if ((infoChange.imgAvatar || avatar) && haveChangeImg && avatar !== 'avt-google') {
+      //   const desertRef = ref(storage, (infoChange.imgAvatar || avatar));
+      //   deleteObject(desertRef).then(() => {
+      //     console.log('xoa anh thanh cong');
+      //     setHaveChangeImg(false)
+      //   }).catch((error) => {
+      //     console.log(error.message);
+      //     console.log('xoa anh that bai');
+      //   });
+      // }
+      uploadTask.on('state_changed',
+        (snapshot) => { },
+        (e) => {
+          toast.error(e.message, {
             autoClose: 1200
           })
-        });
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            //mục đích lưu vào local strogate để khi reload lại nó hiển thị luôn mà không cần tgian load cái ảnh => gây mất thiện cảm người dùng
+            //downloadURL là link của ảnh trên firebase
+            localStorage.setItem('imgAvatar', downloadURL);
+            updateProfile(currentUser, { photoURL: downloadURL })
+            setInfoChange(prevState => {
+              return Object.assign({}, prevState, { imgAvatar: downloadURL });
+            })
+            checkInputDone.imgAvatar = true;
+            setLoading(false);
+            if (!checkInputDone.passwordError) {
+              toast.success('Thông tin tài khoản đã được cập nhật', {
+                autoClose: 1200
+              })
+            }
+          });
+        }
+      );
+    }
+    else {
+      checkInputDone.imgAvatar = true;
+      setLoading(false)
+      if (!checkInputDone.passwordError) {
+        toast.success('Thông tin tài khoản đã được cập nhật', {
+          autoClose: 1200
+        })
       }
-    );
+
+    }
   }
 
-  //solve tải avatar lên firebase và hiển thị
+  //solve hiển thị và check xem có đổi avatar không
   const handleUploadAvatar = (event, fileImg, setLoading) => {
     setHaveChangeImg(true)
     setFileImg(fileImg)
   }
 
   //xử lí việc cập nhật display name
-  //openToast = true là hiện lên thông báo thay đổi tên thành công
-  //openToast = false là xử lí TH update cả password, thì cái này không toast 'thay đổi tên thành công' mà chỉ hiện 'Cập nhật thông tin thành công'
   const handleChangeDisplayName = async (e) => {
     e.preventDefault();
     try {
       await updateProfile(currentUser, { displayName: infoChange.name })
         .then(() => {
-
+          checkInputDone.name = true;
         })
         .catch((error) => {
+          checkInputDone.name = false;
           // console.error("Thay đổi displayName thất bại:", error);
         });
     } catch (error) {
-      toast.error(error.message, {
-        autoClose: 1200,
-      });
+      // toast.error(error.message, {
+      //   autoClose: 1200,
+      // });
       setLoading(false)
     }
-
-
   }
 
   //xử lí việc cập nhật mật khẩu
@@ -224,8 +243,9 @@ const InfoAccount = () => {
     try {
       await reauthenticateWithCredential(user, credential);
       await updatePassword(user, infoChange.newPassword);
-      resetAndUpdateInput()
+      checkInputDone.password = true;
     } catch (error) {
+      checkInputDone.passwordError = true;
       toast.error('Mật khẩu hiện tại không đúng', {
         autoClose: 1200,
       });
@@ -233,7 +253,7 @@ const InfoAccount = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true);
     const { notify, status, changePass } = checkInvalidUser();
@@ -244,11 +264,14 @@ const InfoAccount = () => {
       });
       setLoading(false);
     }
+
     //change displayName nhưng KHÔNG CHANGE PASSWORD
     else if (status && !changePass) {
+      console.log('dasd');
+      await handleChangeDisplayName(e);
       handleUpdateAvatar()
-      handleChangeDisplayName(e);
     }
+
     //CÓ CHANGE PASSWORD & update password thành công
     else if (status && changePass) {
       if (infoChange.password === infoChange.newPassword) {
@@ -258,9 +281,13 @@ const InfoAccount = () => {
         });
       }
       else {
-        handleChangeDisplayName(e) //update displayName
-        handleChangePassword(e) //update password
-        handleUpdateAvatar()
+        //await để xử lí việc nếu password hiện tại không đúng thì checkInputDone.passwordError = true và nó sẽ k đổi avt và name
+        await handleChangePassword(e) //update password
+        if (!checkInputDone.passwordError) {
+          await handleChangeDisplayName(e) //update displayName
+          handleUpdateAvatar()
+          resetAndUpdateInput();
+        }
       }
     }
   }
