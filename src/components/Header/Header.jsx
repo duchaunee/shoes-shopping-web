@@ -49,6 +49,8 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
       localStorage.removeItem('imgAvatar');
       localStorage.removeItem('prevLinkEditProduct')
       localStorage.removeItem('showProduct')
+      localStorage.removeItem('products')
+      localStorage.removeItem('currentUser')
     }).catch((e) => {
       toast.error(e.message, {
         autoClose: 1200,
@@ -126,6 +128,10 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
         localStorage.setItem('isGoogleUser', JSON.stringify(false));
 
         localStorage.removeItem('imgAvatar');
+        localStorage.removeItem('prevLinkEditProduct')
+        localStorage.removeItem('showProduct')
+        localStorage.removeItem('products')
+        localStorage.removeItem('currentUser')
 
         dispatch(REMOVE_ACTIVE_ADMIN())
         dispatch(REMOVE_ACTIVE_USER())
