@@ -47,7 +47,7 @@ const AddProduct = () => {
   const showProduct = JSON.parse(localStorage.getItem('showProduct'))
 
   //lí do tại sao lại cần lưu products trên local: Khi ấn vào edit sản phẩm thì chắc chắn phải ở View Products thì mới ấn đc đúng k, khi ở view thì products sẽ đc tải trên firebase. NHƯNG, nếu như đang ở 1 link sửa sản phẩm vd:  http://localhost:3000/admin/add-product/ZvCAHm5iTRonenNuX63g mà lại đi ấn reload lại trang, thì lúc này products lại k đc tải mất r, vì nó đang ở Add Product với id là ZvCAHm5iTRonenNuX63g do đó dẫn tới product.name. product.imgURL,... bị lỗi, nên phải lưu trên local strogate để phòng tránh TH này, về sau lưu trên server thì chắc k bị lỗi nàyx
-  const productEdit = products.length !== 0 ? products.find(item => item.id === id) : showProduct
+  const productEdit = showProduct || products?.find(item => item.id === id)
 
   const [src, setSrc] = useState(detectForm(id, initializeSrc, {
     imgURL: productEdit?.imgURL,
@@ -103,7 +103,7 @@ const AddProduct = () => {
     e.preventDefault()
     setLoading(true)
     try {
-      console.log(product);
+      // console.log(product);
       await setDoc(doc(db, "products", id), {
         name: product.name,
         imgURL: product.imgURL,
@@ -123,6 +123,9 @@ const AddProduct = () => {
         autoClose: 1200
       })
       navigate(prevLink)
+      //điều hướng lại trang trước đó rồi thì xóa đi
+      localStorage.removeItem('prevLinkEditProduct')
+      localStorage.removeItem('showProduct')
 
     } catch (e) {
       toast.error(e.message, {
@@ -205,10 +208,6 @@ const AddProduct = () => {
       })
     }
   }
-
-  useEffect(() => {
-    console.log(product);
-  }, [product])
 
   return (
     <>

@@ -139,6 +139,7 @@ const InfoAccount = () => {
   }
 
   //XỬ LÍ KHI ĐĂNG KÍ THÌ UPLOAD AVATAR DEFAULT LUÔN CHO NHANH
+  //LÚC XỬ LÍ CÁI BÌNH LUẬN, NẾU USER NÀO CHƯA CÓ AVATAR THÌ DÙNG CÁI ẢNH DEFAULT AVATAR NHƯ TRÊN FAFCEBOOK
 
   //sovle việc cập nhật avatar của user trên firebase
   //chỉ khi nào ấn cập nhật thì mới up ảnh lên firebase nhé :v tẹo về xử lí nốt că thằng add product
@@ -274,6 +275,7 @@ const InfoAccount = () => {
               <span className='text-[#353535] block text-[16px] font-bold uppercase '>Thông tin tài khoản</span>
               <div className=''>
                 <label className='mb-2 font-bold block'>Ảnh hiển thị</label>
+                {console.log(src.imgAvatar, localStorage.getItem('imgAvatar'), currentUser?.photoURL, "")}
                 <UploadSquare
                   src={src}
                   srcURL={src.imgAvatar || localStorage.getItem('imgAvatar') || currentUser?.photoURL || ""}

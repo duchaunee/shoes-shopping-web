@@ -19,7 +19,9 @@ const ProductItem = ({ product, id, img, name, price, text, width, idURL }) => {
   }
 
   const handleDetectAdmin = () => {
-    console.log(id);
+    //chỉ admi mới cần set showProduct và prevLinkEditProduct
+    localStorage.setItem('showProduct', JSON.stringify(product))
+    localStorage.setItem('prevLinkEditProduct', `/${idURL}`)
     navigate(`/admin/add-product/${id}`)
   }
 
@@ -62,8 +64,6 @@ const ProductItem = ({ product, id, img, name, price, text, width, idURL }) => {
               loading={loading}
               onClick={() => {
                 detectUser(handleDetectAdmin, handleAddToCart)()
-                localStorage.setItem('showProduct', JSON.stringify(product))
-                localStorage.setItem('prevLinkEditProduct', `/${idURL}`)
               }}
               text={text} />
           </div>

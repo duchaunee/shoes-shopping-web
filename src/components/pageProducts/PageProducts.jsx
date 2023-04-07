@@ -256,7 +256,7 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
                           name={item.name}
                           price={solvePrice(item.price)}
                           idURL={fieldValue}
-                          text={admin ? 'Sửa sản phầm' : 'Thêm vào giỏ'}
+                          text={admin ? 'Sửa sản phẩm' : 'Thêm vào giỏ'}
                         />
                       </Card>
                     </div>

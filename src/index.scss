@@ -12,28 +12,23 @@
     font-family: 'Roboto', sans-serif;
   }
 
-  //ẩn type number thẻ input
+  //ẩn type number thẻ input-ms-
   input[type=number]::-webkit-inner-spin-button,
-  input[type=number]::-webkit-outer-spin-button,
-  input[type=number]::-moz-inner-spin-button,
-  input[type=number]::-moz-outer-spin-button {
+  input[type=number]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }
 
   //custom thanh scroll
-  body::-webkit-scrollbar,
-  body::-moz-scrollbar {
+  body::-webkit-scrollbar {
     width: 10px;
   }
 
-  body::-webkit-scrollbar-track,
-  body::-moz-scrollbar-track {
+  body::-webkit-scrollbar-track {
     background-color: #fafafa;
   }
 
-  body::-webkit-scrollbar-thumb,
-  body::-moz-scrollbar-thumb {
+  body::-webkit-scrollbar-thumb {
     background-image: linear-gradient(-45deg, #5c8df6, #c30005);
   }
 }

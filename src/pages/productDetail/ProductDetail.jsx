@@ -30,10 +30,14 @@ const ProductDetail = () => {
         id: id,
         ...docSnap.data()
       })
-      localStorage.setItem('showProduct', JSON.stringify({
-        id: id,
-        ...docSnap.data()
-      }))
+
+      if (admin) {
+        localStorage.setItem('showProduct', JSON.stringify({
+          id: id,
+          ...docSnap.data()
+        }))
+      }
+
       setTimeout(() => {
         setLoading(false)
       }, 1000)
@@ -70,6 +74,8 @@ const ProductDetail = () => {
   }
 
   const handleDetectAdmin = () => {
+    //chỉ admin mới cần set prevLinkEditProduct
+    localStorage.setItem('prevLinkEditProduct', `/san-pham/${id}`)
     navigate(`/admin/add-product/${id}`)
   }
 
@@ -80,6 +86,14 @@ const ProductDetail = () => {
   useEffect(() => {
     getProduct()
   }, [])
+
+  useEffect(() => {
+    if (loading) {
+      window.scrollTo({
+        top: 0,
+      });
+    }
+  }, [loading])
 
   return (
     <>
@@ -172,7 +186,6 @@ const ProductDetail = () => {
 
                     <button
                       onClick={() => {
-                        localStorage.setItem('prevLinkEditProduct', `/san-pham/${id}`)
                         detectUser(handleDetectAdmin, handleAddToCart)()
                       }}
                       className='col-span-7 h-full px-3 bg-primary text-white text-[16px] leading-[37px] font-bold tracking-[1px] uppercase transition-all ease-in duration-150 focus:outline-none hover:bg-[#a40206]'>

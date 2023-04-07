@@ -18,14 +18,6 @@ const App = () => {
 
   const [isGoogleUser, setIsGoogleUser] = useState(localStorage.getItem('isGoogleUser') === 'true' ? true : false)
 
-
-  useEffect(() => {
-    const a = [1, 2, 3, 4, 5]
-    const index = a.findIndex((item) => item == 2)
-    console.log(a.splice(index, 1, 'dasdasd'));
-    console.log(a);
-  }, [])
-
   return (
     <>
       <BrowserRouter>

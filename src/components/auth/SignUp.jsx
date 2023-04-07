@@ -74,7 +74,8 @@ const SignUp = ({ signUp, setSignUp, signInWithGoogle }) => {
       createUserWithEmailAndPassword(auth, regInfo.email, regInfo.password)
         .then((userCredential) => {
           const user = userCredential.user;
-          localStorage.setItem('imgAvatar', user.photoURL);
+
+          if (user.photoURL) localStorage.setItem('imgAvatar', user.photoURL); //set avatar cho user login by google
           setLoading(false);
           toast.success(notify, {
             autoClose: 1200,

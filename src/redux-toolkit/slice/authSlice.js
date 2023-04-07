@@ -20,7 +20,6 @@ export const authSlice = createSlice({
 
     SET_ACTIVE_ADMIN: (state, action) => {
       state.isAdmin = action.payload;
-      console.log('action.payload.admin: ', action.payload);
     },
 
     REMOVE_ACTIVE_ADMIN: (state, action) => {

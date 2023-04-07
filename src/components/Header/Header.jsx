@@ -40,12 +40,15 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
       localStorage.setItem('logined', JSON.stringify(false));
 
       setAdmin(false)
+      dispatch(SET_ACTIVE_ADMIN(false))
       localStorage.setItem('admin', JSON.stringify(false));
 
       setIsGoogleUser(false)
       localStorage.setItem('isGoogleUser', JSON.stringify(false));
 
       localStorage.removeItem('imgAvatar');
+      localStorage.removeItem('prevLinkEditProduct')
+      localStorage.removeItem('showProduct')
     }).catch((e) => {
       toast.error(e.message, {
         autoClose: 1200,
@@ -62,7 +65,7 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
         // if ((/^https?:\/\/(?:[^./?#]+\.)?googleusercontent\.com\/.*(?:png|jpe?g|gif)$/).test(user.photoURL)) {
         //   console.log('this"s img get from gg account');
         // }
-        localStorage.setItem('imgAvatar', user.photoURL);
+
         const uid = user.uid;
         const providerData = user.providerData;
         const isGoogleUser = providerData.some(provider => provider.providerId === 'google.com');
@@ -108,12 +111,25 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
 
         //Nhận diện người dùng đã log out hay chưa
       } else {
-        console.log('nhan dien logout'); //mat mang thi no tu dong chay vao day luon :v thoi met qua k solve cai nay nua
+        console.log('nhan dien logout'); //mat mang hoac tai koan k ton tai (xoa tai khoan trong firebase) thi no tu dong chay vao day luon :v thoi met qua k solve cai nay nua
         localStorage.removeItem('displayName');
         localStorage.removeItem('displayEmail');
 
+        setLogined(false)
+        localStorage.setItem('logined', JSON.stringify(false));
+
+        setAdmin(false)
+        dispatch(SET_ACTIVE_ADMIN(false))
+        localStorage.setItem('admin', JSON.stringify(false));
+
+        setIsGoogleUser(false)
+        localStorage.setItem('isGoogleUser', JSON.stringify(false));
+
+        localStorage.removeItem('imgAvatar');
+
         dispatch(REMOVE_ACTIVE_ADMIN())
         dispatch(REMOVE_ACTIVE_USER())
+        dispatch(SET_ACTIVE_ADMIN(false))
       }
     });
 
