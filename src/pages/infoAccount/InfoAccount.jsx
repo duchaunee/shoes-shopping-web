@@ -275,7 +275,6 @@ const InfoAccount = () => {
               <span className='text-[#353535] block text-[16px] font-bold uppercase '>Thông tin tài khoản</span>
               <div className=''>
                 <label className='mb-2 font-bold block'>Ảnh hiển thị</label>
-                {console.log(src.imgAvatar, localStorage.getItem('imgAvatar'), currentUser?.photoURL, "")}
                 <UploadSquare
                   src={src}
                   srcURL={src.imgAvatar || localStorage.getItem('imgAvatar') || currentUser?.photoURL || ""}
