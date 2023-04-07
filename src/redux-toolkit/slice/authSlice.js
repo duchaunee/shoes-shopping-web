@@ -20,7 +20,7 @@ export const authSlice = createSlice({
 
     SET_ACTIVE_ADMIN: (state, action) => {
       state.isAdmin = action.payload;
-      // console.log('action.payload.admin: ', action.payload);
+      console.log('action.payload.admin: ', action.payload);
     },
 
     REMOVE_ACTIVE_ADMIN: (state, action) => {
@@ -29,7 +29,6 @@ export const authSlice = createSlice({
 
     SET_DISPLAY_NAME: (state, action) => {
       state.userName = action.payload
-      console.log(action.payload);
     },
 
     SET_ACTIVE_USER: (state, action) => {
@@ -51,6 +50,7 @@ export const authSlice = createSlice({
 })
 
 export const { SET_GOOGLE_USER, SET_ACTIVE_USER, REMOVE_ACTIVE_USER, SET_ACTIVE_ADMIN, REMOVE_ACTIVE_ADMIN, SET_DISPLAY_NAME } = authSlice.actions
+export const selectIsAdmin = (state) => state.auth.isAdmin
 export const selectIsLoggedIn = (state) => state.auth.isLoggedIn
 export const selectEmail = (state) => state.auth.email
 export const selectUserName = (state) => state.auth.userName

@@ -11,7 +11,8 @@ const ValueFilter = ({
   setProductPreview,
   setQueryProduct,
   setFilterProduct,
-  selectNameProduct }) => {
+  selectNameProduct,
+  setCurrentPage }) => {
 
   const productsCategoryRedux = useSelector(selectNameProduct) //trai, gai, tre em
 
@@ -30,6 +31,7 @@ const ValueFilter = ({
       //thằng nào k điền (null thì lấy giá trị mặc định)
       //khi lọc thì luôn lấy thằng gốc nhé :v (lấy trên redux)
       const ProductFilter = productsCategoryRedux.filter((item) => (item.price >= Number(priceRange.from || minValueFilter) && item.price <= Number(priceRange.to || maxValueFilter)))
+      setCurrentPage(1)
       setProductPreview(ProductFilter)
       //reset
       setFilterProduct('default')
@@ -44,9 +46,7 @@ const ValueFilter = ({
       })
     }
   }
-  useEffect(() => {
-    console.log(productPreview);
-  }, [productPreview])
+
 
   const handleSetPriceRange = (e) => {
     e.preventDefault()
@@ -60,7 +60,7 @@ const ValueFilter = ({
   }
 
   const solvePrice = (price) => {
-    return Math.floor(price).toLocaleString('en-US');
+    return Number(price).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
   }
 
   useEffect(() => {
@@ -108,21 +108,17 @@ const ValueFilter = ({
             borderColor={`${errorRange ? 'border-primary' : ''}`}
           />
         </div>
-        <div className="flex items-center justify-between">
+        <div className="flex gap-2 items-center">
           <button
             onClick={handleRangeSearch}
             className="bg-[#666] rounded-full text-white text-[16px] py-[6px] px-6">
             Lọc
           </button>
-          <div className='text-[14px] inline-block'>
+          <div className='text-[14px] inline-block ml-auto'>
             Giá
-            <p
-              className='inline-block font-bold mx-1'>{solvePrice(priceRange.from || '500000')} ₫
-            </p>
-            —
-            <p
-              className='inline-block font-bold mx-1'>{solvePrice(priceRange.to || '3000000')} ₫
-            </p>
+            <p className='inline-block font-bold mx-1'>{solvePrice(priceRange.from || '500000')}</p>
+            <p className='inline'>-</p>
+            <p className='inline-block font-bold mx-1'>{solvePrice(priceRange.to || '3000000')}</p>
           </div>
 
         </div>

@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { Spinning } from '../../../animation-loading';
 import { db, storage } from '../../../firebase/config';
 import Pagination from '../../pagination/Pagination';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { deleteObject, ref } from 'firebase/storage';
 import { useDispatch, useSelector } from 'react-redux';
 import Notiflix from 'notiflix';
@@ -31,6 +31,7 @@ const ViewProducts = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [pageProducts, setPageProducts] = useState([]); //products every page (use slice to cut all products)
   const dispatch = useDispatch();
+  const navigate = useNavigate()
   const productsRedux = useSelector(selectProducts)
 
   const getProducts = async () => {
@@ -53,7 +54,6 @@ const ViewProducts = () => {
       setLoading(false)
       //save products to redux
       dispatch(STORE_PRODUCTS(allProducts))
-      localStorage.setItem('products', JSON.stringify(allProducts));
     }
     catch (e) {
       toast.error(e.message, {
@@ -132,6 +132,7 @@ const ViewProducts = () => {
   const handleSearchByName = (e) => {
     e.preventDefault()
     //reset input and query
+    setCurrentPage(1)
     setSearchByName('');
     setFilterProduct('default')
     setQueryProduct({
@@ -168,13 +169,13 @@ const ViewProducts = () => {
       case 'latest':
         setQueryProduct({
           field: 'creatAt',
-          order: -1
+          order: 1
         })
         break;
       case 'oldest':
         setQueryProduct({
           field: 'creatAt',
-          order: 1
+          order: -1
         })
         break;
       case 'lowest-price':
@@ -220,7 +221,7 @@ const ViewProducts = () => {
   }
 
   const solvePrice = (price) => {
-    return Math.floor(price).toLocaleString('en-US')
+    return Number(price).toLocaleString('vi-VN');
   }
 
   useEffect(() => {
@@ -360,12 +361,20 @@ const ViewProducts = () => {
                               <span className='text-[18px] bg-[#d9d6d6] rounded-[4px] px-2 py-1'>{solveCategory(product.category)}</span>
                             </td>
                             <td className='col-span-2 flex items-center'>
-                              <span className='text-[18px] font-medium'>{solvePrice(product.price)} ₫</span>
+                              <span className='text-[18px] font-medium'>
+                                {solvePrice(product.price)}
+                                <p className='inline-block text-[16px] align-top ml-[2px]'>₫</p>
+                              </span>
                             </td>
                             <td className='col-span-2 flex items-center gap-5'>
-                              <NavLink to={`/admin/add-product/${product.id}`}>
+                              <button
+                                onClick={() => {
+                                  navigate(`/admin/add-product/${product.id}`)
+                                  localStorage.setItem('prevLinkEditProduct', '/admin/view-products/')
+                                  localStorage.setItem('showProduct', JSON.stringify(product))
+                                }}>
                                 <FontAwesomeIcon className='text-[20px] cursor-pointer text-bgPrimary hover:text-green-600 transition-all ease-linear duration-100' icon={faEdit} />
-                              </NavLink>
+                              </button>
                               <button
                                 onClick={() => confirmDelete(product.id, product.imgURL, product.imgPreviewURL1, product.imgPreviewURL2, product.imgPreviewURL3, product.imgPreviewURL4)}
                                 className=''>

@@ -1,12 +1,13 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import "../../components/lineClamp.scss"
 
 const solvePrice = (price) => {
-  return Math.floor(price).toLocaleString('en-US')
+  return Number(price).toLocaleString('vi-VN');
 }
 
 const NewestProduct = ({ productDemo }) => {
+  const navigate = useNavigate()
   return (
     <>
       <div className="w-full mt-10">
@@ -16,10 +17,20 @@ const NewestProduct = ({ productDemo }) => {
             <li
               key={idx}
               className={`min-h-[80px] flex gap-4 ${idx > -1 && "border border-transparent border-dashed border-t-[#ececec]"}`}>
-              <img className='w-[60px] h-[60px] object-cover' src={item.imgURL} alt="" />
+              <img
+                onClick={() => navigate(`/san-pham/${item.id}`)}
+                className='w-[60px] h-[60px] object-cover cursor-pointer'
+                src={item.imgURL}
+                alt="" />
               <div className="flex-1">
-                <NavLink className='block text-[#334862] text-[14px] mb-1 line-clamp-1'>{item.name}</NavLink>
-                <span className='text-[#111111] font-bold text-[14px]'>{solvePrice(item.price)} ₫</span>
+                <NavLink
+                  to={`/san-pham/${item.id}`}
+                  className='block text-[#334862] text-[14px] mb-1 line-clamp-1'>{item.name}</NavLink>
+                <span
+                  className='text-[#111111] font-bold text-[14px]'>
+                  {solvePrice(item.price)}
+                  <p className='inline-block text-[14px] align-top ml-[2px]'>₫</p>
+                </span>
               </div>
             </li>
           ))}

@@ -24,9 +24,9 @@ const UploadSquare = ({ src, srcURL, setSrc, text, id, width, name, handleImageC
   }
 
   return (
-    <div className={`${width} aspect-square border-[2px] border-dashed border-bgPrimary rounded-[4px]`}>
+    <div className={`${width} aspect-square border-[2px] bg-[#f2f5f8] border-dashed border-bgPrimary rounded-[4px]`}>
       <label
-        className='flex flex-col items-center justify-center w-full aspect-square cursor-pointer'
+        className='flex flex-col gap-2 items-center justify-center w-full aspect-square cursor-pointer'
         htmlFor={id}>
         {loading && <Spinning color='#000' size='26px' />}
         {!srcURL && !loading &&

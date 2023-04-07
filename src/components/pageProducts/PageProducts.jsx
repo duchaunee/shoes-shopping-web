@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { Card, ProductItem, ValueFilter } from '..';
 import NewestProduct from './NewestProduct';
 import { collection, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
@@ -9,10 +9,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Spinning } from '../../animation-loading';
 import Pagination from '../pagination/Pagination';
 import OverlayLoading from '../overlayLoading/OverlayLoading';
+import { selectIsAdmin } from '../../redux-toolkit/slice/authSlice';
 // import OverlayLoading from '../overlayLoading/OverlayLoading';
 
 const solvePrice = (price) => {
-  return Math.floor(price).toLocaleString('en-US')
+  return Number(price).toLocaleString('vi-VN');
 }
 
 const itemsPerPage = 8;
@@ -30,7 +31,9 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
     order: -1
   });
 
+
   const productsCategoryRedux = useSelector(selectNameProduct) //trai, gai, tre em
+  const admin = useSelector(selectIsAdmin) || JSON.parse(localStorage.getItem('admin'))
 
   const [currentPage, setCurrentPage] = useState(1)
   const [pageProducts, setPageProducts] = useState([]); //products every page (use slice to cut all prod
@@ -78,14 +81,14 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
         setQueryProduct({
           value: "latest",
           field: 'creatAt',
-          order: -1
+          order: 1
         })
         break;
       case 'oldest':
         setQueryProduct({
           value: "oldest",
           field: 'creatAt',
-          order: 1
+          order: -1
         })
         break;
       case 'lowest-price':
@@ -158,10 +161,17 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
     setPageProducts(productsSlice);
   }, [productPreview])
 
+  useEffect(() => {
+    if (loading) {
+      window.scrollTo({
+        top: 0,
+      });
+    }
+  }, [loading])
+
   return (
     <>
-
-      <div className="">
+      <div className="min-h-[800px]">
         {/* top */}
         {loading || (
           <div className=" max-w-[1230px] px-[15px] mx-auto min-h-[60px] pt-5 flex items-center justify-between">
@@ -222,6 +232,7 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
                     setQueryProduct={setQueryProduct}
                     setFilterProduct={setFilterProduct}
                     selectNameProduct={selectNameProduct}
+                    setCurrentPage={setCurrentPage}
                   />
                   <NewestProduct productDemo={productDemo}></NewestProduct>
                 </div>
@@ -233,17 +244,19 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
               ? <OverlayLoading />
               : <div className="flex-1">
                 <div className={`px-[15px] ${productPreview.length > 0 && 'min-h-[555px]'} grid grid-cols-4`}>
-                  {console.log(pageProducts)}
                   {pageProducts.map((item) => (
                     <div
                       key={item.id}
                       className="w-full px-[10px] pb-5">
                       <Card width='w-full' >
                         <ProductItem
+                          product={item}
+                          id={item.id}
                           img={item.imgURL}
                           name={item.name}
                           price={solvePrice(item.price)}
-                          text='Thêm vào giỏ'
+                          idURL={fieldValue}
+                          text={admin ? 'Sửa sản phầm' : 'Thêm vào giỏ'}
                         />
                       </Card>
                     </div>

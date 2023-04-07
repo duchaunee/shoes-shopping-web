@@ -1,24 +1,41 @@
-import { EmailAuthProvider, reauthenticateWithCredential, sendEmailVerification, updateEmail, updatePassword, updateProfile } from 'firebase/auth';
+import app, { auth, storage } from '../../firebase/config';
+import { EmailAuthProvider, getAuth, reauthenticateWithCredential, sendEmailVerification, updateEmail, updatePassword, updateProfile } from 'firebase/auth';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Spinning } from '../../animation-loading';
 import ButtonPrimary from '../../components/button/ButtonPrimary';
-import app, { auth } from '../../firebase/config';
 import { SET_DISPLAY_NAME } from '../../redux-toolkit/slice/authSlice';
 import firebase from 'firebase/app';
+import UploadSquare from '../../components/admin/addProduct/UploadSquare';
+import { deleteObject, getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 
 const InfoAccount = () => {
-
   const isGoogleUser = localStorage.getItem('isGoogleUser') === 'true' ? true : false
+  //khi reload cần thời gian xác thực xem có đăng nhập hay không thì mới trả về current đc nha
+  const currentUser = auth.currentUser;
 
   const [loading, setLoading] = useState(false);
+  const [haveChangeImg, setHaveChangeImg] = useState(false);
   const displayEmail = useSelector(state => state.auth.email)
   const displayName = useSelector(state => state.auth.userName)
   // const isGoogleUser = useSelector(state => state.auth.isGoogleUser)
   const dispatch = useDispatch()
 
+  const [fileImg, setFileImg] = useState('')
+
+  const avatar = localStorage.getItem('imgAvatar'); //link avt tren github
+
+  // src này `CHỈ ĐỂ KHI MỞ ẢNH MỚI` lên thì nó hiện trong khung, không liên quan gì đến firebase
+  //khi reload lại thì phải lấy ảnh trong firebase hiển thị vì cái src này k có tác dụng với internet
+  //cái link này không có tác dụng xem trên internet, base64 j đó k nhớ :V thích thì console.log ra mà nhìn
+  const [src, setSrc] = useState({
+    imgAvatar: "",
+  })
+
+  //đây là src ảnh trên firebase
   const [infoChange, setInfoChange] = useState({
+    imgAvatar: "",
     name: displayName,
     password: "",
     newPassword: "",
@@ -42,9 +59,9 @@ const InfoAccount = () => {
   //kiểm tra đầu vào có đúng chưa, nếu ok hết thì mới cho submit
   const checkInvalidUser = (e) => {
     //Check tên trước, nếu hợp lệ thì mới check 3 ô input password
-    if (!(/^[\p{L} ]{3,20}$/u).test(infoChange.name)) {
+    if (!(/^[\p{L}\s]{3,16}$/u).test(infoChange.name)) {
       return {
-        notify: "Tên phải dài từ 3 đến 20 ký tự và chỉ chứa các ký tự chữ và khoảng trắng",
+        notify: "Tên hiển thị phải dài từ 3 đến 16 ký tự và không chứa các ký tự đặc biệt",
         status: false,
         changePass: false
       };
@@ -59,7 +76,7 @@ const InfoAccount = () => {
     //Nếu không có ô nào được điền
     if (count == 0) {
       return {
-        notify: "Tên hiển thị đã được cập nhật",
+        notify: "Thông tin tài khoản đã được cập nhật",
         status: true,
         changePass: false
       };
@@ -102,7 +119,6 @@ const InfoAccount = () => {
 
   //khi cập nhật phải reset các ô input và update các thông tin, mở ra để đọc
   const resetAndUpdateInput = () => {
-    setLoading(false);
     //reset value về ô trống
     console.log('reset');
     setInfoChange({
@@ -122,29 +138,81 @@ const InfoAccount = () => {
     )
   }
 
+  //XỬ LÍ KHI ĐĂNG KÍ THÌ UPLOAD AVATAR DEFAULT LUÔN CHO NHANH
+
+  //sovle việc cập nhật avatar của user trên firebase
+  //chỉ khi nào ấn cập nhật thì mới up ảnh lên firebase nhé :v tẹo về xử lí nốt că thằng add product
+  const handleUpdateAvatar = () => {
+    const storageRef = ref(storage, `shoesPlus-avatar/${Date.now()}${fileImg.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, fileImg);
+
+    //xử lí việc nếu chọn 1 ảnh khác thì phải xóa ảnh cũ đi
+    // if ((infoChange.imgAvatar || avatar) && haveChangeImg && avatar !== 'avt-google') {
+    //   const desertRef = ref(storage, (infoChange.imgAvatar || avatar));
+    //   deleteObject(desertRef).then(() => {
+    //     console.log('xoa anh thanh cong');
+    //     setHaveChangeImg(false)
+    //   }).catch((error) => {
+    //     console.log(error.message);
+    //     console.log('xoa anh that bai');
+    //   });
+    // }
+    uploadTask.on('state_changed',
+      (snapshot) => { },
+      (e) => {
+        toast.error(e.message, {
+          autoClose: 1200
+        })
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          //mục đích lưu vào local strogate để khi reload lại nó hiển thị luôn mà không cần tgian load cái ảnh => gây mất thiện cảm người dùng
+          //downloadURL là link của ảnh trên firebase
+          localStorage.setItem('imgAvatar', downloadURL);
+          updateProfile(currentUser, { photoURL: downloadURL })
+          setInfoChange(prevState => {
+            return Object.assign({}, prevState, { imgAvatar: downloadURL });
+          })
+          setLoading(false);
+          toast.success('Thông tin tài khoản đã được cập nhật', {
+            autoClose: 1200
+          })
+        });
+      }
+    );
+  }
+
+  //solve tải avatar lên firebase và hiển thị
+  const handleUploadAvatar = (event, fileImg, setLoading) => {
+    setHaveChangeImg(true)
+    setFileImg(fileImg)
+  }
+
   //xử lí việc cập nhật display name
   //openToast = true là hiện lên thông báo thay đổi tên thành công
   //openToast = false là xử lí TH update cả password, thì cái này không toast 'thay đổi tên thành công' mà chỉ hiện 'Cập nhật thông tin thành công'
-  const handleChangeDisplayName = (notify, openToast = true, resetAndUpdate = true) => {
-    setLoading(true);
-    var currentUser = auth.currentUser;
-    updateProfile(currentUser, { displayName: infoChange.name })
-      .then(() => {
-        if (resetAndUpdate) resetAndUpdateInput()
-        if (openToast) {
-          toast.success(notify, {
-            autoClose: 1200,
-          });
-        }
-      })
-      .catch((error) => {
-        // console.error("Thay đổi displayName thất bại:", error);
+  const handleChangeDisplayName = async (e) => {
+    e.preventDefault();
+    try {
+      await updateProfile(currentUser, { displayName: infoChange.name })
+        .then(() => {
+
+        })
+        .catch((error) => {
+          // console.error("Thay đổi displayName thất bại:", error);
+        });
+    } catch (error) {
+      toast.error(error.message, {
+        autoClose: 1200,
       });
+      setLoading(false)
+    }
+
+
   }
 
-  //XEM CÁCH ĐỔI MẬT KHẨU MÀ VIẾT TRONG HÀM NÀY NHÉ :V
   //xử lí việc cập nhật mật khẩu
-  const handleChangePassword = async (e, notify) => {
+  const handleChangePassword = async (e) => {
     e.preventDefault();
     const user = auth.currentUser;
     const credential = EmailAuthProvider.credential(
@@ -155,47 +223,43 @@ const InfoAccount = () => {
     try {
       await reauthenticateWithCredential(user, credential);
       await updatePassword(user, infoChange.newPassword);
-      toast.success(notify, {
-        autoClose: 1200,
-      });
       resetAndUpdateInput()
     } catch (error) {
       toast.error('Mật khẩu hiện tại không đúng', {
         autoClose: 1200,
       });
       setLoading(false)
-      // console.error(error);
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault()
-
+    setLoading(true);
     const { notify, status, changePass } = checkInvalidUser();
+
     if (!status && !changePass) {
       toast.error(notify, {
         autoClose: 1500,
       });
+      setLoading(false);
     }
-
-    //change displayName nhưng không change password
-    if (status && !loading && !changePass) {
-      handleChangeDisplayName(notify);
+    //change displayName nhưng KHÔNG CHANGE PASSWORD
+    else if (status && !changePass) {
+      handleUpdateAvatar()
+      handleChangeDisplayName(e);
     }
-
-    //update password thành công
-    if (status && !loading && changePass) {
-      setLoading(true);
+    //CÓ CHANGE PASSWORD & update password thành công
+    else if (status && changePass) {
       if (infoChange.password === infoChange.newPassword) {
         setLoading(false);
         toast.error('Mật khẩu mới không được trùng với mật khẩu hiện tại', {
           autoClose: 1200,
         });
       }
-
       else {
-        handleChangeDisplayName(notify, false, false) //update displayName
-        handleChangePassword(e, notify) //update password
+        handleChangeDisplayName(e) //update displayName
+        handleChangePassword(e) //update password
+        handleUpdateAvatar()
       }
     }
   }
@@ -208,6 +272,19 @@ const InfoAccount = () => {
 
             <div className="w-full mb-12 text-[#222] text-[14px] flex flex-col gap-5 ">
               <span className='text-[#353535] block text-[16px] font-bold uppercase '>Thông tin tài khoản</span>
+              <div className=''>
+                <label className='mb-2 font-bold block'>Ảnh hiển thị</label>
+                <UploadSquare
+                  src={src}
+                  srcURL={src.imgAvatar || localStorage.getItem('imgAvatar') || currentUser?.photoURL || ""}
+                  setSrc={setSrc}
+                  handleImageChange={handleUploadAvatar}
+                  name='imgAvatar'
+                  text='Tải lên ảnh hiển thị'
+                  id='upload-avatar'
+                  width='w-[222px]' />
+                <span className='block mt-2 text-[#353535] text-[16px] italic'>Ảnh sẽ được tự động cắt theo hình tròn khi tải lên</span>
+              </div>
               <p>
                 <label className='mb-2 font-bold block' htmlFor="account_display_name">Tên hiển thị *</label>
                 <input

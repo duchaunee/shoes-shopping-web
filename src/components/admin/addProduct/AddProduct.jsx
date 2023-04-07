@@ -43,9 +43,11 @@ const AddProduct = () => {
   // console.log('id: ', id);
   const products = useSelector(selectProducts)
 
-  //lí do tại sao lại cần lưu products trên local: Khi ấn vào edit sản phẩm thì chắc chắn phải ở View Products thì mới ấn đc đúng k, khi ở view thì products sẽ đc tải trên firebase. NHƯNG, nếu như đang ở 1 link sửa sản phẩm vd:  http://localhost:3000/admin/add-product/ZvCAHm5iTRonenNuX63g mà lại đi ấn reload lại trang, thì lúc này products lại k đc tải mất r, vì nó đang ở Add Product với id là ZvCAHm5iTRonenNuX63g do đó dẫn tới product.name. product.imgURL,... bị lỗi, nên phải lưu trên local strogate để phòng tránh TH này, về sau lưu trên server thì chắc k bị lỗi này
-  const productLocal = JSON.parse(localStorage.getItem('products'))
-  const productEdit = products.length !== 0 ? products.find(item => item.id === id) : productLocal.find(item => item.id === id)
+  const prevLink = localStorage.getItem('prevLinkEditProduct')
+  const showProduct = JSON.parse(localStorage.getItem('showProduct'))
+
+  //lí do tại sao lại cần lưu products trên local: Khi ấn vào edit sản phẩm thì chắc chắn phải ở View Products thì mới ấn đc đúng k, khi ở view thì products sẽ đc tải trên firebase. NHƯNG, nếu như đang ở 1 link sửa sản phẩm vd:  http://localhost:3000/admin/add-product/ZvCAHm5iTRonenNuX63g mà lại đi ấn reload lại trang, thì lúc này products lại k đc tải mất r, vì nó đang ở Add Product với id là ZvCAHm5iTRonenNuX63g do đó dẫn tới product.name. product.imgURL,... bị lỗi, nên phải lưu trên local strogate để phòng tránh TH này, về sau lưu trên server thì chắc k bị lỗi nàyx
+  const productEdit = products.length !== 0 ? products.find(item => item.id === id) : showProduct
 
   const [src, setSrc] = useState(detectForm(id, initializeSrc, {
     imgURL: productEdit?.imgURL,
@@ -70,10 +72,21 @@ const AddProduct = () => {
 
   const handleInputChange = (e) => {
     e.preventDefault()
-    setProduct({
-      ...product,
-      [e.target.name]: e.target.value
-    })
+    //neu type la price thi phai check nhap vao la so
+    if ([e.target.name] == 'price') {
+      if (/^\d{0,7}$/.test(e.target.value)) {
+        setProduct({
+          ...product,
+          [e.target.name]: e.target.value
+        })
+      }
+    }
+    else {
+      setProduct({
+        ...product,
+        [e.target.name]: e.target.value
+      })
+    }
   }
 
   //phát hiện xem form là 'Thêm sản phẩm' hay 'edit sản phẩm' dựa vào id
@@ -109,7 +122,7 @@ const AddProduct = () => {
       toast.success("Sửa sản phẩm thành công", {
         autoClose: 1200
       })
-      navigate('/admin/view-products')
+      navigate(prevLink)
 
     } catch (e) {
       toast.error(e.message, {
@@ -192,6 +205,7 @@ const AddProduct = () => {
       })
     }
   }
+
   useEffect(() => {
     console.log(product);
   }, [product])
@@ -230,11 +244,11 @@ const AddProduct = () => {
                   onChange={handleInputChange}
                   value={product.price}
                   type='input'
-                  numberType='number'
                   width='w-full'
                   name='price'
                   bg='bg-white'
                   labelName='Giá'
+                  maxLength={7}
                   placeholder='Giá sản phẩm'
                   id='product-price' />
                 <InputForm
@@ -291,7 +305,7 @@ const AddProduct = () => {
               setSrc={setSrc}
               handleImageChange={handleImageChange}
               name='imgPreviewURL1'
-              text='Tải lên ảnh preview'
+              text='Tải lên ảnh sản phẩm'
               id='product-preview-1' />
             <UploadSquare
               src={src}
@@ -299,7 +313,7 @@ const AddProduct = () => {
               setSrc={setSrc}
               handleImageChange={handleImageChange}
               name='imgPreviewURL2'
-              text='Tải lên ảnh preview'
+              text='Tải lên ảnh sản phẩm'
               id='product-preview-2' />
             <UploadSquare
               src={src}
@@ -307,7 +321,7 @@ const AddProduct = () => {
               setSrc={setSrc}
               handleImageChange={handleImageChange}
               name='imgPreviewURL3'
-              text='Tải lên ảnh preview'
+              text='Tải lên ảnh sản phẩm'
               id='product-preview-3' />
             <UploadSquare
               src={src}
@@ -315,13 +329,13 @@ const AddProduct = () => {
               setSrc={setSrc}
               handleImageChange={handleImageChange}
               name='imgPreviewURL4'
-              text='Tải lên ảnh preview'
+              text='Tải lên ảnh sản phẩm'
               id='product-preview-4' />
           </div>
         </div>
         <button
           type="submit"
-          className='mt-[20px] w-[180px] px-[10px] h-10 bg-primary text-white text-[15px] leading-[37px] font-bold tracking-[1px] uppercase transition-transform ease-in duration-500 focus:outline-none hover:bg-[#a40206]'>
+          className='mt-[20px] w-[180px] px-[10px] h-10 bg-primary text-white text-[15px] leading-[37px] font-bold tracking-[1px] uppercase transition-all ease-in duration-500 focus:outline-none hover:bg-[#a40206]'>
           {loading ? <Spinning /> : `${detectForm(id, 'Thêm sản phẩm', 'Sửa sản phẩm')}`}
         </button>
       </form>

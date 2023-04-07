@@ -11,19 +11,19 @@ const Footer = () => {
     <footer className="w-full bg-bgPrimary">
       <div className="w-full h-full pt-[70px]">
         <div className="flex gap-[20px] h-full mx-auto max-w-[1230px] border-solid border-b-[1px] border-[#dae1e7]">
-          <div className="w-[25%] px-[25px] pb-[30px]">
+          <div className="w-[25%] px-[15px] pb-[30px]">
             <h3 className='text-white text-[20px] font-semibold mb-[10px] uppercase'>Giới thiệu</h3>
-            <div className="w-[35px] h-[3px] my-[16px] bg-red-600"></div>
+            <div className="w-[50px] h-[3px] my-[16px] bg-red-600"></div>
             <ul className='text-[14px] text-[#a4a4a4]'>
-              Chào mừng bạn đến với GroupTTCS! Tại đây, mỗi một dòng chữ, mỗi chi tiết và hình
+              Chào mừng bạn đến với ShoesPlus! Tại đây, mỗi một dòng chữ, mỗi chi tiết và hình
               ảnh đều là những bằng chứng mang dấu ấn lịch sử Converse 100 năm, và đang không ngừng
               phát triển lớn mạnh.
             </ul>
           </div>
 
-          <div className="w-[25%] px-[25px] pb-[30px]">
+          <div className="w-[25%] px-[15px] pb-[30px]">
             <h3 className='text-white text-[20px] font-semibold mb-[10px] uppercase'>Địa chỉ</h3>
-            <div className="w-[35px] h-[3px] my-[16px] bg-red-600"></div>
+            <div className="w-[50px] h-[3px] my-[16px] bg-red-600"></div>
             <ul className='text-[14px] text-[#a4a4a4]'>
               <li className='flex gap-[10px] mb-[6px] list-none'>
                 <FontAwesomeIcon className='text-white/75 text-[18px] mt-[5px]' icon={faMapMarkerAlt} />
@@ -35,19 +35,20 @@ const Footer = () => {
               </li>
               <li className='flex gap-[10px] mb-[6px] list-none'>
                 <FontAwesomeIcon className='text-white/75 text-[18px] mt-[5px]' icon={faEnvelope} />
-                <p><a className='hover:text-primary transition-all' href="mailto:ThucTapCS@gmail.com">ThucTapCS@gmail.com</a></p>
+                <p><a className='hover:text-primary transition-all' href="mailto:ShoesPlus@gmail.com">ShoesPlus@gmail.com</a></p>
               </li>
               <li className='flex gap-[10px] mb-[6px] list-none'>
                 <FontAwesomeIcon className='text-white/75 text-[18px] mt-[5px]' icon={faTwitter} />
-                <p><a className='hover:text-primary transition-all' href="skype:ThucTapCS?chat">ThucTapCS</a></p>
+                <p><a className='hover:text-primary transition-all' href="skype:ShoesPlus?chat">ShoesPlus</a></p>
               </li>
             </ul>
           </div>
 
-          <div className="w-[25%] px-[25px] pb-[30px]">
+          <div className="w-[25%] px-[15px] pb-[30px]">
             <h3 className='text-white text-[20px] font-semibold mb-[10px] uppercase'>Menu</h3>
-            <div className="w-[35px] h-[3px] my-[16px] bg-red-600"></div>
-            <ul className="grid grid-cols-2 text-[14px] text-[#a4a4a4]">
+            <div className="w-[50px] h-[3px] my-[16px] bg-red-600"></div>
+            {/* xuong man hinh nho thi them gap-x-3 */}
+            <ul className="grid  grid-cols-2 text-[14px] text-[#a4a4a4]">
               {navData.map((nav, idx) => (
                 <MenuFooter
                   key={nav.name}
@@ -58,9 +59,9 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div className="w-[25%] px-[25px] pb-[30px]">
+          <div className="w-[25%] px-[15px] pb-[30px]">
             <h3 className='text-white text-[20px] font-semibold mb-[10px] uppercase'>Mạng xã hội</h3>
-            <div className="w-[35px] h-[3px] my-[16px] bg-primary"></div>
+            <div className="w-[50px] h-[3px] my-[16px] bg-red-600"></div>
             <ul className='text-[14px] text-[#a4a4a4]'>
               <Social color={'#3a589d'} icon={faFacebookF} href="https://fb.com/duchaudeyy" />
               <Social color={'#3b6995'} icon={faInstagram} href="https://fb.com/duchaudeyy" />

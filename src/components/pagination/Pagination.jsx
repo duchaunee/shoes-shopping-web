@@ -14,12 +14,10 @@ const Pagination = ({
   const totalPages = Math.ceil(products.length / itemsPerPage);
 
   useEffect(() => {
-    console.log('products: ', products);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = Math.min(startIndex + itemsPerPage, products.length);
     const productsSlice = products.slice(startIndex, endIndex)
     setPageProducts(productsSlice);
-    console.log(productsSlice);
   }, [currentPage, products])
 
   return (

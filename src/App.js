@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './index.scss' //tailwindcss
 import './App.css' //reset css
 
@@ -17,6 +17,14 @@ const App = () => {
   const [admin, setAdmin] = useState(localStorage.getItem('admin') === 'true' ? true : false)
 
   const [isGoogleUser, setIsGoogleUser] = useState(localStorage.getItem('isGoogleUser') === 'true' ? true : false)
+
+
+  useEffect(() => {
+    const a = [1, 2, 3, 4, 5]
+    const index = a.findIndex((item) => item == 2)
+    console.log(a.splice(index, 1, 'dasdasd'));
+    console.log(a);
+  }, [])
 
   return (
     <>
@@ -37,7 +45,7 @@ const App = () => {
           <Route path="/lien-he" element={<h2>LIÊN HỆ</h2>}></Route>
 
           <Route path='/admin/*' element={admin ? <Admin /> : <PermissionDenied />} />;
-          <Route path="/san-pham" element={<ProductDetail></ProductDetail>}></Route>
+          <Route path="/san-pham/:id" element={<ProductDetail></ProductDetail>}></Route>
 
           <Route path="/*" element={<Page404></Page404>}></Route>
         </Routes>

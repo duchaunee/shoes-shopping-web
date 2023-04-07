@@ -4,11 +4,17 @@ module.exports = {
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
+    // 'screens': {
+    //   'tablet': '850px',
+    // },
     extend: {
       colors: {
         'primary': '#c30005',
         'secondary': '#d26e4b',
         'bgPrimary': '#1f2028',
+      },
+      gridTemplateColumns: {
+        '14': 'repeat(14, minmax(0, 1fr)) ',
       },
       boxShadow: {
         'shadowPrimary': '0 2px 3px -2px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.24)',
