@@ -47,14 +47,6 @@ const ProductDetail = () => {
     }
   }
 
-  //đếm xem cái product có mấy ảnh preview để Array(count).fill...
-  const countImgPriview = () => {
-    let count = 0;
-    Array(4).fill().map((_, idx) => {
-      if (product[`imgPreviewURL${idx + 1}`]) count++;
-    })
-    return count;
-  }
   const solveCategory = (category) => {
     switch (category) {
       case 'giay-nam':
@@ -131,17 +123,19 @@ const ProductDetail = () => {
                   <img className='w-[600px] h-[425px] cursor-pointer mb-[15px]' src={product.imgURL} alt="" />
                   <div className="w-full h-[70px] min-[1024px]:h-[95px] mb-6"> {/* cai nay de tao margin am, phai co 1 the cha boc no moi dung dc */}
                     <div className="h-full mx-[-10px] grid grid-cols-4 grid-rows-1">
-                      {Array(countImgPriview()).fill().map((_, idx) => (
-                        <div
-                          key={idx}
-                          className="px-[10px] col-span-1 w-full h-full">
-                          <img
-                            // opacity-40
-                            className={` cursor-pointer border-[2px] rounded-[2px] border-[#858585] h-full inline-block w-full`}
-                            src={product[`imgPreviewURL${idx + 1}`]}
-                            alt="" />
-                        </div>
-                      ))}
+                      {Array(4).fill().map((_, idx) => {
+                        if (product[`imgPreviewURL${idx + 1}`]) return (
+                          <div
+                            key={idx}
+                            className="px-[10px] col-span-1 w-full h-full">
+                            <img
+                              // opacity-40
+                              className={` cursor-pointer border-[2px] rounded-[2px] border-[#858585] h-full inline-block w-full`}
+                              src={product[`imgPreviewURL${idx + 1}`]}
+                              alt="" />
+                          </div>
+                        )
+                      })}
                     </div>
                   </div>
                 </div>
