@@ -1,19 +1,26 @@
 import React from 'react';
 import { faInfoCircle, faSignOutAlt, faTools, faTruckMoving } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import './headerScroll.scss'
 
 const DropDownAccount = ({ logined, logoutUser, setHoverAccount, admin }) => {
+  const navigate = useNavigate()
   return (
     <>
       <ul
         className="absolute top-full text-[16px] min-w-[240px] rounded-[3px] bg-white shadow-shadowAccount drop-down-account z-[2] mt-3">
-        <li className='hover:text-black transition-all ease-linear duration-100 font-medium text-[#838586] px-5 py-[13px] rounded-[3px]'>
+        <li
+          onClick={() => {
+            if (!admin) navigate('/')
+            // else
+            setHoverAccount(false)
+          }}
+          className='hover:text-black transition-all ease-linear duration-100 font-medium text-[#838586] px-5 py-[13px] rounded-[3px]'>
           {
             admin
               ? <NavLink
-                onClick={() => setHoverAccount(false)}
+                // onClick={() => setHoverAccount(false)}
                 className='flex items-center gap-1'>
                 <FontAwesomeIcon
                   icon={faTools}
@@ -31,9 +38,14 @@ const DropDownAccount = ({ logined, logoutUser, setHoverAccount, admin }) => {
           }
         </li>
 
-        <li className='hover:text-black transition-all ease-linear duration-100 font-medium text-[#838586] px-5 py-[13px] rounded-[3px]'>
+        <li
+          onClick={() => {
+            navigate('/tai-khoan')
+            setHoverAccount(false)
+          }}
+          className='hover:text-black transition-all ease-linear duration-100 font-medium text-[#838586] px-5 py-[13px] rounded-[3px]'>
           <NavLink
-            to="/tai-khoan"
+            // to="/tai-khoan"
             onClick={() => setHoverAccount(false)}
             className='flex items-center gap-1'>
             <FontAwesomeIcon
@@ -43,10 +55,15 @@ const DropDownAccount = ({ logined, logoutUser, setHoverAccount, admin }) => {
           </NavLink>
         </li>
 
-        <li className='hover:text-black transition-all ease-linear duration-100 font-medium text-[#838586] px-5 py-[13px] rounded-[3px]'>
+        <li
+          onClick={() => {
+            navigate('/')
+            logoutUser()
+          }}
+          className='hover:text-black transition-all ease-linear duration-100 font-medium text-[#838586] px-5 py-[13px] rounded-[3px]'>
           <NavLink
-            to='/'
-            onClick={logoutUser}
+            // to='/'
+            // onClick={logoutUser}
             className='flex items-center gap-1'>
             <FontAwesomeIcon
               icon={faSignOutAlt}
