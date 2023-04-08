@@ -273,8 +273,10 @@ const InfoAccount = () => {
         await handleChangePassword(e) //update password
         if (!checkInputDone.passwordError) {
           await handleChangeDisplayName(e) //update displayName
-          handleUpdateAvatar()
-          resetAndUpdateInput();
+          await new Promise((resolve) => {
+            handleUpdateAvatar()
+            if (checkInputDone.imgAvatar === true) resolve()
+          }).then(() => resetAndUpdateInput())
         }
       }
     }
