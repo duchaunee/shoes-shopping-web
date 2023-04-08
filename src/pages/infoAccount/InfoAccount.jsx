@@ -282,7 +282,6 @@ const InfoAccount = () => {
 
   return (
     <>
-      {console.log(infoChange?.name, localStorage.getItem('displayName'), currentUser?.displayName)}
       <div className="my-[30px] max-w-[1230px] mx-auto">
         <div className="px-[15px]">
           <form onSubmit={handleSubmit}>

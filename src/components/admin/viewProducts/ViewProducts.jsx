@@ -32,6 +32,7 @@ const ViewProducts = () => {
   const navigate = useNavigate()
   const productsRedux = useSelector(selectProducts)
 
+  //thật ra đã lấy đc tất cả sản phẩm từ firebase về ở lúc vào web rồi nhưng vẫn để getProducts ở đây nữa để làm cái laoding cho nó đẹp :v chứ vào cái hiện luôn ra thì xấu hihi
   const getProducts = async () => {
     setLoading(true)
     // const productsRef = query(collection(db, "products"), where("name", "==", 'Chuck Taylor All'));
@@ -104,7 +105,11 @@ const ViewProducts = () => {
           }
         })
       }
+      //set lại products trên locaStorage và trên redux
+      console.log(([...productsRedux].filter(product => product.id !== id)));
       dispatch(STORE_PRODUCTS([...productsRedux].filter(product => product.id !== id)))
+      localStorage.setItem('products', JSON.stringify([...productsRedux].filter(product => product.id !== id)))
+
       //reset default
       filterRef.current.value = 'default'
       queryRef.current.value = 'default'
@@ -113,11 +118,9 @@ const ViewProducts = () => {
       //khi mà products tức cả toàn trang chỉ có 1 sản phẩm
       //có 2 TH, 1 là cả shop chỉ còn 1 sp rồi ấn xóa, cái này lười kh solve :V
       //2 là khi search ra 1 sp, ấn xóa phải reset về trang đầu tiên
-      console.log(products.length);
+      // console.log(products.length);
       if (products.length === 1) {
-        console.log('con` 1');
         newProducts = [...productsRedux].filter(product => product.id !== id)
-        console.log(newProducts);
         setCurrentPage(1)
         setProducts(newProducts)
         setPageProducts(newProducts.slice(0, itemsPerPage))

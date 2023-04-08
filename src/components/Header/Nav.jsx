@@ -6,6 +6,12 @@ const Nav = ({ name, to }) => {
     <>
       <NavLink
         to={to}
+        onClick={() => {
+          window.scrollTo({
+            top: 0,
+            // behavior: 'smooth'
+          });
+        }}
         style={({ isActive }) => ({
           borderColor: isActive ? '#c30005' : "",
         })}

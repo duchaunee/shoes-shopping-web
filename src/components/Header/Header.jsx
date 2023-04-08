@@ -6,7 +6,7 @@ import './headerScroll.scss'
 import { navData } from './navData';
 import DropDownAccount from './DropDownAccount';
 import { onAuthStateChanged, signOut, updateEmail } from 'firebase/auth';
-import { auth } from '../../firebase/config';
+import { auth, db } from '../../firebase/config';
 import { toast, ToastContainer } from 'react-toastify';
 import { NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,7 +20,8 @@ import {
 } from '../../redux-toolkit/slice/authSlice';
 import Admin from '../admin/Admin';
 import { adminAccount } from '../../AdminAccount';
-import { SET_CURRENT_USER } from '../../redux-toolkit/slice/productSlice';
+import { SET_CURRENT_USER, STORE_PRODUCTS } from '../../redux-toolkit/slice/productSlice';
+import { collection, getDocs, orderBy, query } from 'firebase/firestore';
 
 const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogleUser }) => {
   // khi reload lại window, logined bị chạy lại const [logined, setLogined] = useState(false) nên nó sẽ nhấp nháy ở "Đăng nhập/đăng xuất" (logined = false) rồi mới chuyển qua Tài khoản (logined = false), do đó phải khởi tạo lấy giá trị từ localstrogate
@@ -29,6 +30,30 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
   const [hoverAccount, setHoverAccount] = useState(false)
   const dispatch = useDispatch()
   const userEmail = useSelector(selectEmail)
+
+  const getProducts = async () => {
+    const productsRef = collection(db, "products");
+    const q = query(productsRef, orderBy('creatAt', 'desc'));
+    try {
+      const querySnapshot = await getDocs(q);
+      const allProducts = querySnapshot.docs.map((doc) => {
+        return {
+          id: doc.id,
+          ...doc.data()
+        }
+      })
+      //init
+      // console.log(allProducts);
+      localStorage.setItem('products', JSON.stringify(allProducts))
+      //save products to redux
+      dispatch(STORE_PRODUCTS(allProducts))
+    }
+    catch (e) {
+      toast.error(e.message, {
+        autoClose: 1000
+      })
+    }
+  }
 
   const logoutUser = () => {
     signOut(auth).then(() => {
@@ -147,7 +172,11 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
   });
 
   useEffect(() => {
-    //call luc moi vao web ma man hinh > 200
+    //lúc vào trang cái thì tải luôn cả products về cho dễ dùng
+    //ném vào localstrogate và ném vào redux
+    getProducts()
+
+    //call scroll luc moi vao web ma man hinh > 200
     handleScroll();
     window.addEventListener('scroll', handleScroll);
     return () => {
@@ -175,6 +204,12 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
                   </div>
                   : <NavLink
                     to="/dang-nhap"
+                    onClick={() => {
+                      window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                      });
+                    }}
                     className='text-[13px] cursor-pointer py-[10px] hover:text-white transition-all ease-linear duration-200 font-bold tracking-[0.32px] no-underline uppercase text-white/80' href="">
                     Đăng nhập / Đăng ký
                   </NavLink>
@@ -186,6 +221,7 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
               onClick={() => {
                 window.scrollTo({
                   top: 0,
+                  behavior: 'smooth'
                 });
               }}
               className="col-span-4 py-[10px] h-full">
@@ -196,6 +232,12 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
               admin
                 ? <NavLink
                   to='/admin/home'
+                  onClick={() => {
+                    window.scrollTo({
+                      top: 0,
+                      // behavior: 'smooth'
+                    });
+                  }}
                   className="col-span-4 flex items-center ml-auto cursor-pointer py-[10px] text-[13px] font-bold no-underline tracking-[0.32px] uppercase hover:text-white transition-all ease-linear duration-200">
                   <FontAwesomeIcon icon={faShapes} className='cursor-pointer pr-[10px] text-[18px]' />
                   Dashboard

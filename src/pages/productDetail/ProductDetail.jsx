@@ -7,6 +7,8 @@ import { faCircleCheck, faMinus, faPlus, faStar, faTags } from '@fortawesome/fre
 import { useDispatch, useSelector } from 'react-redux';
 import { selectIsAdmin } from '../../redux-toolkit/slice/authSlice';
 import CarLoading from '../../components/carLoading/CarLoading'
+import { selectProducts } from '../../redux-toolkit/slice/productSlice';
+import { Card, ProductItem } from '../../components';
 
 const solvePrice = (price) => {
   return Number(price).toLocaleString('vi-VN');
@@ -14,12 +16,14 @@ const solvePrice = (price) => {
 
 const ProductDetail = () => {
   const { id } = useParams()
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [product, setProduct] = useState({})
   const navigate = useNavigate()
   const admin = useSelector(selectIsAdmin) || JSON.parse(localStorage.getItem('admin'))
+  const products = useSelector(selectProducts)
 
   const getProduct = async () => {
+    console.log('get Product')
     setLoading(true)
     const docRef = doc(db, "products", id);
     const docSnap = await getDoc(docRef);
@@ -37,7 +41,6 @@ const ProductDetail = () => {
           ...docSnap.data()
         }))
       }
-
       setTimeout(() => {
         setLoading(false)
       }, 1000)
@@ -84,6 +87,10 @@ const ProductDetail = () => {
 
   const handleDetectAdmin = () => {
     //chỉ admin mới cần set prevLinkEditProduct
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
     localStorage.setItem('prevLinkEditProduct', `/san-pham/${id}`)
     navigate(`/admin/add-product/${id}`)
   }
@@ -94,20 +101,8 @@ const ProductDetail = () => {
 
   useEffect(() => {
     getProduct() //lấy ra sản phẩm đó lúc vào trang
-    //xử lí trường hợp nếu ở cuối trang productDetail ấn reload thì nó k lên đầu 
-    //=> ảnh hưởng thẩm mĩ
-    window.scrollTo({
-      top: 0,
-    });
-  }, [])
+  }, [id]) //param là id để xử lí việc vẫn ở trang đó nhưng bấm vào sản phẩm khác (ở Sản phẩm tương tự cuối trang) thì nó phải re-render lại để hiển thị, nếu k có cái này thì hình ảnh vẫn là của sản phẩm trước
 
-  useEffect(() => {
-    if (loading) {
-      window.scrollTo({
-        top: 0,
-      });
-    }
-  }, [loading])
 
   return (
     <>
@@ -115,6 +110,7 @@ const ProductDetail = () => {
         ? <CarLoading />
         : <>
           {/* top */}
+          {console.log('re-render', loading)}
           <div className="w-full">
             <div className="w-full h-full py-10">
               <div className="max-w-[1230px] h-full mx-auto flex">
@@ -230,7 +226,7 @@ const ProductDetail = () => {
           <div className="w-full">
             <div className="max-w-[1230px] h-full px-[15px] mx-auto">
               {/* thong tin bo sung */}
-              <div className="w-full h-full py-[20px] border border-transparent border-t-[#ddd]">
+              <div className="w-full h-full pt-[36px] pb-[8px] border border-transparent border-t-[#ddd]">
                 <div className="w-full h-full p-[20px] border border-[#ddd]">
                   <div className="pb-[8px]">
                     <h1 className='font-bold text-[18px] leading-[32px] text-[#1c1c1c] uppercase'>Thông tin bổ sung</h1>
@@ -265,36 +261,70 @@ const ProductDetail = () => {
                       <img src="../../noHaveComment.png" alt="" />
                       <p className='text-[18px] font-medium opacity-75'>Chưa có đánh giá</p>
                     </div> */}
-                    {/* 1 comment */}
-                    <div className="flex gap-4 pt-5 pb-8 border border-transparent border-b-[#ddd]">
-                      <div className="w-[50px] h-[50px] rounded-full border border-[#ddd] overflow-hidden">
-                        {/* phải xử lí nếu nó không có avatar thì cho avatar mặc định */}
-                        <img className='w-full h-full object-cover' src={localStorage.getItem('imgAvatar') || 'https://source.unsplash.com/random'} alt="" />
-                      </div>
-                      <div className="flex-1 flex flex-col">
-                        <span className='font-medium'>{localStorage.getItem('displayName')}</span>
-                        <div className="">
-                          <FontAwesomeIcon className='text-[#f9dc4b] text-[14px]' icon={faStar} />
+                    {/*comment */}
+                    {Array(2).fill().map((item, idx) => {
+                      return (
+                        <div
+                          key={idx}
+                          className={`flex gap-4 pt-5 pb-8 ${idx < Array(2).length - 1 ? 'border border-transparent border-b-[#ddd]' : ''}`}>
+                          <div className="w-[50px] h-[50px] rounded-full border border-[#ddd] overflow-hidden">
+                            {/* phải xử lí nếu nó không có avatar thì cho avatar mặc định */}
+                            <img className='w-full h-full object-cover' src={localStorage.getItem('imgAvatar') || 'https://source.unsplash.com/random'} alt="" />
+                          </div>
+                          <div className="flex-1 flex flex-col">
+                            <span className='font-medium'>{localStorage.getItem('displayName')}</span>
+                            <div className="">
+                              <FontAwesomeIcon className='text-[#f9dc4b] text-[14px]' icon={faStar} />
+                            </div>
+                            <div className="text-black opacity-50 text-[14px]">
+                              {`Phân loại hàng: ${product.name} - ${solveCategory(product.category)}`}
+                            </div>
+                            <div className="mt-2  ">Chất vải dày dặn, form đẹp. Mình 1m6 mặc size M vẫn ok nhé, ko có bị ngắn đâu nè. Rcm mng nên mua, shop còn tặng ktrang vải nữa, rất tốt...Chất vải dày dặn, form đẹp. Mình 1m6 mặc size M vẫn ok nhé, ko có bị ngắn đâu nè. Rcm mng nên mua, shop còn tặng ktrang vải nữa, rất tốt...</div>
+                          </div>
                         </div>
-                        <div className="text-black opacity-50 text-[14px]">
-                          {`Phân loại hàng: ${product.name} - ${solveCategory(product.category)}`}
-                        </div>
-                        <div className="mt-2  ">Chất vải dày dặn, form đẹp. Mình 1m6 mặc size M vẫn ok nhé, ko có bị ngắn đâu nè. Rcm mng nên mua, shop còn tặng ktrang vải nữa, rất tốt...Chất vải dày dặn, form đẹp. Mình 1m6 mặc size M vẫn ok nhé, ko có bị ngắn đâu nè. Rcm mng nên mua, shop còn tặng ktrang vải nữa, rất tốt...</div>
-                      </div>
-                    </div>
-
+                      )
+                    })}
                   </div>
                 </div>
               </div>
 
               {/* sp tuong tu */}
-              <div className=""></div>
+              <div className="w-full h-full pt-4 pb-[20px]">
+                <div className="w-full h-full">
+                  <div className="ml-5 pb-[8px]">
+                    <h1 className='font-bold text-[18px] leading-[32px] text-[#1c1c1c] uppercase'>Sản phẩm tương tự</h1>
+                  </div>
+                  <div className="ml-5 w-[50px] h-[3px] mt-1 mb-5 bg-red-600"></div>
+                  <div className="w-full overflow-hidden overflow-x-scroll whitespace-nowrap h-[309px]">
+                    {products.map((item, idx) => {
+                      //lọc ra những thằng khác loại VÀ lọc ra cả CHÍNH NÓ, ở sp tương tự hiện chính nó làm gì :v
+                      if (item.category !== product.category || item.id === product.id) return;
+                      return (
+                        <div
+                          key={idx}
+                          className="inline-flex w-[240px] px-[10px] pb-5 h-full">
+                          <Card width='w-full' >
+                            <ProductItem
+                              product={item}
+                              id={item.id}
+                              img={item.imgURL}
+                              name={item.name}
+                              price={solvePrice(item.price)}
+                              idURL={`san-pham/${id}`} //id của cái trang hiện tại chứa sp, chứ kp item.id nhé
+                              setLoadingPage={setLoading}
+                              text={admin ? 'Sửa sản phẩm' : 'Thêm vào giỏ'}
+                            />
+                          </Card>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </>
       }
-
-
     </>
   );
 };

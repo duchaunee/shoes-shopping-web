@@ -103,14 +103,6 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
     }
   }
 
-  useEffect(() => {
-    getProducts('category', 'giay-nu', 5, 'setDemo')
-    getProducts('category', fieldValue, undefined, 'setPreview')
-    window.scrollTo({
-      top: 0,
-    });
-  }, [])
-
   const handleFilterProduct = (e) => {
     if (e.target.value !== 'default') {
       queryRef.current.value = 'default'
@@ -139,12 +131,9 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
   }, [productPreview])
 
   useEffect(() => {
-    if (loading) {
-      window.scrollTo({
-        top: 0,
-      });
-    }
-  }, [loading])
+    getProducts('category', 'giay-nu', 5, 'setDemo')
+    getProducts('category', fieldValue, undefined, 'setPreview')
+  }, [])
 
   return (
     <>

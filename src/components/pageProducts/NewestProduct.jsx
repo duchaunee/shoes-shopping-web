@@ -18,13 +18,25 @@ const NewestProduct = ({ productDemo }) => {
               key={idx}
               className={`min-h-[80px] flex gap-4 ${idx > -1 && "border border-transparent border-dashed border-t-[#ececec]"}`}>
               <img
-                onClick={() => navigate(`/san-pham/${item.id}`)}
+                onClick={() => {
+                  navigate(`/san-pham/${item.id}`)
+                  window.scrollTo({
+                    top: 0,
+                    // behavior: 'smooth'
+                  });
+                }}
                 className='w-[60px] h-[60px] object-cover cursor-pointer'
                 src={item.imgURL}
                 alt="" />
               <div className="flex-1">
                 <NavLink
                   to={`/san-pham/${item.id}`}
+                  onClick={() => {
+                    window.scrollTo({
+                      top: 0,
+                      // behavior: 'smooth'
+                    });
+                  }}
                   className='block text-[#334862] text-[14px] mb-1 line-clamp-1'>{item.name}</NavLink>
                 <span
                   className='text-[#111111] font-bold text-[14px]'>

@@ -12,9 +12,13 @@ const DropDownAccount = ({ logined, logoutUser, setHoverAccount, admin }) => {
         className="absolute top-full text-[16px] min-w-[240px] rounded-[3px] bg-white shadow-shadowAccount drop-down-account z-[2] mt-3">
         <li
           onClick={() => {
-            if (!admin) navigate('/')
+            // if (!admin) navigate('/')
             // else
             setHoverAccount(false)
+            // window.scrollTo({
+            //   top: 0,
+            //   behavior: 'smooth'
+            // });
           }}
           className='hover:text-black transition-all ease-linear duration-100 font-medium text-[#838586] px-5 py-[13px] rounded-[3px]'>
           {
@@ -42,6 +46,10 @@ const DropDownAccount = ({ logined, logoutUser, setHoverAccount, admin }) => {
           onClick={() => {
             navigate('/tai-khoan')
             setHoverAccount(false)
+            window.scrollTo({
+              top: 0,
+              behavior: 'smooth'
+            });
           }}
           className='hover:text-black transition-all ease-linear duration-100 font-medium text-[#838586] px-5 py-[13px] rounded-[3px]'>
           <NavLink
@@ -59,6 +67,10 @@ const DropDownAccount = ({ logined, logoutUser, setHoverAccount, admin }) => {
           onClick={() => {
             navigate('/')
             logoutUser()
+            window.scrollTo({
+              top: 0,
+              behavior: 'smooth'
+            });
           }}
           className='hover:text-black transition-all ease-linear duration-100 font-medium text-[#838586] px-5 py-[13px] rounded-[3px]'>
           <NavLink

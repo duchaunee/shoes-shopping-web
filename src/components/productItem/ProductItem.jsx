@@ -5,7 +5,7 @@ import "../../components/lineClamp.scss"
 import { useSelector } from 'react-redux';
 import { selectIsAdmin } from '../../redux-toolkit/slice/authSlice';
 
-const ProductItem = ({ product, id, img, name, price, text, width, idURL }) => {
+const ProductItem = ({ product, id, img, name, price, text, width, idURL, setLoadingPage }) => {
 
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
@@ -19,8 +19,12 @@ const ProductItem = ({ product, id, img, name, price, text, width, idURL }) => {
 
   const handleDetectAdmin = () => {
     //chỉ admi mới cần set showProduct và prevLinkEditProduct
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
     localStorage.setItem('showProduct', JSON.stringify(product))
-    localStorage.setItem('prevLinkEditProduct', `/${idURL}`)
+    if (idURL) localStorage.setItem('prevLinkEditProduct', `/${idURL}`)
     navigate(`/admin/add-product/${id}`)
   }
 
@@ -46,13 +50,30 @@ const ProductItem = ({ product, id, img, name, price, text, width, idURL }) => {
         <div className=''>
           <NavLink
             className='block h-[150px]'
+            onClick={() => {
+              setLoadingPage(true) //nguyên nhân có cái này là truyền từ Sản phẩm tương tự trong productDetail, lí do truyền là khi ấn vào, nó sẽ bị nháy ở sp hiện tại (loading car ý nó = false nên nó hiện cái cũ), vậy nên khi ấn vào minh set cho nó là true phát luôn để không bị nháy, THỬ BỎ DÒNG NÀY ĐI CHẠY LÀ THẤY SỰ KHÁC BIỆT
+              window.scrollTo({
+                top: 0,
+                // behavior: 'smooth'
+              });
+            }}
             to={`/san-pham/${id}`}>
             <img className='w-full h-full object-cover' src={img} alt="" />
           </NavLink>
         </div>
         <div className="pt-[10px] px-[10px] pb-[20px] flex flex-col justify-center">
           <div className="mb-[10px] text-bgPrimary line-clamp-1 text-center">
-            <NavLink to={`/san-pham/${id}`}>{name}</NavLink>
+            <NavLink
+              onClick={() => {
+                setLoadingPage(true) //nguyên nhân có cái này là truyền từ Sản phẩm tương tự trong productDetail, lí do truyền là khi ấn vào, nó sẽ bị nháy ở sp hiện tại (loading car duchauý nó = false nên nó hiện cái cũ), vậy nên khi ấn vào minh set cho nó là true phát luôn để không bị nháy, THỬ BỎ DÒNG NÀY ĐI CHẠY LÀ THẤY SỰ KHÁC BIỆT
+                window.scrollTo({
+                  top: 0,
+                  // behavior: 'smooth'
+                });
+              }}
+              to={`/san-pham/${id}`}>
+              {name}
+            </NavLink>
           </div>
           <div className=" text-bgPrimary font-bold flex justify-center">
             {price}

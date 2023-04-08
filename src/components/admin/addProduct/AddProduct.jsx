@@ -118,6 +118,15 @@ const AddProduct = () => {
         creatAt: product.creatAt,
         editedAt: Timestamp.now().toDate().toString()
       });
+
+      //Sửa sản phẩm thì tìm ra sản phẩm đó ròi replace
+      const findIndexEdit = products.findIndex(item => item.id === id)
+      const newProducts = [...products]
+      newProducts[findIndexEdit] = product
+      dispatch(STORE_PRODUCTS(newProducts))
+      localStorage.setItem('products', JSON.stringify(newProducts))
+
+
       setLoading(false)
       toast.success("Sửa sản phẩm thành công", {
         autoClose: 1200
@@ -193,6 +202,11 @@ const AddProduct = () => {
         imgPreviewURL4: product.imgPreviewURL4,
         creatAt: Timestamp.now().toDate().toString()
       });
+
+      const newProducts = [...products]
+      newProducts.push(product)
+      dispatch(STORE_PRODUCTS(newProducts))
+      localStorage.setItem('products', JSON.stringify(newProducts))
 
       setLoading(false)
       setProduct(initializeFireBase)
