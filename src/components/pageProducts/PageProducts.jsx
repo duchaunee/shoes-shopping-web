@@ -1,16 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { NavLink, useNavigate, useParams } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { NavLink } from 'react-router-dom';
 import { Card, ProductItem, ValueFilter } from '..';
 import NewestProduct from './NewestProduct';
 import { collection, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { db } from '../../firebase/config';
 import { useDispatch, useSelector } from 'react-redux';
-import { Spinning } from '../../animation-loading';
 import Pagination from '../pagination/Pagination';
 import OverlayLoading from '../overlayLoading/OverlayLoading';
 import { selectIsAdmin } from '../../redux-toolkit/slice/authSlice';
-// import OverlayLoading from '../overlayLoading/OverlayLoading';
 
 const solvePrice = (price) => {
   return Number(price).toLocaleString('vi-VN');
@@ -24,12 +22,9 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
   const [loading, setLoading] = useState(true);
   const [productDemo, setProductDemo] = useState([])
   const [productPreview, setProductPreview] = useState([])
-  const [filterProduct, setFilterProduct] = useState('default');
-  const [queryProduct, setQueryProduct] = useState({
-    value: "latest",
-    field: "price", //default la moi nhat
-    order: -1
-  });
+
+  const filterRef = useRef()
+  const queryRef = useRef()
 
 
   const productsCategoryRedux = useSelector(selectNameProduct) //trai, gai, tre em
@@ -42,7 +37,7 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
     setLoading(true)
     const productsRef = query(collection(db, "products"), where(field, "==", fieldValue));
     // const productsRef = collection(db, "products");
-    const q = query(productsRef, orderBy('creatAt', 'asc'), limit(limitNumber));
+    const q = query(productsRef, orderBy('creatAt', 'desc'), limit(limitNumber));
     try {
       const querySnapshot = await getDocs(q);
       const allProducts = querySnapshot.docs.map((doc) => {
@@ -60,10 +55,6 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
           setPageProducts(allProducts.slice(0, itemsPerPage))
           dispatch(STORE_NAME_PRODUCTS(allProducts))
         }, 800);
-        // setLoading(false);
-        // setProductPreview(allProducts) //san pham giay nu
-        // setPageProducts(allProducts.slice(0, itemsPerPage))
-        // dispatch(STORE_NAME_PRODUCTS(allProducts))
       }
     }
     catch (e) {
@@ -73,52 +64,40 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
     }
   }
 
-  const solveQuery = (q) => {
+  const solveQuery = (value) => {
     //1 la a[..] > b[...]
     //-1 ..
-    switch (q) {
+    switch (value) {
       case 'latest':
-        setQueryProduct({
-          value: "latest",
+        return {
           field: 'creatAt',
-          order: 1
-        })
-        break;
+          order: -1
+        }
       case 'oldest':
-        setQueryProduct({
-          value: "oldest",
+        return {
           field: 'creatAt',
-          order: -1
-        })
-        break;
+          order: 1
+        }
       case 'lowest-price':
-        setQueryProduct({
-          value: "lowest-price",
+        return {
           field: 'price',
           order: 1
-        })
-        break;
+        }
       case 'highest-price':
-        setQueryProduct({
-          value: "highest-price",
+        return {
           field: 'price',
           order: -1
-        })
-        break;
+        }
       case 'a-z':
-        setQueryProduct({
-          value: "a-z",
+        return {
           field: 'name',
           order: 1
-        })
-        break;
+        }
       case 'z-a':
-        setQueryProduct({
-          value: "z-a",
+        return {
           field: 'name',
           order: -1
-        })
-        break;
+        }
       default:
         break;
     }
@@ -132,29 +111,24 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
     });
   }, [])
 
-  useEffect(() => {
-    if (queryProduct.value !== 'default') {
+  const handleFilterProduct = (e) => {
+    if (e.target.value !== 'default') {
+      queryRef.current.value = 'default'
+      setCurrentPage(1)
+      if (e.target.value == 'all') setProductPreview(productsCategoryRedux)
+      else setProductPreview([...productsCategoryRedux].filter(item => (item.brand === e.target.value)));
+    }
+  }
+
+  const handleQueryProduct = (e) => {
+    if (e.target.value !== 'default') {
+      const { field, order } = solveQuery(e.target.value)
       setProductPreview([...productPreview].sort((a, b) => {
-        if (a[queryProduct.field] > b[queryProduct.field]) return queryProduct.order
-        return (queryProduct.order) * (-1)
+        if (a[field] > b[field]) return order
+        return (order) * (-1)
       }));
     }
-  }, [queryProduct])
-
-  useEffect(() => {
-    //reset init
-    setCurrentPage(1)
-    setQueryProduct({
-      value: "default",
-      field: "price",
-      order: -1
-    })
-    //
-    if (filterProduct !== 'default') {
-      if (filterProduct == 'all') setProductPreview(productsCategoryRedux)
-      else setProductPreview([...productsCategoryRedux].filter(item => (item.brand === filterProduct)));
-    }
-  }, [filterProduct])
+  }
 
   //có thể để bên Pagination luôn, Nhưng chỉ khi size của productPreview sau khi lọc > 8 (itemsPerPage) t mới cho hiện ra thằng Pagination :v tức là nếu size của productPreview < 8 thì sẽ không hiện Pagination và sẽ không bắt đc thời điểm productPreview thay đổi nên thôi chày cối ném sang bên này vậy :v
   useEffect(() => {
@@ -192,8 +166,8 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
                 <span className='font-bold'>Số lượng</span>: {productPreview.length} sản phẩm
               </p>
               <select
-                value={queryProduct.value}
-                onChange={(e) => solveQuery(e.target.value)}
+                ref={queryRef}
+                onChange={handleQueryProduct}
                 className='outline-none mr-[12px] rounded-[4px] px-3 py-3 pr-16 text-bgPrimary cursor-pointer border-[2px] border-solid border-[#ddd] shadow-shadowSearch'
                 name="sort-by" id="">
                 <option key='0' value="default">Sắp xếp theo</option>
@@ -206,8 +180,8 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
               </select>
 
               <select
-                value={filterProduct}
-                onChange={(e) => setFilterProduct(e.target.value)}
+                ref={filterRef}
+                onChange={handleFilterProduct}
                 className='outline-none mr-[12px] rounded-[4px] px-3 py-3 pr-16 text-bgPrimary cursor-pointer border-[2px] border-solid border-[#ddd] shadow-shadowSearch'
                 name="sort-by" id="">
                 <option key='0' value="default">Lọc sản phẩm theo</option>
@@ -232,8 +206,8 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
                   <ValueFilter
                     productPreview={productPreview}
                     setProductPreview={setProductPreview}
-                    setQueryProduct={setQueryProduct}
-                    setFilterProduct={setFilterProduct}
+                    queryRef={queryRef}
+                    filterRef={filterRef}
                     selectNameProduct={selectNameProduct}
                     setCurrentPage={setCurrentPage}
                   />

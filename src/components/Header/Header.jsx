@@ -82,15 +82,15 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
         localStorage.setItem('logined', JSON.stringify(true));
         //login bằng gg thì nó có displayname là tên gg, còn login bằng mail thì nó là null, khi đó setusername là tên gmail luôn
 
-        //lưu trên localStorage để xử lí TH mất mạng, phương thức onAuthStateChanged không được gọi vì thế dislayName, displayEmail SẼ BỊ RỖNG (do lúc này dispatch ở dingf 61 không được thực hiện nên nó sẽ lấy giá trị khởi tạo của redux), VẬY NÊN để xử lí thì lưu trên localstrogate
-        localStorage.setItem('displayName', user.displayName || (user.email.slice(0, -10).charAt(0).toUpperCase() + (user.email.slice(0, -10)).slice(1)));
+        //lưu trên localStorage để xử lí TH mất mạng, phương thức onAuthStateChanged không được gọi vì thế dislayName, displayEmail SẼ BỊ RỖNG (do lúc này dispatch ở dòng 61 không được thực hiện nên nó sẽ lấy giá trị khởi tạo của redux), VẬY NÊN để xử lí thì lưu trên localstrogate
+        localStorage.setItem('displayName', user.displayName.slice(0, 20) || (user.email.slice(0, -10).charAt(0).toUpperCase() + (user.email.slice(0, -10)).slice(1)));
         localStorage.setItem('displayEmail', user.email);
 
         //set info user
         dispatch(
           SET_ACTIVE_USER({
             email: user.email,
-            userName: user.displayName || (user.email.slice(0, -10).charAt(0).toUpperCase() + (user.email.slice(0, -10)).slice(1)),
+            userName: user.displayName.slice(0, 20) || (user.email.slice(0, -10).charAt(0).toUpperCase() + (user.email.slice(0, -10)).slice(1)),
             userID: user.uid,
           })
         )

@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDocs, orderBy, query, setDoc, Timestamp } from 'firebase/firestore';
+import { addDoc, collection, doc, setDoc, Timestamp } from 'firebase/firestore';
 import { deleteObject, getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';

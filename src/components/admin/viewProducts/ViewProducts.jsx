@@ -1,12 +1,12 @@
 import { faEdit, faSearch, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { collection, deleteDoc, doc, getDocs, orderBy, query } from 'firebase/firestore';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { Spinning } from '../../../animation-loading';
 import { db, storage } from '../../../firebase/config';
 import Pagination from '../../pagination/Pagination';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { deleteObject, ref } from 'firebase/storage';
 import { useDispatch, useSelector } from 'react-redux';
 import Notiflix from 'notiflix';
@@ -18,12 +18,10 @@ const ViewProducts = () => {
   const quantity = 5;
 
   const [loading, setLoading] = useState(false);
-  const [filterProduct, setFilterProduct] = useState('default');
-  const [queryProduct, setQueryProduct] = useState({
-    value: "default",
-    field: "price", //default la moi nhat
-    order: -1
-  });
+
+  const filterRef = useRef()
+  const queryRef = useRef()
+
   const [notFound, setNotFound] = useState(false);
   const [searchByName, setSearchByName] = useState('');
   const [products, setProducts] = useState([]); //all products
@@ -38,7 +36,7 @@ const ViewProducts = () => {
     setLoading(true)
     // const productsRef = query(collection(db, "products"), where("name", "==", 'Chuck Taylor All'));
     const productsRef = collection(db, "products");
-    const q = query(productsRef, orderBy('creatAt', 'asc'));
+    const q = query(productsRef, orderBy('creatAt', 'desc'));
     try {
       const querySnapshot = await getDocs(q);
       const allProducts = querySnapshot.docs.map((doc) => {
@@ -96,25 +94,43 @@ const ViewProducts = () => {
 
   const handleDeleteProduct = async (id, img) => {
     try {
-      //delete product
       await deleteDoc(doc(db, "products", id));
       //delete image (neu co anh thi moi xoa, co TH add product nhung k add anh)
       if (img) {
         img.forEach(async (item) => {
-          const desertRef = ref(storage, item);
-          await deleteObject(desertRef)
+          if (item) {
+            const desertRef = ref(storage, item);
+            await deleteObject(desertRef)
+          }
         })
       }
-      //set lai product
-      const newProducts = products.filter(product => product.id !== id)
-      setProducts(newProducts);
+      dispatch(STORE_PRODUCTS([...productsRedux].filter(product => product.id !== id)))
+      //reset default
+      filterRef.current.value = 'default'
+      queryRef.current.value = 'default'
 
-      //set lai pageProduct (vì mình dùng pagination nên phải set lại cả cái này)
-      const startIndex = (currentPage - 1) * itemsPerPage;
-      const endIndex = Math.min(startIndex + itemsPerPage, newProducts.length);
-      //Nếu chỉ có 1 sản phẩm ở 1 trang, nếu xóa sản phẩm đó đi thì currentPage phải bị giảm đi 1
-      if (startIndex > newProducts.length - 1) setCurrentPage(currentPage - 1)
-      setPageProducts(newProducts.slice(startIndex, endIndex));
+      let newProducts;
+      //khi mà products tức cả toàn trang chỉ có 1 sản phẩm
+      //có 2 TH, 1 là cả shop chỉ còn 1 sp rồi ấn xóa, cái này lười kh solve :V
+      //2 là khi search ra 1 sp, ấn xóa phải reset về trang đầu tiên
+      console.log(products.length);
+      if (products.length === 1) {
+        console.log('con` 1');
+        newProducts = [...productsRedux].filter(product => product.id !== id)
+        console.log(newProducts);
+        setCurrentPage(1)
+        setProducts(newProducts)
+        setPageProducts(newProducts.slice(0, itemsPerPage))
+      }
+      else {
+        newProducts = products.filter(product => product.id !== id)
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, newProducts.length);
+        //nếu 1 sp ở 1 trang, ấn xóa thì số trang phải lùi về 1
+        if (startIndex > newProducts.length - 1) setCurrentPage(currentPage - 1)
+        setProducts(newProducts);
+        setPageProducts(newProducts.slice(startIndex, endIndex));
+      }
 
       toast.success('Xóa sản phẩm thành công', {
         autoClose: 1000
@@ -130,19 +146,16 @@ const ViewProducts = () => {
   }
 
   const handleSearchByName = (e) => {
+    console.log(productsRedux);
     e.preventDefault()
     //reset input and query
     setCurrentPage(1)
     setSearchByName('');
-    setFilterProduct('default')
-    setQueryProduct({
-      value: "default",
-      field: "price",
-      order: -1
-    })
-    //
+    filterRef.current.value = 'default'
+    queryRef.current.value = 'default'
+
     const searchProducts = productsRedux.filter(product => product.name.toLowerCase().includes(searchByName.toLowerCase()))
-    console.log('searchProducts: ', searchProducts);
+    // console.log('searchProducts: ', searchProducts);
 
     //vì thằng getProducts là async nên chưa kịp get về thì nó đã chạy handleSearchByName rồi nên phải có điều kiện products.length !== 0 (sản phẩm đâ được get về)
     if (searchProducts.length === 0 && products.length !== 0) {
@@ -155,53 +168,45 @@ const ViewProducts = () => {
     // 2. Nếu sản phẩm đã get về thành công và nhập vào ô search by name XONG XÓA đi làm cho ô search bị rỗng, mà có searchProducts.length > 0 thì hiển thị
     else if (searchByName !== "" && products.length !== 0 && searchProducts.length > 0
       || (searchByName === "" && searchProducts.length > 0)) {
-      setNotFound(false)
-      // setLoading(false)
       setProducts(searchProducts)
-      // setPageProducts(searchProducts.slice(0, itemsPerPage))
+      setNotFound(false)
     }
   }
 
-  const solveQuery = (q) => {
+  const solveQuery = (value) => {
     //1 la a[..] > b[...]
     //-1 ..
-    switch (q) {
+    switch (value) {
       case 'latest':
-        setQueryProduct({
+        return {
           field: 'creatAt',
-          order: 1
-        })
-        break;
+          order: -1
+        }
       case 'oldest':
-        setQueryProduct({
+        return {
           field: 'creatAt',
-          order: -1
-        })
-        break;
+          order: 1
+        }
       case 'lowest-price':
-        setQueryProduct({
+        return {
           field: 'price',
           order: 1
-        })
-        break;
+        }
       case 'highest-price':
-        setQueryProduct({
+        return {
           field: 'price',
           order: -1
-        })
-        break;
+        }
       case 'a-z':
-        setQueryProduct({
+        return {
           field: 'name',
           order: 1
-        })
-        break;
+        }
       case 'z-a':
-        setQueryProduct({
+        return {
           field: 'name',
           order: -1
-        })
-        break;
+        }
       default:
         break;
     }
@@ -224,27 +229,25 @@ const ViewProducts = () => {
     return Number(price).toLocaleString('vi-VN');
   }
 
-  useEffect(() => {
-    setProducts([...products].sort((a, b) => {
-      if (a[queryProduct.field] > b[queryProduct.field]) return queryProduct.order
-      return (queryProduct.order) * (-1)
-    }));
-  }, [queryProduct])
-
-  useEffect(() => {
-    //reset init
-    setQueryProduct({
-      value: "default",
-      field: "price",
-      order: -1
-    })
-    //
-    if (filterProduct !== 'default') {
+  const handleFilterProduct = (e) => {
+    if (e.target.value !== 'default') {
+      queryRef.current.value = 'default'
+      setNotFound(false)
       setCurrentPage(1)
-      if (filterProduct == 'all') setProducts(productsRedux)
-      else setProducts([...productsRedux].filter(item => (item.brand === filterProduct)));
+      if (e.target.value == 'all') setProducts(productsRedux)
+      else setProducts([...productsRedux].filter(item => (item.brand === e.target.value)));
     }
-  }, [filterProduct])
+  }
+
+  const handleQueryProduct = (e) => {
+    if (e.target.value !== 'default') {
+      const { field, order } = solveQuery(e.target.value)
+      setProducts([...products].sort((a, b) => {
+        if (a[field] > b[field]) return order
+        return (order) * (-1)
+      }));
+    }
+  }
 
   useEffect(() => {
     getProducts()
@@ -260,8 +263,8 @@ const ViewProducts = () => {
         <div className='border border-transparent pb-6 border-b-[#bbb] grid grid-cols-12 items-center'>
           <div className="col-span-4 w-full">
             <select
-              value={filterProduct}
-              onChange={(e) => setFilterProduct(e.target.value)}
+              ref={filterRef}
+              onChange={handleFilterProduct}
               className='outline-none float-left bg-slate-100 px-3 py-3 text-bgPrimary cursor-pointer border border-solid border-[#ddd] shadow-shadowSearch'
               name="sort-by" id="">
               <option key='0' value="default">Lọc sản phẩm theo</option>
@@ -294,8 +297,8 @@ const ViewProducts = () => {
           </form>
           <div className="col-span-2">
             <select
-              value={queryProduct.value}
-              onChange={(e) => solveQuery(e.target.value)}
+              ref={queryRef}
+              onChange={handleQueryProduct}
               className='outline-none float-right bg-slate-100 px-3 py-3 text-bgPrimary cursor-pointer border border-solid border-[#ddd] shadow-shadowSearch'
               name="sort-by" id="">
               <option key='0' value="default">Sắp xếp sản phẩm theo</option>
@@ -314,7 +317,7 @@ const ViewProducts = () => {
             ? <div className='flex flex-col items-center'>
               <img
                 className='w-[350px] object-cover'
-                src="../notFound.jpg" alt=""
+                src="../../notFound.jpg" alt=""
               />
               <h1 className='text-[20px] text-center text-bgPrimary'>Không tìm thấy sản phẩm phù hợp</h1>
             </div>

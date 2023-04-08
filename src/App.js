@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import './index.scss' //tailwindcss
 import './App.css' //reset css
 
-import { Header, Footer, ProductItem, Card, Auth, Admin } from "./components"
-import { Home, Contact, Login, Cart, Checkout, Product, ProductCategory, GirlShoes, BoyShoes, ChildShoes, Page404, ProductDetail } from './pages';
+import { Header, Footer, Auth, Admin } from "./components"
+import { Home, GirlShoes, BoyShoes, ChildShoes, Page404, ProductDetail } from './pages';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import InfoAccount from './pages/infoAccount/InfoAccount';
 import { PermissionDenied } from './components/admin';
-import HomeAdmin from './components/admin/home/HomeAdmin';
 
 //LƯU Ý: đang set height cho body là 300vh để xuất hiện thanh scroll
 const App = () => {

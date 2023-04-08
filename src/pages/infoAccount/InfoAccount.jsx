@@ -1,14 +1,12 @@
-import app, { auth, storage } from '../../firebase/config';
-import { EmailAuthProvider, getAuth, reauthenticateWithCredential, sendEmailVerification, updateEmail, updatePassword, updateProfile } from 'firebase/auth';
+import { auth, storage } from '../../firebase/config';
+import { EmailAuthProvider, reauthenticateWithCredential, updatePassword, updateProfile } from 'firebase/auth';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Spinning } from '../../animation-loading';
-import ButtonPrimary from '../../components/button/ButtonPrimary';
 import { SET_DISPLAY_NAME } from '../../redux-toolkit/slice/authSlice';
-import firebase from 'firebase/app';
 import UploadSquare from '../../components/admin/addProduct/UploadSquare';
-import { deleteObject, getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 
 const InfoAccount = () => {
   const isGoogleUser = localStorage.getItem('isGoogleUser') === 'true' ? true : false
@@ -23,8 +21,8 @@ const InfoAccount = () => {
 
   const [loading, setLoading] = useState(false);
   const [haveChangeImg, setHaveChangeImg] = useState(false);
-  const displayEmail = useSelector(state => state.auth.email)
-  const displayName = useSelector(state => state.auth.userName)
+  const displayEmail = useSelector(state => state.auth.email) || localStorage.getItem('displayEmail')
+  const displayName = useSelector(state => state.auth.userName) || localStorage.getItem('displayName')
   // const isGoogleUser = useSelector(state => state.auth.isGoogleUser)
   const dispatch = useDispatch()
 
@@ -47,13 +45,6 @@ const InfoAccount = () => {
     newPassword: "",
     newPassword2: ""
   })
-
-  useEffect(() => {
-    setInfoChange({
-      ...infoChange,
-      name: displayName,
-    })
-  }, [displayName])
 
   const updateInfoChange = (e) => {
     setInfoChange({
@@ -133,15 +124,6 @@ const InfoAccount = () => {
       newPassword: "",
       newPassword2: ""
     })
-
-    //update displayName trên localStrogate
-    localStorage.setItem('displayName', infoChange.name);
-    //lí do phải dispatch SET_DISPLAY_NAME là do khi đổi tên thì nó cập nhật trên firebase ok rồi, nhưng nếu không F5 lại thì nó vẫn hiển thị trên web là tên cũ (VÌ TÊN HIỂN THỊ ĐỀU LẤY RA TỪ REDUX) nên không F5 lại thì redux không thể cập nhật tên mới ( trong onAuthStateChanged/header nhé), nên phải dispatch để nó re-render hết tất cả những thằng có dùng displayName lấy ra từ redux
-
-    //update displayName trên redux
-    dispatch(
-      SET_DISPLAY_NAME(infoChange.name)
-    )
   }
 
   //XỬ LÍ KHI ĐĂNG KÍ THÌ UPLOAD AVATAR DEFAULT LUÔN CHO NHANH
@@ -218,6 +200,13 @@ const InfoAccount = () => {
       await updateProfile(currentUser, { displayName: infoChange.name })
         .then(() => {
           checkInputDone.name = true;
+
+          //update displayName trên localStrogate
+          localStorage.setItem('displayName', infoChange.name);
+          //lí do phải dispatch SET_DISPLAY_NAME là do khi đổi tên thì nó cập nhật trên firebase ok rồi, nhưng nếu không F5 lại thì nó vẫn hiển thị trên web là tên cũ (VÌ TÊN HIỂN THỊ ĐỀU LẤY RA TỪ REDUX) nên không F5 lại thì redux không thể cập nhật tên mới ( trong onAuthStateChanged/header nhé), nên phải dispatch để nó re-render hết tất cả những thằng có dùng displayName lấy ra từ redux
+
+          //update displayName trên redux
+          dispatch(SET_DISPLAY_NAME(infoChange.name))
         })
         .catch((error) => {
           checkInputDone.name = false;
@@ -267,7 +256,6 @@ const InfoAccount = () => {
 
     //change displayName nhưng KHÔNG CHANGE PASSWORD
     else if (status && !changePass) {
-      console.log('dasd');
       await handleChangeDisplayName(e);
       handleUpdateAvatar()
     }
@@ -297,7 +285,6 @@ const InfoAccount = () => {
       <div className="my-[30px] max-w-[1230px] mx-auto">
         <div className="px-[15px]">
           <form onSubmit={handleSubmit}>
-
             <div className="w-full mb-12 text-[#222] text-[14px] flex flex-col gap-5 ">
               <span className='text-[#353535] block text-[16px] font-bold uppercase '>Thông tin tài khoản</span>
               <div className=''>
@@ -319,7 +306,7 @@ const InfoAccount = () => {
                   // || "" là do lúc mới chạy, onAuthStateChanged để trong useEffect (nó gắn liền với dispatch active user) vì thế lúc mới chạy, thằng infoChange.name lấy ra từ redux nó bị "" và thằng localStorage.getItem('displayName') nó cũng bị null do chưa chạy đc vào useEffect(chưa render xong UI), nên cả 2 thằng đó đều falsy thì mình sẽ lấy ""
                   // CÓ BUG: Nếu xóa hết tên thì nó không bị "" , mà sẽ getItem từ localStrogate và set lại value, vì thế nếu muốn đặt tên khác thì phải copy paste vào, THÔI CHỊU KHÓ LAG 1 TÍ CŨNG ĐC :V BỎ THẰNG LOCALSTROGATE ĐI
                   // value={infoChange.name || localStorage.getItem('displayName') || ""}
-                  value={infoChange.name || ""}
+                  value={infoChange?.name || localStorage.getItem('displayName') || currentUser?.displayName}
                   onChange={(e) => updateInfoChange(e)}
                   name="name"
                   className='align-middle bg-white shadow-sm text-[#333] w-full h-10 outline-none border border-solid border-[#ddd] text-[16px] px-3 mb-2' id='account_display_name' type="text" />

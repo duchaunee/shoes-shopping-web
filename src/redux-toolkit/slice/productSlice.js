@@ -13,7 +13,7 @@ export const productSlice = createSlice({
   reducers: {
     STORE_PRODUCTS: (state, action) => {
       state.products = action.payload
-      // console.log(state.products);
+      console.log('Store Products: ', state.products);
     },
     STORE_GIRL_PRODUCTS: (state, action) => {
       state.girlProducts = action.payload

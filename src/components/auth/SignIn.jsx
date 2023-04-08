@@ -6,7 +6,6 @@ import { Spinning } from '../../animation-loading';
 import { auth } from '../../firebase/config';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { toast } from 'react-toastify';
-import InputForm from '../inputForm/InputForm';
 
 const SignIn = ({ signUp, signInWithGoogle, setResetPassword }) => {
   const navigate = useNavigate()

@@ -1,6 +1,6 @@
 import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Spinning } from '../../../animation-loading';
 
 const UploadSquare = ({ src, srcURL, setSrc, text, id, width, name, handleImageChange }) => {

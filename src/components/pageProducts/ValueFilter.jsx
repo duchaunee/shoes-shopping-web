@@ -7,10 +7,9 @@ const minValueFilter = 500000
 const maxValueFilter = 3000000;
 
 const ValueFilter = ({
-  productPreview,
   setProductPreview,
-  setQueryProduct,
-  setFilterProduct,
+  queryRef,
+  filterRef,
   selectNameProduct,
   setCurrentPage }) => {
 
@@ -34,12 +33,8 @@ const ValueFilter = ({
       setCurrentPage(1)
       setProductPreview(ProductFilter)
       //reset
-      setFilterProduct('default')
-      setQueryProduct({
-        value: "latest",
-        field: "price", //default la moi nhat
-        order: -1
-      })
+      filterRef.current.value = 'default'
+      queryRef.current.value = 'default'
       setPriceRange({
         from: null,
         to: null

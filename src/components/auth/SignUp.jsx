@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 //firebase
-import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth"
+import { createUserWithEmailAndPassword } from "firebase/auth"
 import { auth } from '../../firebase/config';
 import { Spinning } from '../../animation-loading';
 
