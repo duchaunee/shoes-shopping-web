@@ -12,7 +12,7 @@ const NavAdmin = () => {
     <div className="rounded-tl-[12px] rounded-bl-[12px] p-[20px] pt-0 w-[270px] shadow-xl">
       <div className="w-full py-[20px] flex flex-col items-center mb-[10px]">
         <img
-          className='w-[100px] h-[100px] rounded-full mb-2'
+          className='w-[100px] h-[100px] rounded-full mb-2 object-cover'
           src={localStorage.getItem('imgAvatar') || currentUser?.photoURL} alt="" />
         <span className='block font-[500] text-center text-bgPrimary text-[20px]'>{localStorage.getItem('displayName') || displayName}</span>
       </div>

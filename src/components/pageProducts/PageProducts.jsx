@@ -220,7 +220,7 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
             {loading
               ? <OverlayLoading />
               : <div className="flex-1">
-                <div className={`px-[15px] ${productPreview.length > 0 && 'min-h-[555px]'} grid grid-cols-4`}>
+                <div className={`px-[15px] ${productPreview.length > 0 && 'min-h-[596px]'} grid grid-cols-4`}>
                   {pageProducts.map((item) => (
                     <div
                       key={item.id}

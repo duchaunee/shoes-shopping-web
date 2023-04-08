@@ -46,7 +46,7 @@ const DropDownAccount = ({ logined, logoutUser, setHoverAccount, admin }) => {
           className='hover:text-black transition-all ease-linear duration-100 font-medium text-[#838586] px-5 py-[13px] rounded-[3px]'>
           <NavLink
             // to="/tai-khoan"
-            onClick={() => setHoverAccount(false)}
+            // onClick={() => setHoverAccount(false)}
             className='flex items-center gap-1'>
             <FontAwesomeIcon
               icon={faInfoCircle}
