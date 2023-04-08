@@ -309,7 +309,7 @@ const InfoAccount = () => {
                   value={infoChange?.name || localStorage.getItem('displayName') || currentUser?.displayName}
                   onChange={(e) => updateInfoChange(e)}
                   name="name"
-                  className='align-middle bg-white shadow-sm text-[#333] w-full h-10 outline-none border border-solid border-[#ddd] text-[16px] px-3 mb-2' id='account_display_name' type="text" />
+                  className='align-middle bg-white shadow-sm text-[#333] w-full h-10 outline-none border border-solid border-[#ddd] text-[16px] px-3 mb-2 transition-all ease-linear duration-150 focus:shadow-shadowPink focus:border focus:border-[#ea4c8966]' id='account_display_name' type="text" />
                 <span className='text-[#353535] text-[16px] italic'>Đây sẽ là cách mà tên của bạn sẽ được hiển thị trong phần tài khoản và trong phần đánh giá</span>
               </p>
 
@@ -342,7 +342,7 @@ const InfoAccount = () => {
                       value={infoChange.password}
                       onChange={(e) => updateInfoChange(e)}
                       placeholder='Bỏ trống nếu không đổi'
-                      className='placeholder:italic align-middle bg-white shadow-sm text-[#333] w-full h-10 outline-none border border-solid border-[#ddd] text-[16px] px-3 mb-2'
+                      className='placeholder:italic align-middle bg-white shadow-sm text-[#333] w-full h-10 outline-none border border-solid border-[#ddd] text-[16px] px-3 mb-2 transition-all ease-linear duration-150 focus:shadow-shadowPink focus:border focus:border-[#ea4c8966]'
                       id='password_current'
                       type="password" />
                   </p>
@@ -355,7 +355,7 @@ const InfoAccount = () => {
                       placeholder='Bỏ trống nếu không đổi'
                       name="newPassword"
                       onChange={(e) => updateInfoChange(e)}
-                      className='placeholder:italic align-middle bg-white shadow-sm text-[#333] w-full h-10 outline-none border border-solid border-[#ddd] text-[16px] px-3 mb-2'
+                      className='placeholder:italic align-middle bg-white shadow-sm text-[#333] w-full h-10 outline-none border border-solid border-[#ddd] text-[16px] px-3 mb-2 transition-all ease-linear duration-150 focus:shadow-shadowPink focus:border focus:border-[#ea4c8966]'
                       id='password_1'
                       type="password" />
                   </p>
@@ -367,7 +367,7 @@ const InfoAccount = () => {
                       name="newPassword2"
                       value={infoChange.newPassword2}
                       onChange={(e) => updateInfoChange(e)}
-                      className='align-middle bg-white shadow-sm text-[#333] w-full h-10 outline-none border border-solid border-[#ddd] text-[16px] px-3 mb-2'
+                      className='align-middle bg-white shadow-sm text-[#333] w-full h-10 outline-none border border-solid border-[#ddd] text-[16px] px-3 mb-2 transition-all ease-linear duration-150 focus:shadow-shadowPink focus:border focus:border-[#ea4c8966]'
                       id='password_2'
                       type="password" />
                   </p>

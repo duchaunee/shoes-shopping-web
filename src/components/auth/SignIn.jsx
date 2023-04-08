@@ -67,11 +67,11 @@ const SignIn = ({ signUp, signInWithGoogle, setResetPassword }) => {
           <input
             name="email"
             onChange={handleInput}
-            className='bg-[#eee] focus:outline-none focus:shadow-shadowPrimary border-none py-3 px-[15px] my-2 w-full' type="text" placeholder="Email" />
+            className='bg-[#f3f3f4] transition-all ease-linear duration-150 border border-[#fff] focus:bg-white outline-none focus:shadow-shadowPink focus:border focus:border-[#ea4c8966] py-3 px-[15px] my-2 w-full' type="text" placeholder="Email" />
           <input
             name="password"
             onChange={handleInput}
-            className='bg-[#eee] focus:outline-none focus:shadow-shadowPrimary border-none py-3 px-[15px] my-2 w-full' type="password" placeholder="Password" />
+            className='bg-[#f3f3f4] transition-all ease-linear duration-150 border border-[#fff] focus:bg-white outline-none focus:shadow-shadowPink focus:border focus:border-[#ea4c8966] py-3 px-[15px] my-2 w-full' type="password" placeholder="Password" />
           <NavLink
             onClick={() => setResetPassword(true)}
             className=' text-[#333] text-[14px] underline my-[15px]'>

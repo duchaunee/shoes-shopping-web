@@ -157,7 +157,7 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
               <select
                 ref={queryRef}
                 onChange={handleQueryProduct}
-                className='outline-none mr-[12px] rounded-[4px] px-3 py-3 pr-16 text-bgPrimary cursor-pointer border-[2px] border-solid border-[#ddd] shadow-shadowSearch'
+                className='outline-none mr-[12px] px-3 py-3 pr-16 text-bgPrimary cursor-pointer border bg-white border-solid border-[#ccc] shadow-shadowSearch'
                 name="sort-by" id="">
                 <option key='0' value="default">Sắp xếp theo</option>
                 <option key='1' value="latest">Mới nhất</option>
@@ -171,7 +171,7 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
               <select
                 ref={filterRef}
                 onChange={handleFilterProduct}
-                className='outline-none mr-[12px] rounded-[4px] px-3 py-3 pr-16 text-bgPrimary cursor-pointer border-[2px] border-solid border-[#ddd] shadow-shadowSearch'
+                className='outline-none mr-[12px] px-3 py-3 pr-16 text-bgPrimary cursor-pointer border bg-white border-solid border-[#ccc] shadow-shadowSearch'
                 name="sort-by" id="">
                 <option key='0' value="default">Lọc sản phẩm theo</option>
                 <option key='1' value="all">Tất cả</option>

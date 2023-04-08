@@ -21,7 +21,8 @@ module.exports = {
         'shadowHover': '0 4px 10px -4px rgba(0,0,0,0.16), 0 4px 10px rgba(0,0,0,0.23)',
         'shadowAuth': '0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22)',
         'shadowAccount': '0 15px 30px 0 rgba(0, 0, 0, 0.2)',
-        'shadowSearch': 'inset 0 -1.4em 1em 0 rgba(0,0,0,0.02)'
+        'shadowSearch': 'inset 0 -1.4em 1em 0 rgba(0,0,0,0.02)',
+        'shadowPink': '0 0 0 4px rgba(234,76,137,0.1)',
       },
       animation: {
         'showSignUp': 'show 0.6s',
