@@ -58,11 +58,11 @@ const ProductItem = ({ product, id, img, name, price, text, width, idURL, setLoa
               });
             }}
             to={`/san-pham/${id}`}>
-            <img className='w-full h-full object-cover' src={img} alt="" />
+            <img className='pointer-events-none select-none w-full h-full object-cover' src={img} alt="" />
           </NavLink>
         </div>
         <div className="pt-[10px] px-[10px] pb-[20px] flex flex-col justify-center">
-          <div className="mb-[10px] text-bgPrimary line-clamp-1 text-center">
+          <div className="mb-[10px] text-bgPrimary line-clamp-1 text-center select-none">
             <NavLink
               onClick={() => {
                 if (setLoadingPage) setLoadingPage(true) //nguyên nhân có cái này là truyền từ Sản phẩm tương tự trong productDetail, lí do truyền là khi ấn vào, nó sẽ bị nháy ở sp hiện tại (loading car duchauý nó = false nên nó hiện cái cũ), vậy nên khi ấn vào minh set cho nó là true phát luôn để không bị nháy, THỬ BỎ DÒNG NÀY ĐI CHẠY LÀ THẤY SỰ KHÁC BIỆT

@@ -1,5 +1,5 @@
 import { doc, getDoc } from 'firebase/firestore';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { db } from '../../firebase/config';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -21,6 +21,35 @@ const ProductDetail = () => {
   const navigate = useNavigate()
   const admin = useSelector(selectIsAdmin) || JSON.parse(localStorage.getItem('admin'))
   const products = useSelector(selectProducts)
+
+  /////////////// SLIDE /////////////////
+  const wrapper = useRef(null)
+  const speed = 1; //tốc độ kéo sp
+  const [scrollLeft, setScrollLeft] = useState(0)
+  const [startX, setStartX] = useState()
+  const [isMouseDown, setIsMouseDown] = useState(false)
+
+  //ấn chuột
+  const handleDragStart = (e) => {
+    setIsMouseDown(true)
+    wrapper.current.style.cursor = 'grabbing'
+    setStartX(e.pageX - wrapper.current.offsetLeft)
+    setScrollLeft(wrapper.current.scrollLeft)
+  }
+
+  //lúc di chuột & thả chuột
+  const handleDragEnd = () => {
+    setIsMouseDown(false)
+    wrapper.current.style.cursor = 'grab'
+  }
+
+  const handleDragMove = (e) => {
+    if (!isMouseDown) return;
+    let afterX = e.pageX - wrapper.current.offsetLeft;
+    let walk = (afterX - startX) * speed;
+    wrapper.current.scrollLeft = scrollLeft - walk;
+  }
+  ////////////////////////////////
 
   const getProduct = async () => {
     console.log('get Product')
@@ -110,24 +139,27 @@ const ProductDetail = () => {
         ? <CarLoading />
         : <>
           {/* top */}
-          {console.log('re-render', loading)}
           <div className="w-full">
             <div className="w-full h-full py-10">
-              <div className="max-w-[1230px] h-full mx-auto flex">
+              <div className="max-w-[1230px] h-full mx-auto px-[15px] flex gap-8">
                 {/* left */}
-                <div className="flex-1 px-[15px]">
-                  <img className='w-[600px] h-[425px] cursor-pointer mb-[15px]' src={product.imgURL} alt="" />
-                  <div className="w-full h-[70px] min-[1024px]:h-[95px] mb-6"> {/* cai nay de tao margin am, phai co 1 the cha boc no moi dung dc */}
-                    <div className="h-full mx-[-10px] grid grid-cols-4 grid-rows-1">
-                      {Array(4).fill().map((_, idx) => {
-                        if (product[`imgPreviewURL${idx + 1}`]) return (
+                <div className="flex-1">
+                  <img className='h-[425px] cursor-pointer mb-[15px]' src={product.imgURL} alt="" />
+                  <div className="w-full h-[70px] min-[1024px]:h-[95px] mb-6">
+                    {/* fix height cứng để slide nè, responsive cẩn thận nhé */}
+                    <div className="w-[584px] h-full cursor-grab overflow-hidden whitespace-nowrap">
+                      {Array(5).fill().map((_, idx) => {
+                        console.log(product[`imgPreviewURL${idx}`]);
+                        if (idx === 0 || (product[`imgPreviewURL${idx}`] && idx > 0)) return (
                           <div
                             key={idx}
-                            className="px-[10px] col-span-1 w-full h-full">
+                            className={`inline-flex ${idx > 0 ? 'pl-[10px]' : ''} w-[146px] h-full`}>
                             <img
                               // opacity-40
-                              className={` cursor-pointer border-[2px] rounded-[2px] border-[#858585] h-full inline-block w-full`}
-                              src={product[`imgPreviewURL${idx + 1}`]}
+                              className={` cursor-pointer border-[2px] rounded-[2px] border-[#858585] h-full inline-block w-full object-cover`}
+                              src={idx === 0
+                                ? product.imgURL
+                                : product[`imgPreviewURL${idx}`]}
                               alt="" />
                           </div>
                         )
@@ -137,7 +169,7 @@ const ProductDetail = () => {
                 </div>
 
                 {/* right */}
-                <div className="flex-1 px-[15px] pb-[30px]">
+                <div className="flex-1 pb-[30px]">
                   <nav className='text-[#94949e] uppercase text-[14px]'>
                     <NavLink className='transition-all ease-linear duration-100 hover:text-bgPrimary hover:opacity-70mb-2' to='/'>Trang chủ</NavLink>
                     <div className="mx-2 inline-block">/</div>
@@ -295,14 +327,20 @@ const ProductDetail = () => {
                     <h1 className='font-bold text-[18px] leading-[32px] text-[#1c1c1c] uppercase'>Sản phẩm tương tự</h1>
                   </div>
                   <div className="ml-5 w-[50px] h-[3px] mt-1 mb-5 bg-red-600"></div>
-                  <div className="w-full overflow-hidden overflow-x-scroll whitespace-nowrap h-[309px]">
+                  <div
+                    ref={wrapper}
+                    onMouseDown={handleDragStart}
+                    onMouseLeave={handleDragEnd}
+                    onMouseUp={handleDragEnd}
+                    onMouseMove={handleDragMove}
+                    className="cursor-grab w-full overflow-hidden whitespace-nowrap h-[309px]">
                     {products.map((item, idx) => {
                       //lọc ra những thằng khác loại VÀ lọc ra cả CHÍNH NÓ, ở sp tương tự hiện chính nó làm gì :v
                       if (item.category !== product.category || item.id === product.id) return;
                       return (
                         <div
                           key={idx}
-                          className="inline-flex w-[240px] px-[10px] pb-5 h-full">
+                          className="inline-flex w-[240px] px-[10px] pb-5 h-full select-none">
                           <Card width='w-full' >
                             <ProductItem
                               product={item}
@@ -310,7 +348,7 @@ const ProductDetail = () => {
                               img={item.imgURL}
                               name={item.name}
                               price={solvePrice(item.price)}
-                              idURL={`san-pham/${id}`} //id của cái trang hiện tại chứa sp, chứ kp item.id nhé
+                              idURL={`san-pham/${id}`} //prevLink là id của cái trang hiện tại chứa sp, chứ kp item.id nhé
                               setLoadingPage={setLoading}
                               text={admin ? 'Sửa sản phẩm' : 'Thêm vào giỏ'}
                             />
