@@ -5,7 +5,10 @@ import "../../components/lineClamp.scss"
 import { useSelector } from 'react-redux';
 import { selectIsAdmin } from '../../redux-toolkit/slice/authSlice';
 
-const ProductItem = ({ product, id, img, name, price, text, width, idURL, setLoadingPage }) => {
+const ProductItem = ({
+  setTranslateX,
+  setHoverSimilarProduct,
+  product, id, img, name, price, text, width, idURL, setLoadingPage }) => {
 
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
@@ -49,8 +52,16 @@ const ProductItem = ({ product, id, img, name, price, text, width, idURL, setLoa
         className={`bg-white ${width ? "" : 'w-full'}`}>
         <div className=''>
           <NavLink
-            className='block h-[150px]'
-            onClick={() => {
+            onMouseDown={(e) => e.preventDefault()}
+            onMouseUp={(e) => e.preventDefault()}
+            onDragStart={(e) => e.preventDefault()}
+            className='block h-[150px] touch-none'
+            draggable="false"
+
+            onClick={(e) => {
+              console.log('click');
+              if (setTranslateX) setTranslateX(0)
+              if (setHoverSimilarProduct) setHoverSimilarProduct(false)
               if (setLoadingPage) setLoadingPage(true) //nguyên nhân có cái này là truyền từ Sản phẩm tương tự trong productDetail, lí do truyền là khi ấn vào, nó sẽ bị nháy ở sp hiện tại (loading car ý nó = false nên nó hiện cái cũ), vậy nên khi ấn vào minh set cho nó là true phát luôn để không bị nháy, THỬ BỎ DÒNG NÀY ĐI CHẠY LÀ THẤY SỰ KHÁC BIỆT
               window.scrollTo({
                 top: 0,
@@ -58,13 +69,17 @@ const ProductItem = ({ product, id, img, name, price, text, width, idURL, setLoa
               });
             }}
             to={`/san-pham/${id}`}>
-            <img className='pointer-events-none select-none w-full h-full object-cover' src={img} alt="" />
+            <img className='w-full h-full object-contain' src={img} alt="" />
           </NavLink>
         </div>
         <div className="pt-[10px] px-[10px] pb-[20px] flex flex-col justify-center">
-          <div className="mb-[10px] text-bgPrimary line-clamp-1 text-center select-none">
+          <div className="mb-[10px] text-bgPrimary line-clamp-1 text-center">
             <NavLink
+              onDragStart={(e) => e.preventDefault()}
+              onMouseUp={(e) => e.preventDefault()}
               onClick={() => {
+                if (setTranslateX) setTranslateX(0)
+                if (setHoverSimilarProduct) setHoverSimilarProduct(false)
                 if (setLoadingPage) setLoadingPage(true) //nguyên nhân có cái này là truyền từ Sản phẩm tương tự trong productDetail, lí do truyền là khi ấn vào, nó sẽ bị nháy ở sp hiện tại (loading car duchauý nó = false nên nó hiện cái cũ), vậy nên khi ấn vào minh set cho nó là true phát luôn để không bị nháy, THỬ BỎ DÒNG NÀY ĐI CHẠY LÀ THẤY SỰ KHÁC BIỆT
                 window.scrollTo({
                   top: 0,

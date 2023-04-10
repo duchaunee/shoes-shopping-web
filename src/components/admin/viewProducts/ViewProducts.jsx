@@ -356,10 +356,13 @@ const ViewProducts = () => {
                             </td>
                             <td className='col-span-5 grid grid-cols-7 gap-4'>
                               <img
-                                className='col-span-3 rounded-[4px] h-[100px] w-full object-cover'
+                                onClick={() => navigate(`/san-pham/${product.id}`)}
+                                className='col-span-3 rounded-[4px] h-[100px] w-full object-cover cursor-pointer'
                                 src={product.imgURL} alt="" />
                               <div className="col-span-4 flex flex-col mt-4">
-                                <span className='text-[20px] font-medium text-bgPrimary line-clamp-1'>{product.name}</span>
+                                <span
+                                  onClick={() => navigate(`/san-pham/${product.id}`)}
+                                  className='text-[20px] font-medium text-bgPrimary line-clamp-1 cursor-pointer'>{product.name}</span>
                                 <span className='text-[#888] line-clamp-2'>{product.desc}</span>
                               </div>
                             </td>

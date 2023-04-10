@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { db } from '../../firebase/config';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleCheck, faMinus, faPlus, faStar, faTags } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faArrowRight, faCircleCheck, faMinus, faPlus, faStar, faTags } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectIsAdmin } from '../../redux-toolkit/slice/authSlice';
 import CarLoading from '../../components/carLoading/CarLoading'
@@ -16,41 +16,47 @@ const solvePrice = (price) => {
 
 const ProductDetail = () => {
   const { id } = useParams()
+  const [translateX, setTranslateX] = useState(0)
+  const [hoverSimilarProduct, setHoverSimilarProduct] = useState(false)
+
   const [loading, setLoading] = useState(true)
   const [product, setProduct] = useState({})
   const navigate = useNavigate()
   const admin = useSelector(selectIsAdmin) || JSON.parse(localStorage.getItem('admin'))
   const products = useSelector(selectProducts)
 
+  const similarProducts = products.filter((item) => !(item.category !== product.category || item.id === product.id))
+
   /////////////// SLIDE /////////////////
-  const wrapper = useRef(null)
-  const speed = 1; //tốc độ kéo sp
-  const [scrollLeft, setScrollLeft] = useState(0)
-  const [startX, setStartX] = useState()
-  const [isMouseDown, setIsMouseDown] = useState(false)
+  // const wrapper = useRef(null)
+  // const speed = 1; //tốc độ kéo sp
+  // const [scrollLeft, setScrollLeft] = useState(0)
+  // const [startX, setStartX] = useState()
+  // const [isMouseDown, setIsMouseDown] = useState(false)
 
-  //ấn chuột
-  const handleDragStart = (e) => {
-    setIsMouseDown(true)
-    wrapper.current.style.cursor = 'grabbing'
-    setStartX(e.pageX - wrapper.current.offsetLeft)
-    setScrollLeft(wrapper.current.scrollLeft)
-  }
+  // //ấn chuột
+  // const handleDragStart = (e) => {
+  //   setIsMouseDown(true)
+  //   wrapper.current.style.cursor = 'grabbing'
+  //   setStartX(e.pageX - wrapper.current.offsetLeft)
+  //   setScrollLeft(wrapper.current.scrollLeft)
+  // }
 
-  //lúc di chuột & thả chuột
-  const handleDragEnd = () => {
-    setIsMouseDown(false)
-    wrapper.current.style.cursor = 'grab'
-  }
+  // //lúc di chuột & thả chuột
+  // const handleDragEnd = () => {
+  //   setIsMouseDown(false)
+  //   wrapper.current.style.cursor = 'grab'
+  // }
 
-  const handleDragMove = (e) => {
-    if (!isMouseDown) return;
-    let afterX = e.pageX - wrapper.current.offsetLeft;
-    let walk = (afterX - startX) * speed;
-    wrapper.current.scrollLeft = scrollLeft - walk;
-  }
+  // const handleDragMove = (e) => {
+  //   if (!isMouseDown) return;
+  //   let afterX = e.pageX - wrapper.current.offsetLeft;
+  //   let walk = (afterX - startX) * speed;
+  //   wrapper.current.scrollLeft = scrollLeft - walk;
+  // }
   ////////////////////////////////
 
+  ////////////////////////////////
   const getProduct = async () => {
     console.log('get Product')
     setLoading(true)
@@ -144,19 +150,18 @@ const ProductDetail = () => {
               <div className="max-w-[1230px] h-full mx-auto px-[15px] flex gap-8">
                 {/* left */}
                 <div className="flex-1">
-                  <img className='h-[425px] cursor-pointer mb-[15px]' src={product.imgURL} alt="" />
+                  <img className='w-[584px] h-[425px] cursor-pointer mb-[15px] object-contain' src={product.imgURL} alt="" />
                   <div className="w-full h-[70px] min-[1024px]:h-[95px] mb-6">
                     {/* fix height cứng để slide nè, responsive cẩn thận nhé */}
                     <div className="w-[584px] h-full cursor-grab overflow-hidden whitespace-nowrap">
                       {Array(5).fill().map((_, idx) => {
-                        console.log(product[`imgPreviewURL${idx}`]);
                         if (idx === 0 || (product[`imgPreviewURL${idx}`] && idx > 0)) return (
                           <div
                             key={idx}
                             className={`inline-flex ${idx > 0 ? 'pl-[10px]' : ''} w-[146px] h-full`}>
                             <img
                               // opacity-40
-                              className={` cursor-pointer border-[2px] rounded-[2px] border-[#858585] h-full inline-block w-full object-cover`}
+                              className={` cursor-pointer border-[2px] rounded-[2px] border-[#858585] h-full inline-block w-full object-contain`}
                               src={idx === 0
                                 ? product.imgURL
                                 : product[`imgPreviewURL${idx}`]}
@@ -301,7 +306,7 @@ const ProductDetail = () => {
                           className={`flex gap-4 pt-5 pb-8 ${idx < Array(2).length - 1 ? 'border border-transparent border-b-[#ddd]' : ''}`}>
                           <div className="w-[50px] h-[50px] rounded-full border border-[#ddd] overflow-hidden">
                             {/* phải xử lí nếu nó không có avatar thì cho avatar mặc định */}
-                            <img className='w-full h-full object-cover' src={localStorage.getItem('imgAvatar') || 'https://source.unsplash.com/random'} alt="" />
+                            <img className='w-full h-full object-contain' src={localStorage.getItem('imgAvatar') || 'https://source.unsplash.com/random'} alt="" />
                           </div>
                           <div className="flex-1 flex flex-col">
                             <span className='font-medium'>{localStorage.getItem('displayName')}</span>
@@ -327,36 +332,61 @@ const ProductDetail = () => {
                     <h1 className='font-bold text-[18px] leading-[32px] text-[#1c1c1c] uppercase'>Sản phẩm tương tự</h1>
                   </div>
                   <div className="ml-5 w-[50px] h-[3px] mt-1 mb-5 bg-red-600"></div>
+
                   <div
-                    ref={wrapper}
-                    onMouseDown={handleDragStart}
-                    onMouseLeave={handleDragEnd}
-                    onMouseUp={handleDragEnd}
-                    onMouseMove={handleDragMove}
-                    className="cursor-grab w-full overflow-hidden whitespace-nowrap h-[309px]">
-                    {products.map((item, idx) => {
-                      //lọc ra những thằng khác loại VÀ lọc ra cả CHÍNH NÓ, ở sp tương tự hiện chính nó làm gì :v
-                      if (item.category !== product.category || item.id === product.id) return;
-                      return (
-                        <div
-                          key={idx}
-                          className="inline-flex w-[240px] px-[10px] pb-5 h-full select-none">
-                          <Card width='w-full' >
-                            <ProductItem
-                              product={item}
-                              id={item.id}
-                              img={item.imgURL}
-                              name={item.name}
-                              price={solvePrice(item.price)}
-                              idURL={`san-pham/${id}`} //prevLink là id của cái trang hiện tại chứa sp, chứ kp item.id nhé
-                              setLoadingPage={setLoading}
-                              text={admin ? 'Sửa sản phẩm' : 'Thêm vào giỏ'}
-                            />
-                          </Card>
-                        </div>
-                      )
-                    })}
+                    onMouseEnter={() => setHoverSimilarProduct(true)}
+                    onMouseLeave={() => setHoverSimilarProduct(false)}
+                    className="w-full relative">
+                    {/* icon left */}
+                    <div
+                      // 240 là width của từng phần tử, nếu responsive thì thay đổi đi
+                      //tức là mỗi lần nhấn thì sang trái 1 phần tử (240px)
+                      onClick={() => setTranslateX(translateX - 240)}
+                      className={`absolute ${hoverSimilarProduct ? 'w-[60px] h-[60px] shadow-shadowAuth' : 'w-[46px] h-[46px] shadow-shadowAccount'} bg-white text-bgPrimary rounded-full left-[-20px] top-1/2 translate-y-[-60%] flex items-center justify-center cursor-pointer transition-all ease-linear duration-200 z-30 ${translateX === 0 ? 'hidden' : ''}`}>
+                      <FontAwesomeIcon className='text-[20px]' icon={faArrowLeft} />
+                    </div>
+                    {/* main */}
+                    <div className="overflow-hidden whitespace-nowrap h-[309px]">
+                      <div
+                        style={{
+                          transform: `translateX(-${translateX}px)`
+                        }}
+                        className="w-full transition-all ease-linear duration-300">
+                        {similarProducts.map((item, idx) => (
+                          <div
+                            key={idx}
+                            // nếu trên điện thoại thì đổi w-1/5 thành w-1/3 hoặc w-1/2 nhé
+                            className="inline-flex w-1/5 px-[10px] pb-5 h-full select-none">
+                            <Card width='w-full' >
+                              <ProductItem
+                                product={item}
+                                id={item.id}
+                                img={item.imgURL}
+                                name={item.name}
+                                price={solvePrice(item.price)}
+                                idURL={`san-pham/${id}`} //prevLink là id của cái trang hiện tại chứa sp, chứ kp item.id nhé
+                                setLoadingPage={setLoading}
+                                //2 thằng set bên dưới là xử lí khi ấn vào 1 sp ở similar Products qua sp đó rùi, nhưng nếu không set về 0 và về false thì qua sp mới nó vẫn bị như lúc cũ, bỏ ra chạy thử là biết
+                                setTranslateX={setTranslateX}
+                                setHoverSimilarProduct={setHoverSimilarProduct}
+                                text={admin ? 'Sửa sản phẩm' : 'Thêm vào giỏ'}
+                              />
+                            </Card>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    {/* icon right */}
+                    <div
+                      // 240 là width của từng phần tử, nếu responsive thì thay đổi đi
+                      //tức là mỗi lần nhấn thì sang phải 1 phần tử (240px)
+                      onClick={() => setTranslateX(translateX + 240)}
+                      className={`absolute ${hoverSimilarProduct ? 'w-[60px] h-[60px] shadow-shadowAuth' : 'w-[46px] h-[46px] shadow-shadowAccount'} bg-white text-bgPrimary rounded-full right-[-20px] top-1/2 translate-y-[-60%] flex items-center justify-center cursor-pointer transition-all ease-linear duration-200 z-30 ${translateX === (similarProducts.length - 5) * 240 ? 'hidden' : ''}`}>
+                      <FontAwesomeIcon className='text-[18px]' icon={faArrowRight} />
+                    </div>
                   </div>
+
+
                 </div>
               </div>
             </div>
