@@ -21,8 +21,8 @@ const InfoAccount = () => {
 
   const [loading, setLoading] = useState(false);
   const [haveChangeImg, setHaveChangeImg] = useState(false);
-  const displayEmail = useSelector(state => state.auth.email) || localStorage.getItem('displayEmail')
-  const displayName = useSelector(state => state.auth.userName) || localStorage.getItem('displayName')
+  const displayEmail = localStorage.getItem('displayEmail')
+  const displayName = localStorage.getItem('displayName')
   // const isGoogleUser = useSelector(state => state.auth.isGoogleUser)
   const dispatch = useDispatch()
 
@@ -308,7 +308,7 @@ const InfoAccount = () => {
                   // || "" là do lúc mới chạy, onAuthStateChanged để trong useEffect (nó gắn liền với dispatch active user) vì thế lúc mới chạy, thằng infoChange.name lấy ra từ redux nó bị "" và thằng localStorage.getItem('displayName') nó cũng bị null do chưa chạy đc vào useEffect(chưa render xong UI), nên cả 2 thằng đó đều falsy thì mình sẽ lấy ""
                   // CÓ BUG: Nếu xóa hết tên thì nó không bị "" , mà sẽ getItem từ localStrogate và set lại value, vì thế nếu muốn đặt tên khác thì phải copy paste vào, THÔI CHỊU KHÓ LAG 1 TÍ CŨNG ĐC :V BỎ THẰNG LOCALSTROGATE ĐI
                   // value={infoChange.name || localStorage.getItem('displayName') || ""}
-                  value={infoChange?.name || localStorage.getItem('displayName') || currentUser?.displayName}
+                  value={infoChange.name}
                   onChange={(e) => updateInfoChange(e)}
                   name="name"
                   className='align-middle bg-white shadow-sm text-[#333] w-full h-10 outline-none border border-solid border-[#ddd] text-[16px] px-3 mb-2 transition-all ease-linear duration-150 focus:shadow-shadowPink focus:border focus:border-[#ea4c8966]' id='account_display_name' type="text" />
