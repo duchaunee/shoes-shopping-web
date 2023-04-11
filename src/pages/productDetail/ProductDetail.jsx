@@ -253,8 +253,12 @@ const ProductDetail = () => {
                     </p>
                   </div>
                   <div className="w-[50px] h-[2px] bg-black/20 my-[20px]"></div>
-                  <div className="mb-[25px]">
-                    <p className='font-medium text-[18px] text-[#1b1b1b] mb-3'>Select Size: 39</p>
+                  <div className="mb-[15px]">
+                    <div className="mb-3 font-medium text-[18px] text-[#1b1b1b] flex items-center gap-3">
+                      <p className=''>Select Size: 39</p>
+                      <div className="w-[3px] h-[20px] bg-bgPrimary opacity-20"></div>
+                      <p className='opacity-60'>{product.inventory} sản phẩm có sẵn</p>
+                    </div>
                     <ul className='inline-flex gap-3'>
                       {[39, 40, 41, 42, 43].map((size) => (
                         <li
@@ -263,6 +267,11 @@ const ProductDetail = () => {
                       ))}
                     </ul>
                   </div>
+                  {/* <div className="mb-[15px]">
+                    <p className='font-medium text-[18px] text-[#1b1b1b] mb-3'>
+
+                    </p>
+                  </div> */}
                   <div className="mb-[25px] inline-grid grid-cols-12 gap-6 w-[373px] h-[46px]">
                     <div className="col-span-5 flex items-center justify-center gap-2 px-3 py-1 rounded-[4px] border border-[#ccc] ">
                       <button type='button' className='flex items-center outline-none text-bgPrimary font-medium '>

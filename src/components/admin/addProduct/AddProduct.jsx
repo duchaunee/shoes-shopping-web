@@ -14,6 +14,7 @@ const initializeFireBase = {
   name: "",
   imgURL: "",
   price: 0,
+  inventory: 0,
   category: "", //neu khong chon thi de default la giay nam
   brand: "", //neu khong chon thi de default la Classic
   desc: "",
@@ -73,7 +74,7 @@ const AddProduct = () => {
   const handleInputChange = (e) => {
     e.preventDefault()
     //neu type la price thi phai check nhap vao la so
-    if ([e.target.name] == 'price') {
+    if ([e.target.name] == 'price' || [e.target.name] == 'inventory') {
       if (/^\d{0,7}$/.test(e.target.value)) {
         setProduct({
           ...product,
@@ -108,6 +109,7 @@ const AddProduct = () => {
         name: product.name,
         imgURL: product.imgURL,
         price: Number(product.price),
+        inventory: Number(product.inventory), //thêm số lượng tồn kho
         category: product.category,
         brand: product.brand,
         desc: product.desc,
@@ -193,6 +195,7 @@ const AddProduct = () => {
         name: product.name,
         imgURL: product.imgURL,
         price: Number(product.price),
+        inventory: Number(product.inventory), //thêm số lượng tồn kho
         category: product.category,
         brand: product.brand,
         desc: product.desc,
@@ -252,7 +255,7 @@ const AddProduct = () => {
                 id='upload-product'
                 width='w-1/2' />
 
-              <div className="w-1/2 flex flex-col gap-6 flex-1 justify-center">
+              <div className="w-1/2 flex flex-col gap-4 flex-1 justify-center">
                 <InputForm
                   onChange={handleInputChange}
                   value={product.price}
@@ -262,8 +265,21 @@ const AddProduct = () => {
                   bg='bg-white'
                   labelName='Giá'
                   maxLength={7}
-                  placeholder='Giá sản phẩm'
+                  py='py-[10px]'
+                  placeholder='Giá sản phẩm (VNĐ)'
                   id='product-price' />
+                <InputForm
+                  onChange={handleInputChange}
+                  value={product.inventory}
+                  type='input'
+                  width='w-full'
+                  name='inventory'
+                  bg='bg-white'
+                  labelName='Số lượng tồn kho'
+                  maxLength={7}
+                  py='py-[10px]'
+                  placeholder='Số lượng'
+                  id='product-inventory' />
                 <InputForm
                   onChange={handleInputChange}
                   type='select'
