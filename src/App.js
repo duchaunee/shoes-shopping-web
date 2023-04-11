@@ -8,6 +8,7 @@ import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import InfoAccount from './pages/infoAccount/InfoAccount';
 import { PermissionDenied } from './components/admin';
+import OverlayProduct from './pages/productDetail/OverlayProduct';
 
 //LƯU Ý: đang set height cho body là 300vh để xuất hiện thanh scroll
 const App = () => {

@@ -1,14 +1,15 @@
 import { doc, getDoc } from 'firebase/firestore';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { db } from '../../firebase/config';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faArrowRight, faCircleCheck, faMinus, faPlus, faStar, faTags } from '@fortawesome/free-solid-svg-icons';
-import { useDispatch, useSelector } from 'react-redux';
+import { faArrowLeft, faArrowRight, faChevronLeft, faChevronRight, faCircleCheck, faMinus, faPlus, faStar, faTags } from '@fortawesome/free-solid-svg-icons';
+import { useSelector } from 'react-redux';
 import { selectIsAdmin } from '../../redux-toolkit/slice/authSlice';
 import CarLoading from '../../components/carLoading/CarLoading'
 import { selectProducts } from '../../redux-toolkit/slice/productSlice';
 import { Card, ProductItem } from '../../components';
+import OverlayProduct from './OverlayProduct';
 
 const solvePrice = (price) => {
   return Number(price).toLocaleString('vi-VN');
@@ -16,6 +17,11 @@ const solvePrice = (price) => {
 
 const ProductDetail = () => {
   const { id } = useParams()
+  //top prodcut show
+  const [idxActive, setIdxActive] = useState(0)
+  const [translateShowX, setTranslateShowX] = useState(0)
+  const [hoverShowProduct, setHoverShowProduct] = useState(false)
+  //bottom product
   const [translateX, setTranslateX] = useState(0)
   const [hoverSimilarProduct, setHoverSimilarProduct] = useState(false)
 
@@ -25,6 +31,13 @@ const ProductDetail = () => {
   const admin = useSelector(selectIsAdmin) || JSON.parse(localStorage.getItem('admin'))
   const products = useSelector(selectProducts)
 
+  const imgProductsPreview = [
+    product.imgURL,
+    product.imgPreviewURL1,
+    product.imgPreviewURL2,
+    product.imgPreviewURL3,
+    product.imgPreviewURL4
+  ].filter(item => item) //trả về item là trả về item nào mang giá trị trusy thôi nhé :v short syntax
   const similarProducts = products.filter((item) => !(item.category !== product.category || item.id === product.id))
 
   /////////////// SLIDE /////////////////
@@ -138,6 +151,12 @@ const ProductDetail = () => {
     getProduct() //lấy ra sản phẩm đó lúc vào trang
   }, [id]) //param là id để xử lí việc vẫn ở trang đó nhưng bấm vào sản phẩm khác (ở Sản phẩm tương tự cuối trang) thì nó phải re-render lại để hiển thị, nếu k có cái này thì hình ảnh vẫn là của sản phẩm trước
 
+  useEffect(() => {
+    setIdxActive(translateShowX / 584)
+    //
+    if (translateShowX < 0) setTranslateShowX((imgProductsPreview.length - 1) * 584)
+    else if (translateShowX > (imgProductsPreview.length - 1) * 584) setTranslateShowX(0)
+  }, [translateShowX])
 
   return (
     <>
@@ -148,27 +167,52 @@ const ProductDetail = () => {
           <div className="w-full">
             <div className="w-full h-full py-10">
               <div className="max-w-[1230px] h-full mx-auto px-[15px] flex gap-8">
-                {/* left */}
+                {/* left  */}
                 <div className="flex-1">
-                  <img className='w-[584px] h-[425px] cursor-pointer mb-[15px] object-contain' src={product.imgURL} alt="" />
+                  <div
+                    onMouseEnter={() => setHoverShowProduct(true)}
+                    onMouseLeave={() => setHoverShowProduct(false)}
+                    className="relative mb-4 w-[584px] h-[425px] overflow-hidden whitespace-nowrap">
+                    <button
+                      className={`${hoverShowProduct ? '' : 'left-2 opacity-0'} outline-none py-8 px-4 absolute cursor-pointer left-0 top-1/2 translate-y-[-50%] z-30 transition-all ease-in-out duration-500 ${imgProductsPreview.length === 1 ? 'hidden' : ''}`}
+                      onClick={() => { setTranslateShowX(translateShowX - 584) }}>
+                      <FontAwesomeIcon className='text-[36px]' icon={faChevronLeft} />
+                    </button>
+                    <div
+                      style={{
+                        transform: `translateX(-${translateShowX}px)`
+                      }}
+                      className="h-full transition-all ease-in-out duration-300">
+                      {imgProductsPreview.map((imgProduct, idx) => (
+                        <img
+                          key={idx}
+                          className='inline-flex w-[584px] h-full cursor-pointer object-contain' src={imgProduct} alt="" />
+                      ))}
+                    </div>
+                    <button
+                      className={`${hoverShowProduct ? '' : 'right-2 opacity-0'} outline-none py-8 px-4 absolute cursor-pointer right-0 top-1/2 translate-y-[-50%] z-30 transition-all ease-in-out duration-500 ${imgProductsPreview.length === 1 ? 'hidden' : ''}`}
+                      onClick={() => { setTranslateShowX(translateShowX + 584) }}>
+                      <FontAwesomeIcon className='text-[36px]' icon={faChevronRight} />
+                    </button>
+                  </div>
+
                   <div className="w-full h-[70px] min-[1024px]:h-[95px] mb-6">
                     {/* fix height cứng để slide nè, responsive cẩn thận nhé */}
                     <div className="w-[584px] h-full cursor-grab overflow-hidden whitespace-nowrap">
-                      {Array(5).fill().map((_, idx) => {
-                        if (idx === 0 || (product[`imgPreviewURL${idx}`] && idx > 0)) return (
-                          <div
-                            key={idx}
-                            className={`inline-flex ${idx > 0 ? 'pl-[10px]' : ''} w-[146px] h-full`}>
-                            <img
-                              // opacity-40
-                              className={` cursor-pointer border-[2px] rounded-[2px] border-[#858585] h-full inline-block w-full object-contain`}
-                              src={idx === 0
-                                ? product.imgURL
-                                : product[`imgPreviewURL${idx}`]}
-                              alt="" />
-                          </div>
-                        )
-                      })}
+                      {imgProductsPreview.map((imgProduct, idx) => (
+                        <div
+                          onClick={() => {
+                            setIdxActive(idx)
+                            setTranslateShowX(idx * 584)
+                          }}
+                          key={idx}
+                          className={`inline-flex ${idx > 0 ? 'pl-[10px]' : ''} w-1/5 h-full`}>
+                          <img
+                            className={`cursor-pointer ${idxActive === idx ? ' border-[2px] rounded-[2px] border-bgPrimary' : 'opacity-40'} h-full inline-block w-full object-contain transition-all ease-in-out duration-150 `}
+                            src={imgProduct}
+                            alt="" />
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -342,7 +386,7 @@ const ProductDetail = () => {
                       // 240 là width của từng phần tử, nếu responsive thì thay đổi đi
                       //tức là mỗi lần nhấn thì sang trái 1 phần tử (240px)
                       onClick={() => setTranslateX(translateX - 240)}
-                      className={`absolute ${hoverSimilarProduct ? 'w-[60px] h-[60px] shadow-shadowAuth' : 'w-[46px] h-[46px] shadow-shadowAccount'} bg-white text-bgPrimary rounded-full left-[-20px] top-1/2 translate-y-[-60%] flex items-center justify-center cursor-pointer transition-all ease-linear duration-200 z-30 ${translateX === 0 ? 'hidden' : ''}`}>
+                      className={`absolute ${hoverSimilarProduct ? 'w-[60px] h-[60px] shadow-shadowAuth' : 'w-[46px] h-[46px] shadow-shadowAccount'} bg-white text-bgPrimary rounded-full left-[-22px] top-1/2 translate-y-[-60%] flex items-center justify-center cursor-pointer transition-all ease-in-out duration-200 z-30 ${translateX === 0 ? 'hidden' : ''}`}>
                       <FontAwesomeIcon className='text-[20px]' icon={faArrowLeft} />
                     </div>
                     {/* main */}
@@ -381,7 +425,7 @@ const ProductDetail = () => {
                       // 240 là width của từng phần tử, nếu responsive thì thay đổi đi
                       //tức là mỗi lần nhấn thì sang phải 1 phần tử (240px)
                       onClick={() => setTranslateX(translateX + 240)}
-                      className={`absolute ${hoverSimilarProduct ? 'w-[60px] h-[60px] shadow-shadowAuth' : 'w-[46px] h-[46px] shadow-shadowAccount'} bg-white text-bgPrimary rounded-full right-[-20px] top-1/2 translate-y-[-60%] flex items-center justify-center cursor-pointer transition-all ease-linear duration-200 z-30 ${translateX === (similarProducts.length - 5) * 240 ? 'hidden' : ''}`}>
+                      className={`absolute ${hoverSimilarProduct ? 'w-[60px] h-[60px] shadow-shadowAuth' : 'w-[46px] h-[46px] shadow-shadowAccount'} bg-white text-bgPrimary rounded-full right-[-22px] top-1/2 translate-y-[-60%] flex items-center justify-center cursor-pointer transition-all ease-linear duration-200 z-30 ${translateX === (similarProducts.length - 5) * 240 ? 'hidden' : ''}`}>
                       <FontAwesomeIcon className='text-[18px]' icon={faArrowRight} />
                     </div>
                   </div>
