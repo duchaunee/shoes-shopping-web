@@ -410,6 +410,10 @@ const ProductDetail = () => {
                                 price={solvePrice(item.price)}
                                 idURL={`san-pham/${id}`} //prevLink là id của cái trang hiện tại chứa sp, chứ kp item.id nhé
                                 setLoadingPage={setLoading}
+                                //top
+                                setIdxActive={setIdxActive}
+                                setHoverShowProduct={setHoverShowProduct}
+                                setTranslateShowX={setTranslateShowX}
                                 //2 thằng set bên dưới là xử lí khi ấn vào 1 sp ở similar Products qua sp đó rùi, nhưng nếu không set về 0 và về false thì qua sp mới nó vẫn bị như lúc cũ, bỏ ra chạy thử là biết
                                 setTranslateX={setTranslateX}
                                 setHoverSimilarProduct={setHoverSimilarProduct}

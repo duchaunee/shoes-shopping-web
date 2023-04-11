@@ -6,8 +6,8 @@ import { useSelector } from 'react-redux';
 import { selectIsAdmin } from '../../redux-toolkit/slice/authSlice';
 
 const ProductItem = ({
-  setTranslateX,
-  setHoverSimilarProduct,
+  setIdxActive, setHoverShowProduct, setTranslateShowX,
+  setTranslateX, setHoverSimilarProduct,
   product, id, img, name, price, text, width, idURL, setLoadingPage }) => {
 
   const [loading, setLoading] = useState(false)
@@ -59,9 +59,13 @@ const ProductItem = ({
             draggable="false"
 
             onClick={(e) => {
-              console.log('click');
               if (setTranslateX) setTranslateX(0)
               if (setHoverSimilarProduct) setHoverSimilarProduct(false)
+              //
+              if (setIdxActive) setIdxActive(0)
+              if (setHoverShowProduct) setHoverShowProduct(false)
+              if (setTranslateShowX) setTranslateShowX(0)
+              //
               if (setLoadingPage) setLoadingPage(true) //nguyên nhân có cái này là truyền từ Sản phẩm tương tự trong productDetail, lí do truyền là khi ấn vào, nó sẽ bị nháy ở sp hiện tại (loading car ý nó = false nên nó hiện cái cũ), vậy nên khi ấn vào minh set cho nó là true phát luôn để không bị nháy, THỬ BỎ DÒNG NÀY ĐI CHẠY LÀ THẤY SỰ KHÁC BIỆT
               window.scrollTo({
                 top: 0,
