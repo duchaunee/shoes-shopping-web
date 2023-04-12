@@ -3,7 +3,7 @@ import './index.scss' //tailwindcss
 import './App.css' //reset css
 
 import { Header, Footer, Auth, Admin } from "./components"
-import { Home, GirlShoes, BoyShoes, ChildShoes, Page404, ProductDetail } from './pages';
+import { Home, GirlShoes, BoyShoes, ChildShoes, Page404, ProductDetail, Cart } from './pages';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import InfoAccount from './pages/infoAccount/InfoAccount';
@@ -36,8 +36,9 @@ const App = () => {
           <Route path="/tin-tuc" element={<h2>TIN TỨC</h2>}></Route>
           <Route path="/lien-he" element={<h2>LIÊN HỆ</h2>}></Route>
 
-          <Route path='/admin/*' element={admin ? <Admin /> : <PermissionDenied />} />;
+          <Route path='/admin/*' element={admin ? <Admin /> : <PermissionDenied />} />
           <Route path="/san-pham/:id" element={<ProductDetail></ProductDetail>}></Route>
+          <Route path='/gio-hang' element={logined ? <Cart /> : <Navigate to="/dang-nhap" />} />
 
           <Route path="/*" element={<Page404></Page404>}></Route>
         </Routes>

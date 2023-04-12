@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import ButtonPrimary from '../button/ButtonPrimary';
 import "../../components/lineClamp.scss"
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { selectIsAdmin } from '../../redux-toolkit/slice/authSlice';
+import { ADD_TO_CART } from '../../redux-toolkit/slice/cartSlice';
 
 const ProductItem = ({
   setIdxActive, setHoverShowProduct, setTranslateShowX,
@@ -12,8 +13,8 @@ const ProductItem = ({
 
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const admin = useSelector(selectIsAdmin) || JSON.parse(localStorage.getItem('admin'))
-
 
   const detectUser = (functionAdmin, functionUser) => {
     if (admin) return functionAdmin;
@@ -33,6 +34,7 @@ const ProductItem = ({
 
   const handleAddToCart = () => {
     setLoading(true);
+    dispatch(ADD_TO_CART(product))
   }
 
   //load 1,2s roi moi them vao gio hang, neu ve sau co dung tren firebase thi k can cai nay vi tai tren firebase can tgian

@@ -247,7 +247,7 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
                     <FontAwesomeIcon icon={faSearch} className='cursor-pointer py-[10px] text-[18px]' />
                   </div>
                   <NavLink
-                    to={`${logined ? '/go to cart' : "/dang-nhap"} `}
+                    to={`${logined ? '/gio-hang' : "/dang-nhap"} `}
                     className="flex gap-[10px] cursor-pointer py-[10px] text-[13px] font-bold items-center no-underline tracking-[0.32px] uppercase hover:text-white transition-all ease-linear duration-200">
                     <span className="header-cart-title">
                       Giỏ hàng /

@@ -208,7 +208,7 @@ const ProductDetail = () => {
                           key={idx}
                           className={`inline-flex ${idx > 0 ? 'pl-[10px]' : ''} w-1/5 h-full`}>
                           <img
-                            className={`cursor-pointer ${idxActive === idx ? ' border-[2px] rounded-[2px] border-bgPrimary' : 'opacity-40'} h-full inline-block w-full object-contain transition-all ease-in-out duration-150 `}
+                            className={`cursor-pointer border-[2px] rounded-[4px] ${idxActive === idx ? 'border-bgPrimary' : ' border-[#aaa] opacity-40'} h-full inline-block w-full object-contain transition-all ease-in-out duration-150 `}
                             src={imgProduct}
                             alt="" />
                         </div>
@@ -278,7 +278,7 @@ const ProductDetail = () => {
                         <FontAwesomeIcon className='text-[18px] font-medium' icon={faMinus} />
                       </button>
                       <input
-                        type="number" min='1' max='999' defaultValue='5' name="" id=""
+                        type="number" min='1' max='999' defaultValue='01' name="" id=""
                         className='text-bgPrimary outline-none text-center text-[18px] font-medium' />
                       <button type='button' className='flex items-center outline-none text-bgPrimary font-medium '>
                         <FontAwesomeIcon className='text-[18px] font-medium' icon={faPlus} />
