@@ -22,6 +22,7 @@ export const cartSlice = createSlice({
       if (productIndex > 0) { //tìm thấy => đã tồn tại
         state.cartItems[productIndex].cartQuantity += 1
         toast.success(`'${action.payload.name}' đã được thêm vào giỏ hàng`, {
+          position: "top-left",
           autoClose: 1200
         })
       }
@@ -31,6 +32,7 @@ export const cartSlice = createSlice({
           cartQuantity: 1
         })
         toast.success(`'${action.payload.name}' đã được thêm vào giỏ hàng`, {
+          position: "top-left",
           autoClose: 1200
         })
       }

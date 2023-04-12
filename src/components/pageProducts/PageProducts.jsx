@@ -26,7 +26,6 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
   const filterRef = useRef()
   const queryRef = useRef()
 
-
   const productsCategoryRedux = useSelector(selectNameProduct) //trai, gai, tre em
   const admin = useSelector(selectIsAdmin) || JSON.parse(localStorage.getItem('admin'))
 
@@ -137,7 +136,7 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
 
   return (
     <>
-      <div className="min-h-[800px]">
+      <div className='min-h-[666px]'>
         {/* top */}
         {loading || (
           <div className=" max-w-[1230px] px-[15px] mx-auto min-h-[60px] pt-5 flex items-center justify-between">

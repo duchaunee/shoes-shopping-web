@@ -3,7 +3,7 @@ import "./carLoading.scss"
 
 const CarLoading = () => {
   return (
-    <div className='min-h-[350px]'>
+    <div className='min-h-[480px]'>
       <div className="loading-window">
         <div className="car">
           <div className="strike"></div>

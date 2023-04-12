@@ -36,6 +36,8 @@ const ProductDetail = () => {
   const admin = useSelector(selectIsAdmin) || JSON.parse(localStorage.getItem('admin'))
   const products = useSelector(selectProducts)
 
+  const [quantity, setQuantity] = useState(1)
+
   const imgProductsPreview = [
     product.imgURL,
     product.imgPreviewURL1,
@@ -152,15 +154,21 @@ const ProductDetail = () => {
     e.preventDefault()
     setLoadingAddtoCart(true)
     setTimeout(() => {
-      try {
-        const docRef = addDoc(collection(db, "cartProducts"), {
-          userID: userID,
-          ...product
-        });
-        setLoadingAddtoCart(false)
-        dispatch(ADD_TO_CART(product))
-      } catch (e) {
-        console.log(e.message);
+      //thêm sản phẩm = quantity lần
+      for (let i = 0; i < quantity; ++i) {
+        try {
+          const docRef = addDoc(collection(db, "cartProducts"), {
+            userID: userID,
+            ...product
+          });
+          if (i === quantity - 1) {
+            setQuantity(1)
+            setLoadingAddtoCart(false)
+            dispatch(ADD_TO_CART(product))
+          }
+        } catch (e) {
+          console.log(e.message);
+        }
       }
     }, 1000)
   }
@@ -291,15 +299,25 @@ const ProductDetail = () => {
                     </p>
                   </div> */}
                   <div className="mb-[25px] inline-grid grid-cols-12 gap-6 w-[373px] h-[46px]">
-                    <div className="col-span-5 flex items-center justify-center gap-2 px-3 py-1 rounded-[4px] border border-[#ccc] ">
-                      <button type='button' className='flex items-center outline-none text-bgPrimary font-medium '>
-                        <FontAwesomeIcon className='text-[18px] font-medium' icon={faMinus} />
+                    <div className="col-span-5 flex items-center justify-center gap-6 px-3 py-1 rounded-[4px] border border-[#ccc] ">
+                      <button
+                        onClick={() => {
+                          if (quantity > 1) setQuantity(quantity - 1)
+                        }}
+                        type='button' className='flex items-center outline-none text-bgPrimary font-medium '>
+                        <FontAwesomeIcon className='text-[20px] font-medium' icon={faMinus} />
                       </button>
-                      <input
-                        type="number" min='1' max='999' defaultValue='01' name="" id=""
-                        className='text-bgPrimary outline-none text-center text-[18px] font-medium' />
-                      <button type='button' className='flex items-center outline-none text-bgPrimary font-medium '>
-                        <FontAwesomeIcon className='text-[18px] font-medium' icon={faPlus} />
+                      <div
+                        value={quantity}
+                        className='text-bgPrimary outline-none text-center text-[18px] font-medium' > {quantity < 10 ? `0${quantity}` : quantity}
+                      </div>
+                      <button
+                        onClick={() => {
+                          //chỉ đc set đến max số lượng tồn kho
+                          setQuantity(quantity + 1)
+                        }}
+                        type='button' className='flex items-center outline-none text-bgPrimary font-medium '>
+                        <FontAwesomeIcon className='text-[20px] font-medium' icon={faPlus} />
                       </button>
                     </div>
 

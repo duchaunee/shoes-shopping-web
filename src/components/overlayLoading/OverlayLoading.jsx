@@ -6,7 +6,7 @@ const OverlayLoading = () => {
   return (
     <>
 
-      <div className="flex w-full max-h-[350px] items-center justify-center mb-20">
+      <div className="flex w-full max-h-[350px] items-center justify-center mt-20">
         <div className="boxes">
           <div className="box">
             <div></div>

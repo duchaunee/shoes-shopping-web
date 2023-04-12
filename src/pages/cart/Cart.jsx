@@ -8,14 +8,16 @@ import { db } from '../../firebase/config';
 import { useSelector } from 'react-redux';
 import { selectUserID } from '../../redux-toolkit/slice/authSlice';
 import CartProduct from './CartProduct';
+import CarLoading from '../../components/carLoading/CarLoading';
 
 const Cart = () => {
   const [loading, setLoading] = useState(false)
+  const [deleteDone, setDeleteDone] = useState(false)
   const [cartProducts, setCartProducts] = useState([])
   const userID = useSelector(selectUserID) || localStorage.getItem('userID')
 
   const getCartProducts = async () => {
-    // setLoading(true)
+    setLoading(true)
     const productsRef = query(collection(db, "cartProducts"), where('userID', "==", userID));
     const q = query(productsRef);
     try {
@@ -26,7 +28,6 @@ const Cart = () => {
           ...doc.data()
         }
       })
-
       //
       const result = Object.values(allCartProducts.reduce((accumulator, current) => {
         if (!accumulator[current.id]) {
@@ -35,14 +36,17 @@ const Cart = () => {
         accumulator[current.id].quantity += 1;
         return accumulator;
       }, {}));
-      setCartProducts(result)
+
+      setTimeout(() => {
+        setLoading(false)
+        setCartProducts(result)
+      }, 100)
       // setLoading(false)
     }
     catch (e) {
       console.log(e.message);
     }
   }
-
 
   const deliveryDate = () => {
     const today = new Date()
@@ -58,93 +62,116 @@ const Cart = () => {
   }
 
   useEffect(() => {
+    setDeleteDone(false)
     getCartProducts()
-  }, [])
+  }, [deleteDone])
 
   return (
     <>
-      <div className="w-full py-[30px]">
-        <div className="max-w-[1230px] mx-auto ">
-          <div className="w-full px-[15px] pb-[30px]">
-            <div className="w-full flex">
-              {/* left */}
-              <div className="basis-[58.33%] pr-[30px] border border-transparent border-r-[#ececec]">
-                <table className='w-full'>
-                  <thead>
-                    <tr className='border-[3px] border-transparent border-b-[#ececec] grid gap-5 grid-cols-12 grid-rows-1 text-[14px] font-bold py-2 uppercase tracking-wider'>
-                      <td className='col-span-6'>Sản phẩm</td>
-                      <td className='col-span-2'>Giá</td>
-                      <td className='col-span-2'>Số lượng</td>
-                      <td className='col-span-2'>Tổng</td>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {cartProducts.map((cartProduct) => (
-                      <CartProduct
-                        key={cartProduct.idCartProduct}
-                        idProduct={cartProduct.id}
-                        name={cartProduct.name}
-                        img={cartProduct.imgURL}
-                        price={cartProduct.price}
-                        quantityProduct={cartProduct.quantity}
-                      />
-                    ))}
-                  </tbody>
-                </table>
-                <div className="mt-6">
-                  <NavLink
-                    to='/'
-                    className='border-[2px] border-primary text-primary px-4 py-2 hover:bg-primary hover:text-white font-medium transition-all ease-linear duration-[120ms]'>
-                    <FontAwesomeIcon className='mr-[6px]' icon={faLongArrowAltLeft} />
-                    <span className='text-[14] uppercase'>Tiếp tục xem sản phẩm</span>
-                  </NavLink>
-                </div>
-              </div>
-              {/* right */}
-              <div className="flex-1 pl-[30px]">
-                <div className="w-full border-[3px] border-transparent border-b-[#ececec] text-[14px] font-bold py-2 uppercase tracking-wider">
-                  <h1 className=''>Tổng thanh toán</h1>
-                </div>
-                <div className='flex items-center justify-between border border-transparent border-b-[#ddd] py-4 text-[14px]'>
-                  <h2 className=''>Tổng phụ</h2>
-                  <h2 className='font-bold'>2.920.000 ₫</h2>
-                </div>
-                <div className='flex items-center justify-between border border-transparent border-b-[#ddd] py-4 text-[14px]'>
-                  <h2 className=''>Giao hàng</h2>
-                  <div className="">
-                    {/* lấy 1% giá trị hàng */}
-                    <p>Phí giao hàng toàn quốc: <span className='font-bold'>30.000 ₫</span></p>
-                    <p className=''>Nhận hàng vào <span className='font-bold'>{deliveryDate()}</span></p>
-                  </div>
-                </div>
-                <div className='flex items-center justify-between border-[3px] border-transparent border-b-[#ddd] py-4 text-[14px]'>
-                  <h2 className=''>Tổng thanh toán</h2>
-                  <h2 className='font-bold'>2.950.000 ₫</h2>
-                </div>
-                <div className='mt-6 text-[14px]'>
-                  <button
-                    // onClick={}
-                    className='w-full px-2 py-3 bg-secondary font-bold tracking-widest text-white hover:brightness-90 transition-all ease-in-out duration-100 uppercase'>Tiến hành thanh toán</button>
-                  <div className="pt-6 pb-3 flex gap-2 border-[2px] border-transparent border-b-[#ddd]">
-                    <FontAwesomeIcon
-                      className='text-[#b0b0b0] text-[20px]'
-                      icon={faTags}
-                      rotation={90} />
-                    <p className='font-bold text-[16px]'>Phiếu ưu đãi</p>
-                  </div>
-                  <input
-                    className='my-5 text-[16px] w-full px-3 py-2 outline-none border border-[#ccc] focus:shadow-shadowPink'
-                    placeholder='Mã ưu đãi'
-                    type="text" name="" id="" />
-                  <button
-                    // onClick={}
-                    className='w-full p-2 border border-[#ccc] bg-[#f9f9f9] hover:bg-[#c7c7c7] flex items-center justify-center -tracking-tighter text-[16px] text-[#666] transition-all ease-in-out duration-100'>Áp dụng</button>
+      {loading
+        ? <CarLoading />
+        : (
+          <div className="w-full py-[30px]">
+            <div className="w-full h-full bg-red-500"></div>
+            <div className="max-w-[1230px] mx-auto ">
+              <div className="w-full px-[15px] pb-[30px]">
+                <div className="w-full flex">
+                  {cartProducts.length === 0
+                    ? <div className="w-full h-[480px] flex flex-col gap-10 items-center justify-center">
+                      <img className='w-full h-[300px] object-contain' src="../../emptyCart.png" alt="" />
+                      <NavLink
+                        to='/'
+                        className='bg-primary text-white px-4 py-3 hover:bg-[#a40206] transition-all ease-linear duration-[120ms]'>
+                        <FontAwesomeIcon className='mr-[6px]' icon={faLongArrowAltLeft} />
+                        <span className='text-[20px]'>Quay lại trang chủ</span>
+                      </NavLink>
+                    </div>
+                    : (
+                      <>
+                        {/* left */}
+                        <div div className="basis-[58.33%] pr-[30px] border border-transparent border-r-[#ececec]">
+                          <table className='w-full'>
+                            <thead>
+                              <tr className='border-[3px] border-transparent border-b-[#ececec] grid gap-5 grid-cols-12 grid-rows-1 text-[14px] font-bold py-2 uppercase tracking-wider'>
+                                <td className='col-span-6'>Sản phẩm</td>
+                                <td className='col-span-2'>Giá</td>
+                                <td className='col-span-2'>Số lượng</td>
+                                <td className='col-span-2'>Tổng</td>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {cartProducts.map((cartProduct) => (
+                                <CartProduct
+                                  key={cartProduct.idCartProduct}
+                                  setDeleteDone={setDeleteDone}
+                                  idProduct={cartProduct.id}
+                                  name={cartProduct.name}
+                                  category={cartProduct.category}
+                                  img={cartProduct.imgURL}
+                                  price={cartProduct.price}
+                                  quantityProduct={cartProduct.quantity}
+                                />
+                              ))}
+                            </tbody>
+                          </table>
+                          <div className="mt-6">
+                            <NavLink
+                              to='/'
+                              className='border-[2px] border-primary text-primary px-4 py-2 hover:bg-primary hover:text-white font-medium transition-all ease-linear duration-[120ms]'>
+                              <FontAwesomeIcon className='mr-[6px]' icon={faLongArrowAltLeft} />
+                              <span className='text-[14] uppercase'>Tiếp tục xem sản phẩm</span>
+                            </NavLink>
+                          </div>
+                        </div>
+                        {/* right */}
+                        <div className="flex-1 pl-[30px]">
+                          <div className="w-full border-[3px] border-transparent border-b-[#ececec] text-[14px] font-bold py-2 uppercase tracking-wider">
+                            <h1 className=''>Tổng thanh toán</h1>
+                          </div>
+                          <div className='flex items-center justify-between border border-transparent border-b-[#ddd] py-4 text-[14px]'>
+                            <h2 className=''>Tổng phụ</h2>
+                            <h2 className='font-bold'>2.920.000 ₫</h2>
+                          </div>
+                          <div className='flex items-center justify-between border border-transparent border-b-[#ddd] py-4 text-[14px]'>
+                            <h2 className=''>Giao hàng</h2>
+                            <div className="">
+                              {/* lấy 1% giá trị hàng */}
+                              <p>Phí giao hàng toàn quốc: <span className='font-bold'>30.000 ₫</span></p>
+                              <p className=''>Nhận hàng vào <span className='font-bold'>{deliveryDate()}</span></p>
+                            </div>
+                          </div>
+                          <div className='flex items-center justify-between border-[3px] border-transparent border-b-[#ddd] py-4 text-[14px]'>
+                            <h2 className=''>Tổng thanh toán</h2>
+                            <h2 className='font-bold'>2.950.000 ₫</h2>
+                          </div>
+                          <div className='mt-6 text-[14px]'>
+                            <button
+                              // onClick={}
+                              className='w-full px-2 py-3 bg-secondary font-bold tracking-widest text-white hover:brightness-90 transition-all ease-in-out duration-100 uppercase'>Tiến hành thanh toán</button>
+                            <div className="pt-6 pb-3 flex gap-2 border-[2px] border-transparent border-b-[#ddd]">
+                              <FontAwesomeIcon
+                                className='text-[#b0b0b0] text-[20px]'
+                                icon={faTags}
+                                rotation={90} />
+                              <p className='font-bold text-[16px]'>Phiếu ưu đãi</p>
+                            </div>
+                            <input
+                              className='my-5 text-[16px] w-full px-3 py-2 outline-none border border-[#ccc] focus:shadow-shadowPink'
+                              placeholder='Mã ưu đãi'
+                              type="text" name="" id="" />
+                            <button
+                              // onClick={}
+                              className='w-full p-2 border border-[#ccc] bg-[#f9f9f9] hover:bg-[#c7c7c7] flex items-center justify-center -tracking-tighter text-[16px] text-[#666] transition-all ease-in-out duration-100'>Áp dụng</button>
+                          </div>
+                        </div>
+                      </>
+                    )}
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div >
+          </div >
+        )}
+
     </>
   );
 };
