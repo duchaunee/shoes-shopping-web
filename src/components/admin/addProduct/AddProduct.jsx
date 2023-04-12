@@ -9,6 +9,8 @@ import UploadSquare from './UploadSquare';
 import { useNavigate, useParams } from 'react-router-dom';
 import { selectProducts, STORE_PRODUCTS } from '../../../redux-toolkit/slice/productSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCartShopping, faPlus, faWrench } from '@fortawesome/free-solid-svg-icons';
 
 const initializeFireBase = {
   name: "",
@@ -365,7 +367,17 @@ const AddProduct = () => {
         <button
           type="submit"
           className='mt-[20px] w-[180px] px-[10px] h-10 bg-primary text-white text-[15px] leading-[37px] font-bold tracking-[1px] uppercase transition-all ease-in duration-500 focus:outline-none hover:bg-[#a40206]'>
-          {loading ? <Spinning /> : `${detectForm(id, 'Thêm sản phẩm', 'Sửa sản phẩm')}`}
+          {loading ? <Spinning /> : detectForm(id, (
+            <div className="flex gap-1 items-center justify-center">
+              <FontAwesomeIcon className='text-[18px]' icon={faPlus} />
+              Thêm sản phẩm
+            </div>
+          ), (
+            <div className="flex gap-2 items-center justify-center">
+              <FontAwesomeIcon className='text-[18px]' icon={faWrench} />
+              Sửa sản phẩm
+            </div>
+          ))}
         </button>
       </form>
 

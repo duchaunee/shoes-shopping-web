@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { db } from '../../firebase/config';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faArrowRight, faCartShopping, faChevronLeft, faChevronRight, faCircleCheck, faMinus, faPlus, faStar, faTags, faTruckFast } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faArrowRight, faCartShopping, faChevronLeft, faChevronRight, faCircleCheck, faMinus, faPlus, faStar, faTags, faTruckFast, faWrench } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectIsAdmin, selectIsLoggedIn, selectUserID } from '../../redux-toolkit/slice/authSlice';
 import CarLoading from '../../components/carLoading/CarLoading'
@@ -374,7 +374,10 @@ const ProductDetail = () => {
                       {loadingAddtoCart
                         ? <Spinning />
                         : (admin
-                          ? "Sửa sản phẩm"
+                          ? <div className="flex gap-2 items-center justify-center">
+                            <FontAwesomeIcon className='text-[18px]' icon={faWrench} />
+                            Sửa sản phẩm
+                          </div>
                           : <div className="flex gap-2 items-center justify-center">
                             <FontAwesomeIcon className='text-[18px]' icon={faCartShopping} />
                             Thêm vào giỏ
