@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { db } from '../../firebase/config';
@@ -12,6 +12,7 @@ import { Card, ProductItem } from '../../components';
 import OverlayProduct from './OverlayProduct';
 import { ADD_TO_CART } from '../../redux-toolkit/slice/cartSlice';
 import { Spinning } from '../../animation-loading';
+import { toast } from 'react-toastify';
 
 const solvePrice = (price) => {
   return Number(price).toLocaleString('vi-VN');
@@ -33,6 +34,7 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true)
   const [loadingAddtoCart, setLoadingAddtoCart] = useState(false)
   const [product, setProduct] = useState({})
+  const [size, setSize] = useState(39)
   const navigate = useNavigate()
   const admin = useSelector(selectIsAdmin) || JSON.parse(localStorage.getItem('admin'))
   const products = useSelector(selectProducts)
@@ -151,27 +153,60 @@ const ProductDetail = () => {
     navigate(`/admin/add-product/${id}`)
   }
 
-  const handleAddToCart = (e) => {
+  const handleAddToCart = async (e) => {
     e.preventDefault()
+    console.log(quantity);
     setLoadingAddtoCart(true)
-    setTimeout(() => {
-      //thêm sản phẩm = quantity lần
-      for (let i = 0; i < quantity; ++i) {
-        try {
-          const docRef = addDoc(collection(db, "cartProducts"), {
-            userID: userID,
-            ...product
-          });
-          if (i === quantity - 1) {
+    const productsRef = query(
+      collection(db, "cartProducts"),
+      where('userID', "==", userID), //id người dùng
+      where('id', "==", id)); //id của sản phẩm
+    const q = query(productsRef);
+    try {
+      const querySnapshot = await getDocs(q);
+      //sản phẩm chưa có trong giỏ hàng, thêm vào với quantity là 1
+      if (querySnapshot.docs.length === 0) {
+        setTimeout(() => {
+          try {
+            const docRef = addDoc(collection(db, "cartProducts"), {
+              ...product,
+              userID: userID,
+              size: size,
+              quantity: 1,
+            });
+            //reset init
             setQuantity(1)
+            setSize(39)
+            //
             setLoadingAddtoCart(false)
-            dispatch(ADD_TO_CART(product))
+            toast.success(`Thêm sản phẩm thành công`, {
+              position: "top-left",
+              autoClose: 1200
+            })
+          } catch (e) {
+            console.log(e.message);
           }
-        } catch (e) {
-          console.log(e.message);
-        }
+        }, 1000)
       }
-    }, 1000)
+      else { //nếu nó đã tồn tại rồi thì tăng quantity lên quantity (ô input)
+        const docRef = querySnapshot.docs[0].ref;
+        const docSnapshot = await getDoc(docRef);
+        const currentQuantity = docSnapshot.data().quantity;
+
+        await updateDoc(docRef, {
+          quantity: currentQuantity + quantity,
+        });
+        setQuantity(1)
+        setLoadingAddtoCart(false)
+        toast.success(`Thêm sản phẩm thành công`, {
+          position: "top-left",
+          autoClose: 1200
+        })
+      }
+    }
+    catch (e) {
+      console.log(e.message);
+    }
   }
 
   useEffect(() => {
@@ -282,15 +317,18 @@ const ProductDetail = () => {
                   <div className="w-[50px] h-[2px] bg-black/20 my-[20px]"></div>
                   <div className="mb-[15px]">
                     <div className="mb-3 font-medium text-[18px] text-[#1b1b1b] flex items-center gap-3">
-                      <p className=''>Select Size: 39</p>
+                      <p className=''>Select Size: {size}</p>
                       <div className="w-[3px] h-[20px] bg-bgPrimary opacity-20"></div>
                       <p className='opacity-60'>{product.inventory} sản phẩm có sẵn</p>
                     </div>
                     <ul className='inline-flex gap-3'>
-                      {[39, 40, 41, 42, 43].map((size) => (
+                      {[39, 40, 41, 42, 43].map((sizeItem) => (
                         <li
-                          key={size}
-                          className='inline-block font-medium transition-all ease-linear duration-100 cursor-pointer hover:bg-[#1d242e] hover:text-white py-[6px] w-[65px] text-center rounded-[4px] text-[18px] text-[#1b1b1b] bg-[#e8e8e8]'>{size}</li>
+                          key={sizeItem}
+                          onClick={() => setSize(sizeItem)}
+                          className={`${sizeItem === size && "bg-[#1d242e] text-white"} 
+                          hover:bg-[#1d242e] hover:text-white inline-block font-medium transition-all ease-linear duration-100 cursor-pointer py-[6px] w-[65px] text-center rounded-[4px] text-[18px] text-[#1b1b1b] bg-[#e8e8e8]`}>{sizeItem}
+                        </li>
                       ))}
                     </ul>
                   </div>

@@ -1,34 +1,43 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { faMinus, faPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useNavigate } from 'react-router-dom';
 import { collection, deleteDoc, doc, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../firebase/config';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { selectUserID } from '../../redux-toolkit/slice/authSlice';
+import { toast } from 'react-toastify';
 
-const CartProduct = ({ setDeleteDone, idProduct, name, category, img, price, quantityProduct }) => {
+const CartProduct = ({
+  setLoading,
+  quantityCart, setQuantityCart, nameInput,
+  setDone, idProduct, name, size, category, img, price, quantityProduct
+}) => {
   const userID = useSelector(selectUserID) || localStorage.getItem('userID')
   const [quantity, setQuantity] = useState(quantityProduct || 1)
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const handleDeleteCartProduct = async (idProduct) => {
-
-    const productsRef = query(collection(db, "cartProducts"), where('id', "==", idProduct), where('userID', "==", userID));
+    setLoading(true)
+    const productsRef = query(
+      collection(db, "cartProducts"),
+      where('userID', "==", userID),
+      where('id', "==", idProduct));
     const q = query(productsRef);
     try {
       const querySnapshot = await getDocs(q);
-      const allCartProductsDelete = querySnapshot.docs.map((doc) => doc.id)
-      await Promise.all(
-        allCartProductsDelete.map(async (idItemDelete) => {
-          try {
-            await deleteDoc(doc(db, "cartProducts", idItemDelete));
-          } catch (e) {
-            console.log(e.message);
-          }
+      const idCartProductsDelete = querySnapshot.docs.map((doc) => doc.id)[0]
+      try {
+        await deleteDoc(doc(db, "cartProducts", idCartProductsDelete));
+        setDone(true)
+        toast.success(`Xóa sản phẩm thành công`, {
+          position: "top-left",
+          autoClose: 1200
         })
-      );
-      setDeleteDone(true)
+      } catch (e) {
+        console.log(e.message);
+      }
     }
     catch (e) {
       console.log(e.message);
@@ -51,6 +60,29 @@ const CartProduct = ({ setDeleteDone, idProduct, name, category, img, price, qua
   const solvePrice = (price) => {
     return Number(price).toLocaleString('vi-VN');
   }
+
+  useEffect(() => {
+    //cách 1: Cập nhật trực tiếp
+    //state CÓ THỂ không đúng do cập nhật trực tiếp, nếu cập nhật nhiều lần cùng lúc thì react chỉ lấy duy nhất 1 lần cập nhật cuối, đó là do cơ chế re-render của react, nó sẽ gom chung các lần re-render để chỉ re-render 1 lần duy nhất
+    // setQuantityCart({
+    //   ...quantityCart,
+    //   [nameInput]: quantity
+    // })
+
+    // //cách 2: chỉ gán những cái muốn cập nhật
+    //state lúc nào cũng đúng dó luôn gán lại state cũ
+    setQuantityCart(prevState => {
+      return Object.assign({}, prevState, { [nameInput]: quantity });
+    })
+
+    //cách 3: lấy state cũ và trả về state mới: 
+    //state lúc nào cũng đúng do luôn đc trả về từ state cũ
+    // setQuantityCart(prev => ({
+    //   ...prev,
+    //   [nameInput]: quantity
+    // }))
+    // console.log(nameInput, quantity);
+  }, [quantity])
 
   return (
     <>
@@ -75,7 +107,9 @@ const CartProduct = ({ setDeleteDone, idProduct, name, category, img, price, qua
               className='text-[16] font-medium text-[#334862] cursor-pointer line-clamp-1 '>
               {name}
             </span>
-            <span className='text-[#888] line-clamp-2'>{solveCategory(category)}</span>
+            <span className='text-[#888] line-clamp-2'>
+              {`${solveCategory(category)} | Size: ${size}`}
+            </span>
           </div>
         </td >
         {/* {solvePrice(product.price)} */}
@@ -87,13 +121,14 @@ const CartProduct = ({ setDeleteDone, idProduct, name, category, img, price, qua
         </td >
         <td className='col-span-2 flex items-center border border-[#ddd] py-2'>
           <button
-            onClick={() => {
+            onClick={(e) => {
               if (quantity > 1) setQuantity(quantity - 1)
             }}
             type='button' className='flex-1 flex items-center  justify-center outline-none text-bgPrimary font-medium '>
             <FontAwesomeIcon className='text-[16px] font-medium' icon={faMinus} />
           </button>
-          <div className='flex-1 text-bgPrimary outline-none text-center text-[16px] font-bold' >
+          <div
+            className='flex-1 text-bgPrimary outline-none text-center text-[16px] font-bold' >
             {quantity < 10 ? `0${quantity}` : quantity}
           </div>
           <button

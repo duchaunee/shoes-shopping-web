@@ -3,6 +3,11 @@ import { addDoc, collection } from "firebase/firestore"
 import { toast } from "react-toastify"
 import { db } from "../../firebase/config"
 
+
+//CÁI REDUX NÀY CHỈ ĐỂ CHỨA {
+// SẢN PHẨM,
+// SỐ LƯỢNG CỦA SẢN PHẨM ĐÓ
+// } (MỖI USER SẼ LÀ 1 REDUX RIÊNG)
 const initialState = {
   cartItems: localStorage.getItem('cartItems')
     ? JSON.parse(localStorage.getItem('cartItems'))
@@ -16,32 +21,41 @@ export const cartSlice = createSlice({
   initialState,
   reducers: {
     ADD_TO_CART: (state, action) => {
-      // console.log(action.payload);
-      //kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng chưa?
-      const productIndex = state.cartItems.findIndex(item => item.id === action.payload.id)
-      if (productIndex > 0) { //tìm thấy => đã tồn tại
-        state.cartItems[productIndex].cartQuantity += 1
-        toast.success(`'${action.payload.name}' đã được thêm vào giỏ hàng`, {
-          position: "top-left",
-          autoClose: 1200
-        })
-      }
-      else {
+      console.log(action.payload);
+      // action.payload.quantity là số lượng tăng thêm
+      const productIndex = state.cartItems.findIndex(item => item.id === action.payload.product.id)
+      console.log('productIndex: ', productIndex);
+      if (productIndex < 0) {
         state.cartItems.push({
-          ...action.payload,
-          cartQuantity: 1
+          ...action.payload.product,
+          quantity: 1
         })
-        toast.success(`'${action.payload.name}' đã được thêm vào giỏ hàng`, {
-          position: "top-left",
-          autoClose: 1200
-        })
+      } else {
+        state.cartItems[productIndex] = {
+          ...action.payload.product,
+          quantity: state.cartItems[productIndex].quantity + action.payload.quantity
+        }
       }
+      toast.success(`Sản phẩm đã được thêm vào giỏ hàng`, {
+        position: "top-left",
+        autoClose: 1200
+      })
       localStorage.setItem('cartItems', JSON.stringify(state.cartItems))
     },
+
+    REMOVE_FROM_CART: (state, action) => {
+      const newCartItems = state.cartItems.filter(item => item.id !== action.payload)
+      state.cartItems = newCartItems
+      toast.success(`Xóa sản phảm khỏi giỏ hàng thành công`, {
+        position: "top-left",
+        autoClose: 1200
+      })
+      localStorage.setItem('cartItems', JSON.stringify(state.cartItems))
+    }
   }
 })
 
-export const { ADD_TO_CART } = cartSlice.actions
+export const { ADD_TO_CART, REMOVE_FROM_CART } = cartSlice.actions
 export const selectCartItems = (state) => state.cart.cartItems
 export const selectCartTotalQuantity = (state) => state.cart.cartTotalQuantity
 export const selectCartTotalAmount = (state) => state.cart.cartTotalAmount

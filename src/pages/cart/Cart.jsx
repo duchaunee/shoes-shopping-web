@@ -3,17 +3,20 @@ import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLongArrowAltLeft, faTags } from '@fortawesome/free-solid-svg-icons';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { useSelector } from 'react-redux';
 import { selectUserID } from '../../redux-toolkit/slice/authSlice';
 import CartProduct from './CartProduct';
 import CarLoading from '../../components/carLoading/CarLoading';
+import { toast } from 'react-toastify';
 
 const Cart = () => {
-  const [loading, setLoading] = useState(false)
-  const [deleteDone, setDeleteDone] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [done, setDone] = useState(false)
+  const [totalPayment, setTotalPayment] = useState(0)
   const [cartProducts, setCartProducts] = useState([])
+  const [quantityCart, setQuantityCart] = useState({})
   const userID = useSelector(selectUserID) || localStorage.getItem('userID')
 
   const getCartProducts = async () => {
@@ -29,27 +32,55 @@ const Cart = () => {
             ...doc.data()
           }
         })
-        // console.log(allCartProducts);
-        const result = Object.values(allCartProducts.reduce((accumulator, current) => {
-          if (!accumulator[current.id]) {
-            accumulator[current.id] = { ...current, quantity: 0 };
-          }
-          accumulator[current.id].quantity += 1;
-          return accumulator;
-        }, {}));
-        resolve(result)
-      }).then((result) => {
-        console.log(result);
+        resolve(allCartProducts)
+      }).then((allCartProducts) => {
         setTimeout(() => {
-          setCartProducts(result)
+          // console.log('done');
+          console.log(allCartProducts);
+          setCartProducts(allCartProducts)
           setLoading(false)
-        }, 100)
+        }, 254)
       })
-      // setLoading(false)
     }
     catch (e) {
       console.log(e.message);
     }
+  }
+
+  const handleUpdateCartProduct = async () => {
+    setLoading(true)
+    cartProducts.forEach(async (cartProduct, idx) => {
+      // console.log(quantityCart[cartProduct.idCartProduct]);
+      const productsRef = query(
+        collection(db, "cartProducts"),
+        where('userID', "==", userID), //id người dùng
+        where('id', "==", cartProduct.id)); //id của sản phẩm
+      const q = query(productsRef);
+
+      try {
+        const querySnapshot = await getDocs(q);
+        const docRef = querySnapshot.docs[0].ref;
+        //
+        const docSnapshot = await getDoc(docRef);
+        console.log(docSnapshot.data());
+
+        await updateDoc(docRef, {
+          quantity: quantityCart[cartProduct.idCartProduct],
+        });
+
+        if (idx === cartProducts.length - 1) {
+          setDone(true)
+          //update cart
+          toast.success(`Cập nhật giỏ hàng thành công`, {
+            position: "top-left",
+            autoClose: 1200
+          })
+          // setLoading(false)
+        }
+      } catch (e) {
+        console.log(e.message);
+      }
+    })
   }
 
   const deliveryDate = () => {
@@ -66,9 +97,9 @@ const Cart = () => {
   }
 
   useEffect(() => {
-    setDeleteDone(false)
+    setDone(false)
     getCartProducts()
-  }, [deleteDone])
+  }, [done])
 
   return (
     <>
@@ -107,9 +138,14 @@ const Cart = () => {
                               {cartProducts.map((cartProduct) => (
                                 <CartProduct
                                   key={cartProduct.idCartProduct}
-                                  setDeleteDone={setDeleteDone}
+                                  size={cartProduct.size}
+                                  setDone={setDone}
+                                  setLoading={setLoading}
+                                  quantityCart={quantityCart}
+                                  setQuantityCart={setQuantityCart}
                                   idProduct={cartProduct.id}
                                   name={cartProduct.name}
+                                  nameInput={cartProduct.idCartProduct}
                                   category={cartProduct.category}
                                   img={cartProduct.imgURL}
                                   price={cartProduct.price}
@@ -118,13 +154,18 @@ const Cart = () => {
                               ))}
                             </tbody>
                           </table>
-                          <div className="mt-6">
+                          <div className="mt-6 flex gap-4">
                             <NavLink
                               to='/'
-                              className='border-[2px] border-primary text-primary px-4 py-2 hover:bg-primary hover:text-white font-medium transition-all ease-linear duration-[120ms]'>
+                              className='border-[2px] border-primary text-primary px-4 py-1 hover:bg-primary hover:text-white flex items-center font-medium transition-all ease-linear duration-[120ms]'>
                               <FontAwesomeIcon className='mr-[6px]' icon={faLongArrowAltLeft} />
                               <span className='text-[14] uppercase'>Tiếp tục xem sản phẩm</span>
                             </NavLink>
+                            <button
+                              onClick={handleUpdateCartProduct}
+                              className='px-4 py-1 bg-primary hover:bg-[#9f0d11] text-white font-medium transition-all ease-linear flex items-center duration-[120ms]'>
+                              <span className='text-[14] uppercase'>Cập nhật giỏ hàng</span>
+                            </button>
                           </div>
                         </div>
                         {/* right */}

@@ -4,10 +4,10 @@ import ButtonPrimary from '../button/ButtonPrimary';
 import "../../components/lineClamp.scss"
 import { useDispatch, useSelector } from 'react-redux';
 import { selectIsAdmin, selectIsLoggedIn } from '../../redux-toolkit/slice/authSlice';
-import { ADD_TO_CART, selectCartItems } from '../../redux-toolkit/slice/cartSlice';
 import { selectUserID } from '../../redux-toolkit/slice/authSlice';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { db } from '../../firebase/config';
+import { toast } from 'react-toastify';
 
 const ProductItem = ({
   setIdxActive, setHoverShowProduct, setTranslateShowX,
@@ -17,7 +17,6 @@ const ProductItem = ({
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const cartItems = useSelector(selectCartItems) || JSON.parse(localStorage.getItem('cartItems'))
   const admin = useSelector(selectIsAdmin) || JSON.parse(localStorage.getItem('admin'))
   const userID = useSelector(selectUserID) || localStorage.getItem('userID')
   const logined = useSelector(selectIsLoggedIn) || JSON.parse(localStorage.getItem('logined'))
@@ -40,18 +39,54 @@ const ProductItem = ({
 
   const handleAddToCart = async () => {
     setLoading(true)
-    setTimeout(() => {
-      try {
-        const docRef = addDoc(collection(db, "cartProducts"), {
-          userID: userID,
-          ...product
+    const productsRef = query(
+      collection(db, "cartProducts"),
+      where('userID', "==", userID), //id người dùng
+      where('id', "==", id)); //id của sản phẩm
+    const q = query(productsRef);
+    try {
+      const querySnapshot = await getDocs(q);
+      //sản phẩm chưa có trong giỏ hàng, thêm vào với quantity là 1
+      if (querySnapshot.docs.length === 0) {
+        setTimeout(() => {
+          try {
+            const docRef = addDoc(collection(db, "cartProducts"), {
+              ...product,
+              userID: userID,
+              size: 39, //mặc định
+              quantity: 1,
+            });
+            setLoading(false)
+            toast.success(`Thêm sản phẩm thành công`, {
+              position: "top-left",
+              autoClose: 1200
+            })
+          } catch (e) {
+            console.log(e.message);
+          }
+        }, 1000)
+      }
+      else { //nếu nó đã tồn tại rồi thì tăng quantity lên 1
+        const docRef = querySnapshot.docs[0].ref;
+        const docSnapshot = await getDoc(docRef);
+        const currentQuantity = docSnapshot.data().quantity;
+
+        await updateDoc(docRef, {
+          quantity: currentQuantity + 1,
         });
         setLoading(false)
-        dispatch(ADD_TO_CART(product))
-      } catch (e) {
-        console.log(e.message);
+        //có rồi mà thêm ở product Item thì quantity tăng 1, nếu ở detail thi quantity: số lượng
+        toast.success(`Thêm sản phẩm thành công`, {
+          position: "top-left",
+          autoClose: 1200
+        })
       }
-    }, 1000)
+    }
+    catch (e) {
+      console.log(e.message);
+    }
+
+
   }
 
   return (
