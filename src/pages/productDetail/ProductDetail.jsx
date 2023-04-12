@@ -136,9 +136,9 @@ const ProductDetail = () => {
     }
   }
 
-  const detectUser = (functionAdmin, functionUser) => {
-    if (admin) return functionAdmin;
-    return functionUser
+  const detectUser = (functionAdmin, functionUser, e) => {
+    if (admin) return functionAdmin();
+    return functionUser(e)
   }
 
   const handleDetectAdmin = () => {
@@ -322,9 +322,9 @@ const ProductDetail = () => {
                       </button>
                     </div>
                     <button
-                      onClick={() => {
+                      onClick={(e) => {
                         if (!logined) navigate('/dang-nhap')
-                        else detectUser(handleDetectAdmin, handleAddToCart)()
+                        else detectUser(handleDetectAdmin, handleAddToCart, e)
                       }}
                       className='col-span-7 h-full px-3 bg-primary text-white text-[16px] leading-[37px] font-bold tracking-[1px] uppercase transition-all ease-in duration-150 focus:outline-none hover:bg-[#a40206]'>
                       {loadingAddtoCart

@@ -36,10 +36,10 @@ const Cart = () => {
         accumulator[current.id].quantity += 1;
         return accumulator;
       }, {}));
-
+      console.log(result);
       setTimeout(() => {
-        setLoading(false)
         setCartProducts(result)
+        setLoading(false)
       }, 100)
       // setLoading(false)
     }
@@ -62,8 +62,8 @@ const Cart = () => {
   }
 
   useEffect(() => {
-    setDeleteDone(false)
     getCartProducts()
+    setDeleteDone(false)
   }, [deleteDone])
 
   return (
@@ -89,7 +89,7 @@ const Cart = () => {
                     : (
                       <>
                         {/* left */}
-                        <div div className="basis-[58.33%] pr-[30px] border border-transparent border-r-[#ececec]">
+                        <div className="basis-[58.33%] pr-[30px] border border-transparent border-r-[#ececec]">
                           <table className='w-full'>
                             <thead>
                               <tr className='border-[3px] border-transparent border-b-[#ececec] grid gap-5 grid-cols-12 grid-rows-1 text-[14px] font-bold py-2 uppercase tracking-wider'>

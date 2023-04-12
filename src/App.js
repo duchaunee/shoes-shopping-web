@@ -27,7 +27,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />}></Route>
           <Route path='/dang-nhap' element={logined ? <Navigate to="/" /> : <Auth />} />;
-          <Route path='/tai-khoan' element={logined ? <InfoAccount /> : <Navigate to="/" />} />;
+          <Route path='/tai-khoan' element={logined ? <InfoAccount /> : <Navigate to="/dang-nhap" />} />;
 
           <Route path="/gioi-thieu" element={<h2>GIOI THIEU</h2>}></Route>
           <Route path="/giay-nu" element={<GirlShoes></GirlShoes>}></Route>
