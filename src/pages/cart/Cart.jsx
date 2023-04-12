@@ -5,15 +5,17 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLongArrowAltLeft, faTags } from '@fortawesome/free-solid-svg-icons';
 import { collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { db } from '../../firebase/config';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { selectUserID } from '../../redux-toolkit/slice/authSlice';
 import CartProduct from './CartProduct';
 import CarLoading from '../../components/carLoading/CarLoading';
 import { toast } from 'react-toastify';
+import { CAlC_TOTAL_PAYMENT } from '../../redux-toolkit/slice/cartSlice';
 
 const Cart = () => {
   const [loading, setLoading] = useState(true)
   const [done, setDone] = useState(false)
+  const dispatch = useDispatch()
   const [totalPayment, setTotalPayment] = useState(0)
   const [cartProducts, setCartProducts] = useState([])
   const [quantityCart, setQuantityCart] = useState({})
@@ -34,9 +36,16 @@ const Cart = () => {
         })
         resolve(allCartProducts)
       }).then((allCartProducts) => {
+        //
+        const totalPayment = allCartProducts.reduce((total, item) => {
+          return total + item.price * item.quantity
+        }, 0)
+        setTotalPayment(totalPayment)
+        localStorage.setItem('totalPayment', JSON.stringify(totalPayment))
+        dispatch(CAlC_TOTAL_PAYMENT(totalPayment))
+        //
+        localStorage.setItem('cartLength', JSON.stringify(allCartProducts.length))
         setTimeout(() => {
-          // console.log('done');
-          console.log(allCartProducts);
           setCartProducts(allCartProducts)
           setLoading(false)
         }, 254)
@@ -71,10 +80,12 @@ const Cart = () => {
         if (idx === cartProducts.length - 1) {
           setDone(true)
           //update cart
-          toast.success(`Cập nhật giỏ hàng thành công`, {
-            position: "top-left",
-            autoClose: 1200
-          })
+          setTimeout(() => {
+            toast.success(`Cập nhật giỏ hàng thành công`, {
+              position: "top-left",
+              autoClose: 1200
+            })
+          }, 500)
           // setLoading(false)
         }
       } catch (e) {
@@ -96,6 +107,10 @@ const Cart = () => {
     )
   }
 
+  const solvePrice = (price) => {
+    return Number(price).toLocaleString('vi-VN');
+  }
+
   useEffect(() => {
     setDone(false)
     getCartProducts()
@@ -112,6 +127,7 @@ const Cart = () => {
               <div className="w-full px-[15px] pb-[30px]">
                 <div className="w-full flex">
                   {cartProducts.length === 0
+                    || JSON.parse(localStorage.getItem('cartLength')) === 0
                     ? <div className="w-full h-[480px] flex flex-col gap-10 items-center justify-center">
                       <img className='w-full h-[300px] object-contain' src="../../emptyCart.png" alt="" />
                       <NavLink
@@ -138,7 +154,6 @@ const Cart = () => {
                               {cartProducts.map((cartProduct) => (
                                 <CartProduct
                                   key={cartProduct.idCartProduct}
-                                  size={cartProduct.size}
                                   setDone={setDone}
                                   setLoading={setLoading}
                                   quantityCart={quantityCart}
@@ -175,7 +190,7 @@ const Cart = () => {
                           </div>
                           <div className='flex items-center justify-between border border-transparent border-b-[#ddd] py-4 text-[14px]'>
                             <h2 className=''>Tổng phụ</h2>
-                            <h2 className='font-bold'>2.920.000 ₫</h2>
+                            <h2 className='font-bold'>{solvePrice(totalPayment)}₫</h2>
                           </div>
                           <div className='flex items-center justify-between border border-transparent border-b-[#ddd] py-4 text-[14px]'>
                             <h2 className=''>Giao hàng</h2>
@@ -187,7 +202,7 @@ const Cart = () => {
                           </div>
                           <div className='flex items-center justify-between border-[3px] border-transparent border-b-[#ddd] py-4 text-[14px]'>
                             <h2 className=''>Tổng thanh toán</h2>
-                            <h2 className='font-bold'>2.950.000 ₫</h2>
+                            <h2 className='font-bold'>{solvePrice(totalPayment + 30000)}₫</h2>
                           </div>
                           <div className='mt-6 text-[14px]'>
                             <button
@@ -205,7 +220,7 @@ const Cart = () => {
                               placeholder='Mã ưu đãi'
                               type="text" name="" id="" />
                             <button
-                              // onClick={}
+                              onClick={() => setTotalPayment(prev => prev - 30000)}
                               className='w-full p-2 border border-[#ccc] bg-[#f9f9f9] hover:bg-[#c7c7c7] flex items-center justify-center -tracking-tighter text-[16px] text-[#666] transition-all ease-in-out duration-100'>Áp dụng</button>
                           </div>
                         </div>

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { db } from '../../firebase/config';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faArrowRight, faChevronLeft, faChevronRight, faCircleCheck, faMinus, faPlus, faStar, faTags } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faArrowRight, faCartShopping, faChevronLeft, faChevronRight, faCircleCheck, faMinus, faPlus, faStar, faTags, faTruckFast } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectIsAdmin, selectIsLoggedIn, selectUserID } from '../../redux-toolkit/slice/authSlice';
 import CarLoading from '../../components/carLoading/CarLoading'
@@ -34,7 +34,6 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true)
   const [loadingAddtoCart, setLoadingAddtoCart] = useState(false)
   const [product, setProduct] = useState({})
-  const [size, setSize] = useState(39)
   const navigate = useNavigate()
   const admin = useSelector(selectIsAdmin) || JSON.parse(localStorage.getItem('admin'))
   const products = useSelector(selectProducts)
@@ -154,58 +153,58 @@ const ProductDetail = () => {
   }
 
   const handleAddToCart = async (e) => {
-    e.preventDefault()
-    console.log(quantity);
-    setLoadingAddtoCart(true)
-    const productsRef = query(
-      collection(db, "cartProducts"),
-      where('userID', "==", userID), //id người dùng
-      where('id', "==", id)); //id của sản phẩm
-    const q = query(productsRef);
-    try {
-      const querySnapshot = await getDocs(q);
-      //sản phẩm chưa có trong giỏ hàng, thêm vào với quantity là 1
-      if (querySnapshot.docs.length === 0) {
-        setTimeout(() => {
-          try {
-            const docRef = addDoc(collection(db, "cartProducts"), {
-              ...product,
-              userID: userID,
-              size: size,
-              quantity: 1,
-            });
-            //reset init
-            setQuantity(1)
-            setSize(39)
-            //
-            setLoadingAddtoCart(false)
-            toast.success(`Thêm sản phẩm thành công`, {
-              position: "top-left",
-              autoClose: 1200
-            })
-          } catch (e) {
-            console.log(e.message);
-          }
-        }, 1000)
-      }
-      else { //nếu nó đã tồn tại rồi thì tăng quantity lên quantity (ô input)
-        const docRef = querySnapshot.docs[0].ref;
-        const docSnapshot = await getDoc(docRef);
-        const currentQuantity = docSnapshot.data().quantity;
+    if (!loadingAddtoCart) { //nếu đang quay thì không cho bấm
+      e.preventDefault()
+      // console.log(quantity);
+      setLoadingAddtoCart(true)
+      const productsRef = query(
+        collection(db, "cartProducts"),
+        where('userID', "==", userID), //id người dùng
+        where('id', "==", id)); //id của sản phẩm
+      const q = query(productsRef);
+      try {
+        const querySnapshot = await getDocs(q);
+        //sản phẩm chưa có trong giỏ hàng, thêm vào với quantity là 1
+        if (querySnapshot.docs.length === 0) {
+          setTimeout(() => {
+            try {
+              const docRef = addDoc(collection(db, "cartProducts"), {
+                ...product,
+                userID: userID,
+                quantity: 1,
+              });
+              //reset init
+              setQuantity(1)
+              //
+              setLoadingAddtoCart(false)
+              toast.success(`Thêm sản phẩm thành công`, {
+                position: "top-left",
+                autoClose: 1200
+              })
+            } catch (e) {
+              console.log(e.message);
+            }
+          }, 1000)
+        }
+        else { //nếu nó đã tồn tại rồi thì tăng quantity lên quantity (ô input)
+          const docRef = querySnapshot.docs[0].ref;
+          const docSnapshot = await getDoc(docRef);
+          const currentQuantity = docSnapshot.data().quantity;
 
-        await updateDoc(docRef, {
-          quantity: currentQuantity + quantity,
-        });
-        setQuantity(1)
-        setLoadingAddtoCart(false)
-        toast.success(`Thêm sản phẩm thành công`, {
-          position: "top-left",
-          autoClose: 1200
-        })
+          await updateDoc(docRef, {
+            quantity: currentQuantity + quantity,
+          });
+          setQuantity(1)
+          setLoadingAddtoCart(false)
+          toast.success(`Thêm sản phẩm thành công`, {
+            position: "top-left",
+            autoClose: 1200
+          })
+        }
       }
-    }
-    catch (e) {
-      console.log(e.message);
+      catch (e) {
+        console.log(e.message);
+      }
     }
   }
 
@@ -297,7 +296,7 @@ const ProductDetail = () => {
                     <div className="w-[2px] bg-[#e6e6e6]"></div>
                     <p className='text-[#767676] font-medium'>432 Đánh giá</p>
                   </div>
-                  <div className="mt-[22px] mb-4 flex items-center gap-3">
+                  <div className="mt-5 mb-4 flex items-center gap-3">
                     {/* cái đề để tránh flex nó làm cho height tăng theo thằng con dài nhất mà mình chỉ muốn nó py-1 theo font thui */}
                     <div className="">
                       <div className="inline-flex rounded-[12px] items-center gap-1 w-auto bg-[#6ab87e]/20 py-1 px-2">
@@ -315,22 +314,50 @@ const ProductDetail = () => {
                     </p>
                   </div>
                   <div className="w-[50px] h-[2px] bg-black/20 my-[20px]"></div>
-                  <div className="mb-[15px]">
-                    <div className="mb-3 font-medium text-[18px] text-[#1b1b1b] flex items-center gap-3">
-                      <p className=''>Select Size: {size}</p>
-                      <div className="w-[3px] h-[20px] bg-bgPrimary opacity-20"></div>
-                      <p className='opacity-60'>{product.inventory} sản phẩm có sẵn</p>
+                  <div className="mb-[20px] grid grid-cols-5 items-start">
+                    <div className="col-span-1 mb-3 font-medium text-[18px] text-[#1b1b1b] inline-flex items-center gap-3">
+                      <p className=''>Vận chuyển</p>
                     </div>
-                    <ul className='inline-flex gap-3'>
-                      {[39, 40, 41, 42, 43].map((sizeItem) => (
-                        <li
-                          key={sizeItem}
-                          onClick={() => setSize(sizeItem)}
-                          className={`${sizeItem === size && "bg-[#1d242e] text-white"} 
-                          hover:bg-[#1d242e] hover:text-white inline-block font-medium transition-all ease-linear duration-100 cursor-pointer py-[6px] w-[65px] text-center rounded-[4px] text-[18px] text-[#1b1b1b] bg-[#e8e8e8]`}>{sizeItem}
-                        </li>
-                      ))}
-                    </ul>
+                    <div className='col-span-4 inline-flex flex-col'>
+                      <div className="flex gap-2">
+                        <FontAwesomeIcon className='text-[#00c7a3] text-[18px] mt-1' icon={faTruckFast} />
+                        <p className='text-[16px] font-medium'>Miễn phí vận chuyển</p>
+                      </div>
+                      <p className='text-[16px] opacity-80 ml-[30px]'>Miễn phí vận chuyển cho đơn hàng trên 850.000₫</p>
+                    </div>
+                  </div>
+                  <div className="mb-[20px] grid grid-cols-5 items-center">
+                    <div className="col-span-1 mb-3 font-medium text-[18px] text-[#1b1b1b] inline-flex items-center gap-3">
+                      <p className=''>Số lượng</p>
+                    </div>
+                    {/* input */}
+                    <div className='col-span-1 inline-flex'>
+                      <div className="flex items-center justify-center gap-6 px-3 py-1 border border-[#ccc] font-bold">
+                        <button
+                          onClick={() => {
+                            if (quantity > 1) setQuantity(quantity - 1)
+                          }}
+                          type='button' className='flex items-center outline-none text-bgPrimary font-medium '>
+                          <FontAwesomeIcon className='text-[24px] font-medium' icon={faMinus} />
+                        </button>
+                        <div
+                          value={quantity}
+                          className='text-bgPrimary outline-none text-center text-[18px] font-medium' > {quantity < 10 ? `0${quantity}` : quantity}
+                        </div>
+                        <button
+                          onClick={() => {
+                            //chỉ đc set đến max số lượng tồn kho
+                            setQuantity(quantity + 1)
+                          }}
+                          type='button' className='flex items-center outline-none text-bgPrimary font-medium '>
+                          <FontAwesomeIcon className='text-[24px] font-medium' icon={faPlus} />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="col-span-2 flex gap-2 ml-4 items-center">
+                      <div className="w-[2px] h-6 bg-[#e6e6e6]"></div>
+                      <p className='text-[#767676] opacity-80 font-medium'>{product.inventory} sản phẩm có sẵn</p>
+                    </div>
                   </div>
                   {/* <div className="mb-[15px]">
                     <p className='font-medium text-[18px] text-[#1b1b1b] mb-3'>
@@ -338,27 +365,6 @@ const ProductDetail = () => {
                     </p>
                   </div> */}
                   <div className="mb-[25px] inline-grid grid-cols-12 gap-6 w-[373px] h-[46px]">
-                    <div className="col-span-5 flex items-center justify-center gap-6 px-3 py-1 rounded-[4px] border border-[#ccc] ">
-                      <button
-                        onClick={() => {
-                          if (quantity > 1) setQuantity(quantity - 1)
-                        }}
-                        type='button' className='flex items-center outline-none text-bgPrimary font-medium '>
-                        <FontAwesomeIcon className='text-[20px] font-medium' icon={faMinus} />
-                      </button>
-                      <div
-                        value={quantity}
-                        className='text-bgPrimary outline-none text-center text-[18px] font-medium' > {quantity < 10 ? `0${quantity}` : quantity}
-                      </div>
-                      <button
-                        onClick={() => {
-                          //chỉ đc set đến max số lượng tồn kho
-                          setQuantity(quantity + 1)
-                        }}
-                        type='button' className='flex items-center outline-none text-bgPrimary font-medium '>
-                        <FontAwesomeIcon className='text-[20px] font-medium' icon={faPlus} />
-                      </button>
-                    </div>
                     <button
                       onClick={(e) => {
                         if (!logined) navigate('/dang-nhap')
@@ -367,7 +373,12 @@ const ProductDetail = () => {
                       className='col-span-7 h-full px-3 bg-primary text-white text-[16px] leading-[37px] font-bold tracking-[1px] uppercase transition-all ease-in duration-150 focus:outline-none hover:bg-[#a40206]'>
                       {loadingAddtoCart
                         ? <Spinning />
-                        : (admin ? "Sửa sản phẩm" : "Thêm sản phẩm")}
+                        : (admin
+                          ? "Sửa sản phẩm"
+                          : <div className="flex gap-2 items-center justify-center">
+                            <FontAwesomeIcon className='text-[18px]' icon={faCartShopping} />
+                            Thêm vào giỏ
+                          </div>)}
                     </button>
                   </div>
                   <div className="w-full py-4 px-6 shadow-shadowHover">

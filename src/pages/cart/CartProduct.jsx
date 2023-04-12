@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 const CartProduct = ({
   setLoading,
   quantityCart, setQuantityCart, nameInput,
-  setDone, idProduct, name, size, category, img, price, quantityProduct
+  setDone, idProduct, name, category, img, price, quantityProduct
 }) => {
   const userID = useSelector(selectUserID) || localStorage.getItem('userID')
   const [quantity, setQuantity] = useState(quantityProduct || 1)
@@ -31,10 +31,12 @@ const CartProduct = ({
       try {
         await deleteDoc(doc(db, "cartProducts", idCartProductsDelete));
         setDone(true)
-        toast.success(`Xóa sản phẩm thành công`, {
-          position: "top-left",
-          autoClose: 1200
-        })
+        setTimeout(() => {
+          toast.success(`Xóa sản phẩm thành công`, {
+            position: "top-left",
+            autoClose: 1200
+          })
+        }, 500)
       } catch (e) {
         console.log(e.message);
       }
@@ -108,7 +110,7 @@ const CartProduct = ({
               {name}
             </span>
             <span className='text-[#888] line-clamp-2'>
-              {`${solveCategory(category)} | Size: ${size}`}
+              {`${solveCategory(category)}`}
             </span>
           </div>
         </td >

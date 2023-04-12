@@ -38,55 +38,54 @@ const ProductItem = ({
   }
 
   const handleAddToCart = async () => {
-    setLoading(true)
-    const productsRef = query(
-      collection(db, "cartProducts"),
-      where('userID', "==", userID), //id người dùng
-      where('id', "==", id)); //id của sản phẩm
-    const q = query(productsRef);
-    try {
-      const querySnapshot = await getDocs(q);
-      //sản phẩm chưa có trong giỏ hàng, thêm vào với quantity là 1
-      if (querySnapshot.docs.length === 0) {
-        setTimeout(() => {
-          try {
-            const docRef = addDoc(collection(db, "cartProducts"), {
-              ...product,
-              userID: userID,
-              size: 39, //mặc định
-              quantity: 1,
-            });
-            setLoading(false)
-            toast.success(`Thêm sản phẩm thành công`, {
-              position: "top-left",
-              autoClose: 1200
-            })
-          } catch (e) {
-            console.log(e.message);
-          }
-        }, 1000)
-      }
-      else { //nếu nó đã tồn tại rồi thì tăng quantity lên 1
-        const docRef = querySnapshot.docs[0].ref;
-        const docSnapshot = await getDoc(docRef);
-        const currentQuantity = docSnapshot.data().quantity;
+    if (!loading) { //nếu đang loading thì k xử lí thêm sản phẩm
+      setLoading(true)
+      const productsRef = query(
+        collection(db, "cartProducts"),
+        where('userID', "==", userID), //id người dùng
+        where('id', "==", id)); //id của sản phẩm
+      const q = query(productsRef);
+      try {
+        const querySnapshot = await getDocs(q);
+        //sản phẩm chưa có trong giỏ hàng, thêm vào với quantity là 1
+        if (querySnapshot.docs.length === 0) {
+          setTimeout(() => {
+            try {
+              const docRef = addDoc(collection(db, "cartProducts"), {
+                ...product,
+                userID: userID,
+                quantity: 1,
+              });
+              setLoading(false)
+              toast.success(`Thêm sản phẩm thành công`, {
+                position: "top-left",
+                autoClose: 1200
+              })
+            } catch (e) {
+              console.log(e.message);
+            }
+          }, 1000)
+        }
+        else { //nếu nó đã tồn tại rồi thì tăng quantity lên 1
+          const docRef = querySnapshot.docs[0].ref;
+          const docSnapshot = await getDoc(docRef);
+          const currentQuantity = docSnapshot.data().quantity;
 
-        await updateDoc(docRef, {
-          quantity: currentQuantity + 1,
-        });
-        setLoading(false)
-        //có rồi mà thêm ở product Item thì quantity tăng 1, nếu ở detail thi quantity: số lượng
-        toast.success(`Thêm sản phẩm thành công`, {
-          position: "top-left",
-          autoClose: 1200
-        })
+          await updateDoc(docRef, {
+            quantity: currentQuantity + 1,
+          });
+          setLoading(false)
+          //có rồi mà thêm ở product Item thì quantity tăng 1, nếu ở detail thi quantity: số lượng
+          toast.success(`Thêm sản phẩm thành công`, {
+            position: "top-left",
+            autoClose: 1200
+          })
+        }
+      }
+      catch (e) {
+        console.log(e.message);
       }
     }
-    catch (e) {
-      console.log(e.message);
-    }
-
-
   }
 
   return (

@@ -17,19 +17,23 @@ import {
   SET_ACTIVE_ADMIN,
   REMOVE_ACTIVE_ADMIN,
   SET_GOOGLE_USER,
+  selectUserID,
 } from '../../redux-toolkit/slice/authSlice';
 import Admin from '../admin/Admin';
 import { adminAccount } from '../../AdminAccount';
 import { SET_CURRENT_USER, STORE_PRODUCTS } from '../../redux-toolkit/slice/productSlice';
-import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
+import { selectTotalPayment } from '../../redux-toolkit/slice/cartSlice';
 
 const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogleUser }) => {
   // khi reload lại window, logined bị chạy lại const [logined, setLogined] = useState(false) nên nó sẽ nhấp nháy ở "Đăng nhập/đăng xuất" (logined = false) rồi mới chuyển qua Tài khoản (logined = false), do đó phải khởi tạo lấy giá trị từ localstrogate
   // const [logined, setLogined] = useState(localStorage.getItem('logined') === 'true' ? true : false)
   const [scrolled, setScrolled] = useState(false);
   const [hoverAccount, setHoverAccount] = useState(false)
+  // const totalPayment = useSelector(selectTotalPayment) || JSON.parse(localStorage.getItem('totalPayment'))
   const dispatch = useDispatch()
   const userEmail = useSelector(selectEmail)
+  const userID = useSelector(selectUserID) || localStorage.getItem('userID')
 
   const getProducts = async () => {
     const productsRef = collection(db, "products");
@@ -53,6 +57,10 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
         autoClose: 1000
       })
     }
+  }
+
+  const solvePrice = (price) => {
+    return Number(price).toLocaleString('vi-VN');
   }
 
   const logoutUser = () => {
@@ -256,9 +264,7 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
                     to={`${logined ? '/gio-hang' : "/dang-nhap"} `}
                     className="flex gap-[10px] cursor-pointer py-[10px] text-[13px] font-bold items-center no-underline tracking-[0.32px] uppercase hover:text-white transition-all ease-linear duration-200">
                     <span className="header-cart-title">
-                      Giỏ hàng /
-                      <span className="header-cart-price">{logined ? "1,250,000" : "0"} </span>
-                      ₫
+                      Giỏ hàng
                     </span>
                     <span className="text-[22px]">
                       <FontAwesomeIcon icon={faShoppingCart} className='' />
