@@ -18,8 +18,31 @@ const Cart = () => {
   const dispatch = useDispatch()
   const [totalPayment, setTotalPayment] = useState(0)
   const [cartProducts, setCartProducts] = useState([])
+  const [allProducts, setAllProducts] = useState([])
   const [quantityCart, setQuantityCart] = useState({})
   const userID = useSelector(selectUserID) || localStorage.getItem('userID')
+
+
+  // lí do có hàm này là do khi admin đổi tên, ảnh,... thì trong giỏ hàng cũng phải cập nhật thông tin mới nhất
+  const getProducts = async () => {
+    const productsRef = collection(db, "products");
+    const q = query(productsRef);
+    try {
+      const querySnapshot = await getDocs(q);
+      const allProducts = querySnapshot.docs.map((doc) => {
+        return {
+          id: doc.id,
+          ...doc.data()
+        }
+      })
+      setAllProducts(allProducts)
+    }
+    catch (e) {
+      toast.error(e.message, {
+        autoClose: 1000
+      })
+    }
+  }
 
   const getCartProducts = async () => {
     setLoading(true)
@@ -29,9 +52,16 @@ const Cart = () => {
       const querySnapshot = await getDocs(q);
       await new Promise((resolve) => {
         const allCartProducts = querySnapshot.docs.map((doc) => {
+          // console.log(doc.data().id);
+          const newProduct = allProducts.filter((product) => product.id === doc.data().id)[0]
+          console.log('newProduct: ', newProduct);
           return {
+            ...doc.data(),
+            imgURL: newProduct.imgURL,
+            name: newProduct.name,
+            price: newProduct.price,
+            category: newProduct.category,
             idCartProduct: doc.id,
-            ...doc.data()
           }
         })
         resolve(allCartProducts)
@@ -71,7 +101,7 @@ const Cart = () => {
         const docRef = querySnapshot.docs[0].ref;
         //
         const docSnapshot = await getDoc(docRef);
-        console.log(docSnapshot.data());
+        // console.log(docSnapshot.data());
 
         await updateDoc(docRef, {
           quantity: quantityCart[cartProduct.idCartProduct],
@@ -113,8 +143,14 @@ const Cart = () => {
 
   useEffect(() => {
     setDone(false)
+
+    getProducts()
     getCartProducts()
   }, [done])
+
+  useEffect(() => {
+    getCartProducts()
+  }, [allProducts])
 
   return (
     <>
