@@ -1,7 +1,7 @@
 import React, { memo, useState } from 'react';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 //firebase
@@ -11,6 +11,7 @@ import { Spinning } from '../../animation-loading';
 
 
 const SignUp = ({ signUp, setSignUp, signInWithGoogle }) => {
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(false);
   const [regInfo, setRegInfo] = useState({
     email: "",
@@ -73,6 +74,7 @@ const SignUp = ({ signUp, setSignUp, signInWithGoogle }) => {
       setLoading(true)
       createUserWithEmailAndPassword(auth, regInfo.email, regInfo.password)
         .then((userCredential) => {
+          navigate('/')
           const user = userCredential.user;
 
           if (user.photoURL) localStorage.setItem('imgAvatar', user.photoURL); //set avatar cho user login by google

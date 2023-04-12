@@ -164,14 +164,14 @@ const ProductDetail = () => {
       const q = query(productsRef);
       try {
         const querySnapshot = await getDocs(q);
-        //sản phẩm chưa có trong giỏ hàng, thêm vào với quantity là 1
+        //sản phẩm chưa có trong giỏ hàng, thêm vào với quantity là quantity(state)
         if (querySnapshot.docs.length === 0) {
           setTimeout(() => {
             try {
               const docRef = addDoc(collection(db, "cartProducts"), {
                 ...product,
                 userID: userID,
-                quantity: 1,
+                quantity: quantity,
               });
               //reset init
               setQuantity(1)

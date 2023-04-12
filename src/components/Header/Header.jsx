@@ -264,7 +264,7 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
                     to={`${logined ? '/gio-hang' : "/dang-nhap"} `}
                     className="flex gap-[10px] cursor-pointer py-[10px] text-[13px] font-bold items-center no-underline tracking-[0.32px] uppercase hover:text-white transition-all ease-linear duration-200">
                     <span className="header-cart-title">
-                      Giỏ hàng
+                      Giỏ hàng / Thanh toán
                     </span>
                     <span className="text-[22px]">
                       <FontAwesomeIcon icon={faShoppingCart} className='' />
