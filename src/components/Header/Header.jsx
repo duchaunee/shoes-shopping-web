@@ -62,6 +62,7 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
       });
       setLogined(false)
 
+      dispatch(REMOVE_ACTIVE_USER())
       localStorage.setItem('logined', JSON.stringify(false));
 
       setAdmin(false)

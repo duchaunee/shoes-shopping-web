@@ -5,7 +5,7 @@ import { db } from '../../firebase/config';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight, faChevronLeft, faChevronRight, faCircleCheck, faMinus, faPlus, faStar, faTags } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectIsAdmin, selectUserID } from '../../redux-toolkit/slice/authSlice';
+import { selectIsAdmin, selectIsLoggedIn, selectUserID } from '../../redux-toolkit/slice/authSlice';
 import CarLoading from '../../components/carLoading/CarLoading'
 import { selectProducts } from '../../redux-toolkit/slice/productSlice';
 import { Card, ProductItem } from '../../components';
@@ -21,6 +21,7 @@ const ProductDetail = () => {
   const { id } = useParams()
   const dispatch = useDispatch()
   const userID = useSelector(selectUserID) || localStorage.getItem('userID')
+  const logined = useSelector(selectIsLoggedIn) || JSON.parse(localStorage.getItem('logined'))
   //top prodcut show
   const [idxActive, setIdxActive] = useState(0)
   const [translateShowX, setTranslateShowX] = useState(0)
@@ -320,9 +321,11 @@ const ProductDetail = () => {
                         <FontAwesomeIcon className='text-[20px] font-medium' icon={faPlus} />
                       </button>
                     </div>
-
                     <button
-                      onClick={detectUser(handleDetectAdmin, handleAddToCart)}
+                      onClick={() => {
+                        if (!logined) navigate('/dang-nhap')
+                        else detectUser(handleDetectAdmin, handleAddToCart)()
+                      }}
                       className='col-span-7 h-full px-3 bg-primary text-white text-[16px] leading-[37px] font-bold tracking-[1px] uppercase transition-all ease-in duration-150 focus:outline-none hover:bg-[#a40206]'>
                       {loadingAddtoCart
                         ? <Spinning />

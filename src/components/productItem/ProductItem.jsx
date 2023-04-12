@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import ButtonPrimary from '../button/ButtonPrimary';
 import "../../components/lineClamp.scss"
 import { useDispatch, useSelector } from 'react-redux';
-import { selectIsAdmin } from '../../redux-toolkit/slice/authSlice';
+import { selectIsAdmin, selectIsLoggedIn } from '../../redux-toolkit/slice/authSlice';
 import { ADD_TO_CART, selectCartItems } from '../../redux-toolkit/slice/cartSlice';
 import { selectUserID } from '../../redux-toolkit/slice/authSlice';
 import { addDoc, collection } from 'firebase/firestore';
@@ -20,6 +20,7 @@ const ProductItem = ({
   const cartItems = useSelector(selectCartItems) || JSON.parse(localStorage.getItem('cartItems'))
   const admin = useSelector(selectIsAdmin) || JSON.parse(localStorage.getItem('admin'))
   const userID = useSelector(selectUserID) || localStorage.getItem('userID')
+  const logined = useSelector(selectIsLoggedIn) || JSON.parse(localStorage.getItem('logined'))
 
   const detectUser = (functionAdmin, functionUser) => {
     if (admin) return functionAdmin;
@@ -110,7 +111,10 @@ const ProductItem = ({
             <ButtonPrimary
               loading={loading}
               onClick={() => {
-                detectUser(handleDetectAdmin, handleAddToCart)()
+                if (!logined) {
+                  navigate('/dang-nhap')
+                }
+                else detectUser(handleDetectAdmin, handleAddToCart)()
               }}
               text={text} />
           </div>
