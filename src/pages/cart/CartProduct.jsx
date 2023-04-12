@@ -18,17 +18,17 @@ const CartProduct = ({ setDeleteDone, idProduct, name, category, img, price, qua
     const q = query(productsRef);
     try {
       const querySnapshot = await getDocs(q);
-      new Promise((resolve) => {
-        const allCartProductsDelete = querySnapshot.docs.map((doc) => doc.id)
-        allCartProductsDelete.forEach(async (idItemDelete) => {
+      const allCartProductsDelete = querySnapshot.docs.map((doc) => doc.id)
+      await Promise.all(
+        allCartProductsDelete.map(async (idItemDelete) => {
           try {
             await deleteDoc(doc(db, "cartProducts", idItemDelete));
           } catch (e) {
             console.log(e.message);
           }
         })
-        resolve()
-      }).then(() => setDeleteDone(true))
+      );
+      setDeleteDone(true)
     }
     catch (e) {
       console.log(e.message);

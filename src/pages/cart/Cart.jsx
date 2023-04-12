@@ -22,25 +22,29 @@ const Cart = () => {
     const q = query(productsRef);
     try {
       const querySnapshot = await getDocs(q);
-      const allCartProducts = querySnapshot.docs.map((doc) => {
-        return {
-          idCartProduct: doc.id,
-          ...doc.data()
-        }
+      await new Promise((resolve) => {
+        const allCartProducts = querySnapshot.docs.map((doc) => {
+          return {
+            idCartProduct: doc.id,
+            ...doc.data()
+          }
+        })
+        // console.log(allCartProducts);
+        const result = Object.values(allCartProducts.reduce((accumulator, current) => {
+          if (!accumulator[current.id]) {
+            accumulator[current.id] = { ...current, quantity: 0 };
+          }
+          accumulator[current.id].quantity += 1;
+          return accumulator;
+        }, {}));
+        resolve(result)
+      }).then((result) => {
+        console.log(result);
+        setTimeout(() => {
+          setCartProducts(result)
+          setLoading(false)
+        }, 100)
       })
-      //
-      const result = Object.values(allCartProducts.reduce((accumulator, current) => {
-        if (!accumulator[current.id]) {
-          accumulator[current.id] = { ...current, quantity: 0 };
-        }
-        accumulator[current.id].quantity += 1;
-        return accumulator;
-      }, {}));
-      console.log(result);
-      setTimeout(() => {
-        setCartProducts(result)
-        setLoading(false)
-      }, 100)
       // setLoading(false)
     }
     catch (e) {
@@ -62,8 +66,8 @@ const Cart = () => {
   }
 
   useEffect(() => {
-    getCartProducts()
     setDeleteDone(false)
+    getCartProducts()
   }, [deleteDone])
 
   return (

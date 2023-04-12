@@ -16,7 +16,7 @@ export const cartSlice = createSlice({
   initialState,
   reducers: {
     ADD_TO_CART: (state, action) => {
-      console.log(action.payload);
+      // console.log(action.payload);
       //kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng chưa?
       const productIndex = state.cartItems.findIndex(item => item.id === action.payload.id)
       if (productIndex > 0) { //tìm thấy => đã tồn tại
