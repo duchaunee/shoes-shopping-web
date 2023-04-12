@@ -1,11 +1,48 @@
 
-import React, { useEffect } from 'react';
-import CartProduct from './CcartProduct';
+import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLongArrowAltLeft, faTags } from '@fortawesome/free-solid-svg-icons';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../../firebase/config';
+import { useSelector } from 'react-redux';
+import { selectUserID } from '../../redux-toolkit/slice/authSlice';
+import CartProduct from './CartProduct';
 
 const Cart = () => {
+  const [loading, setLoading] = useState(false)
+  const [cartProducts, setCartProducts] = useState([])
+  const userID = useSelector(selectUserID) || localStorage.getItem('userID')
+
+  const getCartProducts = async () => {
+    // setLoading(true)
+    const productsRef = query(collection(db, "cartProducts"), where('userID', "==", userID));
+    const q = query(productsRef);
+    try {
+      const querySnapshot = await getDocs(q);
+      const allCartProducts = querySnapshot.docs.map((doc) => {
+        return {
+          idCartProduct: doc.id,
+          ...doc.data()
+        }
+      })
+
+      //
+      const result = Object.values(allCartProducts.reduce((accumulator, current) => {
+        if (!accumulator[current.id]) {
+          accumulator[current.id] = { ...current, quantity: 0 };
+        }
+        accumulator[current.id].quantity += 1;
+        return accumulator;
+      }, {}));
+      setCartProducts(result)
+      // setLoading(false)
+    }
+    catch (e) {
+      console.log(e.message);
+    }
+  }
+
 
   const deliveryDate = () => {
     const today = new Date()
@@ -19,6 +56,10 @@ const Cart = () => {
       `${startDelivary.getDate()} Th${startDelivary.getMonth() + 1 < 10 ? `0${startDelivary.getMonth() + 1}` : startDelivary.getMonth() + 1} - ${endDelivary.getDate()} Th${endDelivary.getMonth() + 1 < 10 ? `0${endDelivary.getMonth() + 1}` : endDelivary.getMonth() + 1}`
     )
   }
+
+  useEffect(() => {
+    getCartProducts()
+  }, [])
 
   return (
     <>
@@ -38,10 +79,16 @@ const Cart = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <CartProduct />
-                    <CartProduct />
-                    <CartProduct />
-                    <CartProduct />
+                    {cartProducts.map((cartProduct) => (
+                      <CartProduct
+                        key={cartProduct.idCartProduct}
+                        idProduct={cartProduct.id}
+                        name={cartProduct.name}
+                        img={cartProduct.imgURL}
+                        price={cartProduct.price}
+                        quantityProduct={cartProduct.quantity}
+                      />
+                    ))}
                   </tbody>
                 </table>
                 <div className="mt-6">
@@ -91,7 +138,7 @@ const Cart = () => {
                     type="text" name="" id="" />
                   <button
                     // onClick={}
-                    className='w-full px-2 py-3 border border-[#ccc] bg-[#f9f9f9] hover:bg-[#c7c7c7] flex items-center justify-center -tracking-tighter text-[16px] text-[#666] transition-all ease-in-out duration-100'>Áp dụng</button>
+                    className='w-full p-2 border border-[#ccc] bg-[#f9f9f9] hover:bg-[#c7c7c7] flex items-center justify-center -tracking-tighter text-[16px] text-[#666] transition-all ease-in-out duration-100'>Áp dụng</button>
                 </div>
               </div>
             </div>

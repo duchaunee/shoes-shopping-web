@@ -1,15 +1,17 @@
-import { doc, getDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { db } from '../../firebase/config';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight, faChevronLeft, faChevronRight, faCircleCheck, faMinus, faPlus, faStar, faTags } from '@fortawesome/free-solid-svg-icons';
-import { useSelector } from 'react-redux';
-import { selectIsAdmin } from '../../redux-toolkit/slice/authSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectIsAdmin, selectUserID } from '../../redux-toolkit/slice/authSlice';
 import CarLoading from '../../components/carLoading/CarLoading'
 import { selectProducts } from '../../redux-toolkit/slice/productSlice';
 import { Card, ProductItem } from '../../components';
 import OverlayProduct from './OverlayProduct';
+import { ADD_TO_CART } from '../../redux-toolkit/slice/cartSlice';
+import { Spinning } from '../../animation-loading';
 
 const solvePrice = (price) => {
   return Number(price).toLocaleString('vi-VN');
@@ -17,6 +19,8 @@ const solvePrice = (price) => {
 
 const ProductDetail = () => {
   const { id } = useParams()
+  const dispatch = useDispatch()
+  const userID = useSelector(selectUserID) || localStorage.getItem('userID')
   //top prodcut show
   const [idxActive, setIdxActive] = useState(0)
   const [translateShowX, setTranslateShowX] = useState(0)
@@ -26,6 +30,7 @@ const ProductDetail = () => {
   const [hoverSimilarProduct, setHoverSimilarProduct] = useState(false)
 
   const [loading, setLoading] = useState(true)
+  const [loadingAddtoCart, setLoadingAddtoCart] = useState(false)
   const [product, setProduct] = useState({})
   const navigate = useNavigate()
   const admin = useSelector(selectIsAdmin) || JSON.parse(localStorage.getItem('admin'))
@@ -143,8 +148,21 @@ const ProductDetail = () => {
     navigate(`/admin/add-product/${id}`)
   }
 
-  const handleAddToCart = () => {
-    console.log('them vao gio');
+  const handleAddToCart = (e) => {
+    e.preventDefault()
+    setLoadingAddtoCart(true)
+    setTimeout(() => {
+      try {
+        const docRef = addDoc(collection(db, "cartProducts"), {
+          userID: userID,
+          ...product
+        });
+        setLoadingAddtoCart(false)
+        dispatch(ADD_TO_CART(product))
+      } catch (e) {
+        console.log(e.message);
+      }
+    }, 1000)
   }
 
   useEffect(() => {
@@ -286,11 +304,11 @@ const ProductDetail = () => {
                     </div>
 
                     <button
-                      onClick={() => {
-                        detectUser(handleDetectAdmin, handleAddToCart)()
-                      }}
+                      onClick={detectUser(handleDetectAdmin, handleAddToCart)}
                       className='col-span-7 h-full px-3 bg-primary text-white text-[16px] leading-[37px] font-bold tracking-[1px] uppercase transition-all ease-in duration-150 focus:outline-none hover:bg-[#a40206]'>
-                      {admin ? "Sửa sản phẩm" : "Thêm sản phẩm"}
+                      {loadingAddtoCart
+                        ? <Spinning />
+                        : (admin ? "Sửa sản phẩm" : "Thêm sản phẩm")}
                     </button>
                   </div>
                   <div className="w-full py-4 px-6 shadow-shadowHover">

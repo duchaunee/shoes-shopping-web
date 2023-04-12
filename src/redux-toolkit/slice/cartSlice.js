@@ -1,5 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit"
+import { addDoc, collection } from "firebase/firestore"
 import { toast } from "react-toastify"
+import { db } from "../../firebase/config"
 
 const initialState = {
   cartItems: localStorage.getItem('cartItems')
@@ -14,7 +16,7 @@ export const cartSlice = createSlice({
   initialState,
   reducers: {
     ADD_TO_CART: (state, action) => {
-      // console.log();
+      console.log(action.payload);
       //kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng chưa?
       const productIndex = state.cartItems.findIndex(item => item.id === action.payload.id)
       if (productIndex > 0) { //tìm thấy => đã tồn tại
@@ -32,7 +34,6 @@ export const cartSlice = createSlice({
           autoClose: 1200
         })
       }
-
       localStorage.setItem('cartItems', JSON.stringify(state.cartItems))
     },
   }

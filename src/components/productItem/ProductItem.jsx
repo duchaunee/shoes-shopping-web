@@ -4,7 +4,10 @@ import ButtonPrimary from '../button/ButtonPrimary';
 import "../../components/lineClamp.scss"
 import { useDispatch, useSelector } from 'react-redux';
 import { selectIsAdmin } from '../../redux-toolkit/slice/authSlice';
-import { ADD_TO_CART } from '../../redux-toolkit/slice/cartSlice';
+import { ADD_TO_CART, selectCartItems } from '../../redux-toolkit/slice/cartSlice';
+import { selectUserID } from '../../redux-toolkit/slice/authSlice';
+import { addDoc, collection } from 'firebase/firestore';
+import { db } from '../../firebase/config';
 
 const ProductItem = ({
   setIdxActive, setHoverShowProduct, setTranslateShowX,
@@ -14,7 +17,9 @@ const ProductItem = ({
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const cartItems = useSelector(selectCartItems) || JSON.parse(localStorage.getItem('cartItems'))
   const admin = useSelector(selectIsAdmin) || JSON.parse(localStorage.getItem('admin'))
+  const userID = useSelector(selectUserID) || localStorage.getItem('userID')
 
   const detectUser = (functionAdmin, functionUser) => {
     if (admin) return functionAdmin;
@@ -32,20 +37,21 @@ const ProductItem = ({
     navigate(`/admin/add-product/${id}`)
   }
 
-  const handleAddToCart = () => {
-    setLoading(true);
-    dispatch(ADD_TO_CART(product))
+  const handleAddToCart = async () => {
+    setLoading(true)
+    setTimeout(() => {
+      try {
+        const docRef = addDoc(collection(db, "cartProducts"), {
+          userID: userID,
+          ...product
+        });
+        setLoading(false)
+        dispatch(ADD_TO_CART(product))
+      } catch (e) {
+        console.log(e.message);
+      }
+    }, 1000)
   }
-
-  //load 1,2s roi moi them vao gio hang, neu ve sau co dung tren firebase thi k can cai nay vi tai tren firebase can tgian
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1200)
-    return () => {
-      clearTimeout(timer)
-    }
-  }, [loading])
 
   return (
     <>

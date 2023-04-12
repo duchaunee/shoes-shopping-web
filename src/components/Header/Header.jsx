@@ -110,6 +110,7 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
         //lưu trên localStorage để xử lí TH mất mạng, phương thức onAuthStateChanged không được gọi vì thế dislayName, displayEmail SẼ BỊ RỖNG (do lúc này dispatch ở dòng 61 không được thực hiện nên nó sẽ lấy giá trị khởi tạo của redux), VẬY NÊN để xử lí thì lưu trên localstrogate
         localStorage.setItem('displayName', user.displayName?.slice(0, 20) || (user.email.slice(0, -10).charAt(0).toUpperCase() + (user.email.slice(0, -10)).slice(1)));
         localStorage.setItem('displayEmail', user?.email);
+        localStorage.setItem('userID', user.uid);
 
         //set info user
         dispatch(
