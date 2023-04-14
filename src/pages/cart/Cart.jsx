@@ -11,6 +11,7 @@ import CartProduct from './CartProduct';
 import CarLoading from '../../components/carLoading/CarLoading';
 import { toast } from 'react-toastify';
 import { CAlC_TOTAL_PAYMENT } from '../../redux-toolkit/slice/cartSlice';
+import { VOUCHERS } from '../../voucherShop';
 
 const Cart = () => {
   const [loading, setLoading] = useState(true)
@@ -163,7 +164,7 @@ const Cart = () => {
         : (
           <div className="w-full py-[30px]">
             <div className="w-full h-full bg-red-500"></div>
-            <div className="max-w-[1230px] mx-auto ">
+            <div className="max-w-[1230px] min-h-[800px] mx-auto ">
               <div className="w-full px-[15px] pb-[30px]">
                 <div className="w-full flex">
                   {cartProducts.length === 0
@@ -224,7 +225,7 @@ const Cart = () => {
                           </div>
                         </div>
                         {/* right */}
-                        <div className="flex-1 pl-[30px]">
+                        <div className="flex-1 pt-[15px] pb-[30px] px-[30px] h-full border-[2px] border-solid border-primary">
                           <div className="w-full border-[3px] border-transparent border-b-[#ececec] text-[14px] font-bold py-2 uppercase tracking-wider">
                             <h1 className=''>Tổng thanh toán</h1>
                           </div>
@@ -245,9 +246,10 @@ const Cart = () => {
                             <h2 className='font-bold'>{solvePrice(totalPayment + 30000)}₫</h2>
                           </div>
                           <div className='mt-6 text-[14px]'>
-                            <button
-                              // onClick={}
-                              className='w-full px-2 py-3 bg-secondary font-bold tracking-widest text-white hover:brightness-90 transition-all ease-in-out duration-100 uppercase'>Tiến hành thanh toán</button>
+                            <NavLink
+                              to='/thanh-toan'
+                              className='block text-center w-full px-2 py-3 bg-secondary font-bold tracking-widest text-white hover:brightness-90 transition-all ease-in-out duration-100 uppercase'>Tiến hành thanh toán
+                            </NavLink>
                             <div className="pt-6 pb-3 flex gap-2 border-[2px] border-transparent border-b-[#ddd]">
                               <FontAwesomeIcon
                                 className='text-[#b0b0b0] text-[20px]'
