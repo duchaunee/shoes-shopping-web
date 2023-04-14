@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
+import { Timestamp, addDoc, collection, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { db } from '../../firebase/config';
@@ -172,6 +172,7 @@ const ProductDetail = () => {
                 ...product,
                 userID: userID,
                 quantity: quantity,
+                addAt: Timestamp.now().toDate().toString()
               });
               //reset init
               setQuantity(1)

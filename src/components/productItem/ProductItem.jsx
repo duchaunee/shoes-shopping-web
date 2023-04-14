@@ -5,7 +5,7 @@ import "../../components/lineClamp.scss"
 import { useDispatch, useSelector } from 'react-redux';
 import { selectIsAdmin, selectIsLoggedIn } from '../../redux-toolkit/slice/authSlice';
 import { selectUserID } from '../../redux-toolkit/slice/authSlice';
-import { addDoc, collection, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
+import { Timestamp, addDoc, collection, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { toast } from 'react-toastify';
 
@@ -55,6 +55,7 @@ const ProductItem = ({
                 ...product,
                 userID: userID,
                 quantity: 1,
+                addAt: Timestamp.now().toDate().toString()
               });
               setLoading(false)
               toast.success(`Thêm sản phẩm thành công`, {

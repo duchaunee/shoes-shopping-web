@@ -52,19 +52,21 @@ const Cart = () => {
       try {
         const querySnapshot = await getDocs(q);
         await new Promise((resolve) => {
-          const allCartProducts = querySnapshot.docs.map((doc) => {
-            // console.log(doc.data().id);
-            const newProduct = allProducts.filter((product) => product.id === doc.data().id)[0]
-            console.log('newProduct: ', newProduct);
-            return {
-              ...doc.data(),
-              imgURL: newProduct.imgURL,
-              name: newProduct.name,
-              price: newProduct.price,
-              category: newProduct.category,
-              idCartProduct: doc.id,
-            }
-          })
+          const allCartProducts = querySnapshot.docs
+            .map((doc) => {
+              // console.log(doc.data().id);
+              const newProduct = allProducts.filter((product) => product.id === doc.data().id)[0]
+              // console.log('newProduct: ', newProduct);
+              return {
+                ...doc.data(),
+                imgURL: newProduct.imgURL,
+                name: newProduct.name,
+                price: newProduct.price,
+                category: newProduct.category,
+                idCartProduct: doc.id,
+              }
+            })
+            .sort((cartProductA, cartProductB) => (new Date(cartProductB.addAt)) - (new Date(cartProductA.addAt)))
           resolve(allCartProducts)
         }).then((allCartProducts) => {
           //
