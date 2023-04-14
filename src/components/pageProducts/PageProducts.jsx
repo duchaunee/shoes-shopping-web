@@ -48,11 +48,14 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
       //init
       if (detectProduct == 'setDemo') setProductDemo(allProducts) //demo ben trai
       if (detectProduct == 'setPreview') {
+        const allProductsConverted = allProducts
+          .sort((productA, productB) => (new Date(productB.creatAt)) - (new Date(productA.creatAt)))
+        console.log(allProductsConverted);
         setTimeout(() => {
           setLoading(false);
-          setProductPreview(allProducts) //san pham giay nu
-          setPageProducts(allProducts.slice(0, itemsPerPage))
-          dispatch(STORE_NAME_PRODUCTS(allProducts))
+          setProductPreview(allProductsConverted) //san pham giay nu
+          setPageProducts(allProductsConverted.slice(0, itemsPerPage))
+          dispatch(STORE_NAME_PRODUCTS(allProductsConverted))
         }, 800);
       }
     }
@@ -114,12 +117,30 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
   const handleQueryProduct = (e) => {
     if (e.target.value !== 'default') {
       const { field, order } = solveQuery(e.target.value)
-      setProductPreview([...productPreview].sort((a, b) => {
-        if (a[field] > b[field]) return order
-        return (order) * (-1)
-      }));
+      if (field === 'creatAt') {
+        setProductPreview([...productPreview].sort((a, b) => {
+          if ((new Date(a[field])) > (new Date(b[field]))) return order
+          return (order) * (-1)
+        }));
+      }
+      else {
+        setProductPreview([...productPreview].sort((a, b) => {
+          if (a[field] > b[field]) return order
+          return (order) * (-1)
+        }));
+      }
     }
   }
+
+  // const handleQueryProduct = (e) => {
+  //   if (e.target.value !== 'default') {
+  //     const { field, order } = solveQuery(e.target.value)
+  //     setProductPreview([...productPreview].sort((a, b) => {
+  //       if (a[field] > b[field]) return order
+  //       return (order) * (-1)
+  //     }));
+  //   }
+  // }
 
   //có thể để bên Pagination luôn, Nhưng chỉ khi size của productPreview sau khi lọc > 8 (itemsPerPage) t mới cho hiện ra thằng Pagination :v tức là nếu size của productPreview < 8 thì sẽ không hiện Pagination và sẽ không bắt đc thời điểm productPreview thay đổi nên thôi chày cối ném sang bên này vậy :v
   useEffect(() => {

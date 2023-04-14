@@ -292,7 +292,7 @@ const AddProduct = () => {
                   labelName='Loại'
                   placeholder='Loại sản phẩm'
                   id='product-category'>
-                  <option key='0' value="choose">Chọn loại sản phẩm</option>
+                  <option key='0' value="">Chọn loại sản phẩm</option>
                   <option key='1' value="giay-nam">Giày nam</option>
                   <option key='2' value="giay-nu">Giày nữ</option>
                   <option key='3' value="giay-tre-em">Giày trẻ em</option>
@@ -307,7 +307,7 @@ const AddProduct = () => {
                   labelName='Thương hiệu'
                   placeholder='Thương hiệu sản phẩm'
                   id='product-brand'>
-                  <option key='0' value="choose">Chọn thương hiệu</option>
+                  <option key='0' value="">Chọn thương hiệu</option>
                   <option key='1' value="classic">Classic</option>
                   <option key='2' value="sunbaked">Sunbaked</option>
                   <option key='3' value="chuck-07s">Chuck 07S</option>

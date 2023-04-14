@@ -27,6 +27,8 @@ const CartProduct = ({
     const q = query(productsRef);
     try {
       const querySnapshot = await getDocs(q);
+      console.log(querySnapshot.docs);
+      //doc.id là id của firebase tạo riêng cho mỗi sản phẩm, còn doc.data() là dữ liệu của sản phẩm, nên doc.data().id tức là id của bên trong cái object sản phẩm {}
       const idCartProductsDelete = querySnapshot.docs.map((doc) => doc.id)[0]
       try {
         await deleteDoc(doc(db, "cartProducts", idCartProductsDelete));

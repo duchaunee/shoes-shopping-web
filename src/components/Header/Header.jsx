@@ -87,6 +87,8 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
       localStorage.removeItem('currentUser')
       localStorage.removeItem('userID')
       localStorage.removeItem('cartItems')
+      localStorage.removeItem('totalPayment')
+      localStorage.removeItem('cartLength')
     }).catch((e) => {
       toast.error(e.message, {
         autoClose: 1200,
@@ -168,6 +170,8 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
         localStorage.removeItem('currentUser')
         localStorage.removeItem('userID')
         localStorage.removeItem('cartItems')
+        localStorage.removeItem('totalPayment')
+        localStorage.removeItem('cartLength')
 
         dispatch(REMOVE_ACTIVE_ADMIN())
         dispatch(REMOVE_ACTIVE_USER())

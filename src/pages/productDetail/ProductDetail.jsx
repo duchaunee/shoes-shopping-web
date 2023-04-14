@@ -305,7 +305,7 @@ const ProductDetail = () => {
                       </div>
                     </div>
                     <p className="inline-block line-through text-[#aaa] text-[16px]">
-                      {solvePrice(Math.floor(product.price + (product.price * 50) / 100))}
+                      {solvePrice(Math.floor(product.price * 2))}
                       <span className='text-[14px] align-top'>₫</span>
                     </p>
                     <p className="inline-block font-semibold text-[26px] text-bgPrimary">

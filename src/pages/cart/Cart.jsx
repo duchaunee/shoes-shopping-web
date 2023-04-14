@@ -48,41 +48,43 @@ const Cart = () => {
     setLoading(true)
     const productsRef = query(collection(db, "cartProducts"), where('userID', "==", userID));
     const q = query(productsRef);
-    try {
-      const querySnapshot = await getDocs(q);
-      await new Promise((resolve) => {
-        const allCartProducts = querySnapshot.docs.map((doc) => {
-          // console.log(doc.data().id);
-          const newProduct = allProducts.filter((product) => product.id === doc.data().id)[0]
-          console.log('newProduct: ', newProduct);
-          return {
-            ...doc.data(),
-            imgURL: newProduct.imgURL,
-            name: newProduct.name,
-            price: newProduct.price,
-            category: newProduct.category,
-            idCartProduct: doc.id,
-          }
+    if (allProducts.length > 0) {
+      try {
+        const querySnapshot = await getDocs(q);
+        await new Promise((resolve) => {
+          const allCartProducts = querySnapshot.docs.map((doc) => {
+            // console.log(doc.data().id);
+            const newProduct = allProducts.filter((product) => product.id === doc.data().id)[0]
+            console.log('newProduct: ', newProduct);
+            return {
+              ...doc.data(),
+              imgURL: newProduct.imgURL,
+              name: newProduct.name,
+              price: newProduct.price,
+              category: newProduct.category,
+              idCartProduct: doc.id,
+            }
+          })
+          resolve(allCartProducts)
+        }).then((allCartProducts) => {
+          //
+          const totalPayment = allCartProducts.reduce((total, item) => {
+            return total + item.price * item.quantity
+          }, 0)
+          setTotalPayment(totalPayment)
+          localStorage.setItem('totalPayment', JSON.stringify(totalPayment))
+          dispatch(CAlC_TOTAL_PAYMENT(totalPayment))
+          //
+          localStorage.setItem('cartLength', JSON.stringify(allCartProducts.length))
+          setTimeout(() => {
+            setCartProducts(allCartProducts)
+            setLoading(false)
+          }, 254)
         })
-        resolve(allCartProducts)
-      }).then((allCartProducts) => {
-        //
-        const totalPayment = allCartProducts.reduce((total, item) => {
-          return total + item.price * item.quantity
-        }, 0)
-        setTotalPayment(totalPayment)
-        localStorage.setItem('totalPayment', JSON.stringify(totalPayment))
-        dispatch(CAlC_TOTAL_PAYMENT(totalPayment))
-        //
-        localStorage.setItem('cartLength', JSON.stringify(allCartProducts.length))
-        setTimeout(() => {
-          setCartProducts(allCartProducts)
-          setLoading(false)
-        }, 254)
-      })
-    }
-    catch (e) {
-      console.log(e.message);
+      }
+      catch (e) {
+        console.log(e.message);
+      }
     }
   }
 

@@ -1,6 +1,6 @@
 import { faEdit, faSearch, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { collection, deleteDoc, doc, getDocs, orderBy, query } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs, orderBy, query, where } from 'firebase/firestore';
 import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { Spinning } from '../../../animation-loading';
@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Notiflix from 'notiflix';
 import { STORE_PRODUCTS, selectProducts } from '../../../redux-toolkit/slice/productSlice';
 import "../../lineClamp.scss"
+import { selectUserID } from '../../../redux-toolkit/slice/authSlice';
 
 const ViewProducts = () => {
   const itemsPerPage = 3;
@@ -31,6 +32,7 @@ const ViewProducts = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate()
   const productsRedux = useSelector(selectProducts)
+  const userID = useSelector(selectUserID) || localStorage.getItem('userID')
 
   //thật ra đã lấy đc tất cả sản phẩm từ firebase về ở lúc vào web rồi nhưng vẫn để getProducts ở đây nữa để làm cái laoding cho nó đẹp :v chứ vào cái hiện luôn ra thì xấu hihi
   const getProducts = async () => {
@@ -47,12 +49,16 @@ const ViewProducts = () => {
           ...doc.data()
         }
       })
+
+      //vì createAt lúc tạo sp là dạng string :v thì nếu tạo ngày 14 sẽ bị nhỏ hơn ngày 3 (so sánh string mà) nên phải convert về Date
+      const allProductsConverted = allProducts
+        .sort((productA, productB) => (new Date(productB.creatAt)) - (new Date(productA.creatAt)))
       //init
-      setProducts(allProducts)
-      setPageProducts(allProducts.slice(0, itemsPerPage))
+      setProducts(allProductsConverted)
+      setPageProducts(allProductsConverted.slice(0, itemsPerPage))
       setLoading(false)
       //save products to redux
-      dispatch(STORE_PRODUCTS(allProducts))
+      dispatch(STORE_PRODUCTS(allProductsConverted))
     }
     catch (e) {
       toast.error(e.message, {
@@ -93,11 +99,41 @@ const ViewProducts = () => {
     );
   }
 
+  //hàm này để xóa đi sản phẩm trong Cart Product
+  const handleDeleteCartProduct = async (idProduct) => {
+    const productsRef = query(collection(db, "cartProducts"))
+    const q = query(productsRef);
+    try {
+      const querySnapshot = await getDocs(q);
+      // console.log(querySnapshot.docs);
+      const allIdCartProductsDelete = querySnapshot.docs.filter((doc) => doc.data().id === idProduct)
+      // console.log(allIdCartProductsDelete);
+      Promise.all(
+        allIdCartProductsDelete.map(async (idCartProductsDelete) => {
+          try {
+            await deleteDoc(doc(db, "cartProducts", idCartProductsDelete.id));
+          } catch (e) {
+            console.log(e.message);
+          }
+        })
+
+      )
+    }
+    catch (e) {
+      console.log(e.message);
+    }
+  }
+
   const handleDeleteProduct = async (id, img) => {
     try {
       await deleteDoc(doc(db, "products", id));
-      //delete image (neu co anh thi moi xoa, co TH add product nhung k add anh)
-      if (img) {
+
+      try {
+        await handleDeleteCartProduct(id); //khi xóa 1 sản phẩm thì xóa luôn cả cartProduct (những sản phẩm trong giỏ hàng)
+      } catch (e) {
+        console.log(e.message);
+      }
+      if (img) { //delete image (neu co anh thi moi xoa, co TH add product nhung k add anh)
         img.forEach(async (item) => {
           if (item) {
             const desertRef = ref(storage, item);
@@ -105,6 +141,7 @@ const ViewProducts = () => {
           }
         })
       }
+
       //set lại products trên locaStorage và trên redux
       console.log(([...productsRedux].filter(product => product.id !== id)));
       dispatch(STORE_PRODUCTS([...productsRedux].filter(product => product.id !== id)))
@@ -245,10 +282,18 @@ const ViewProducts = () => {
   const handleQueryProduct = (e) => {
     if (e.target.value !== 'default') {
       const { field, order } = solveQuery(e.target.value)
-      setProducts([...products].sort((a, b) => {
-        if (a[field] > b[field]) return order
-        return (order) * (-1)
-      }));
+      if (field === 'creatAt') {
+        setProducts([...products].sort((a, b) => {
+          if ((new Date(a[field])) > (new Date(b[field]))) return order
+          return (order) * (-1)
+        }));
+      }
+      else {
+        setProducts([...products].sort((a, b) => {
+          if (a[field] > b[field]) return order
+          return (order) * (-1)
+        }));
+      }
     }
   }
 
