@@ -49,7 +49,7 @@ const CheckOut = () => {
         setTimeout(() => {
           setCartProducts(allCartProducts)
           setLoading(false)
-        }, 500)
+        }, 800)
       })
     }
     catch (e) {

@@ -13,6 +13,7 @@ import { toast } from 'react-toastify';
 import { CAlC_TOTAL_PAYMENT } from '../../redux-toolkit/slice/cartSlice';
 import { VOUCHERS } from '../../voucherShop';
 import OverlayCart from './OverlayCart';
+import { Skeleton } from '../../animation-loading';
 
 const Cart = () => {
   const [loading, setLoading] = useState(true)
@@ -224,7 +225,7 @@ const Cart = () => {
                         </div>
                       </div>
                       {/* right */}
-                      <div className="flex-1 pt-[15px] pb-[30px] px-[30px] h-full border-[2px] border-solid border-primary">
+                      <div className={`flex-1 pt-[15px] pb-[30px] px-[30px] h-full border-[2px] border-solid ${!loading && 'border-primary'}`}>
                         <div className="w-full border-[3px] border-transparent border-b-[#ececec] text-[14px] font-bold py-2 uppercase tracking-wider">
                           <h1 className=''>Tổng thanh toán</h1>
                         </div>
@@ -252,7 +253,7 @@ const Cart = () => {
                               setTimeout(() => {
                                 navigate('/thanh-toan')
                                 // setLoading(false)
-                              }, 1000)
+                              }, 1200)
                             }}
                             className='block text-center w-full px-2 py-3 bg-secondary font-bold tracking-widest text-white hover:brightness-90 transition-all ease-in-out duration-100 uppercase'>Tiến hành thanh toán
                           </button>
