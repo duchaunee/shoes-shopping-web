@@ -12,8 +12,7 @@ import CarLoading from '../../components/carLoading/CarLoading';
 import { toast } from 'react-toastify';
 import { CAlC_TOTAL_PAYMENT } from '../../redux-toolkit/slice/cartSlice';
 import { VOUCHERS } from '../../voucherShop';
-import OverlayCart from './OverlayCart';
-import { Skeleton } from '../../animation-loading';
+import { OverlayLoading, Skeleton } from '../../animation-loading';
 
 const Cart = () => {
   const [loading, setLoading] = useState(true)
@@ -162,7 +161,7 @@ const Cart = () => {
 
   return (
     <>
-      <OverlayCart loading={loading}>
+      <OverlayLoading loading={loading}>
         <div className="w-full py-[30px]">
           <div className="max-w-[1230px] min-h-[800px] mx-auto ">
             <div className="w-full px-[15px] pb-[30px]">
@@ -279,7 +278,7 @@ const Cart = () => {
             </div>
           </div>
         </div >
-      </OverlayCart>
+      </OverlayLoading>
     </>
   );
 };

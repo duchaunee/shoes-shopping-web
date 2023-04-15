@@ -1,8 +1,7 @@
 import React from 'react';
 import CarLoading from '../../components/carLoading/CarLoading';
-import Spinning from '../../animation-loading/spinning/Spinning'
 
-const OverlayCart = ({ children, loading }) => {
+const OverlayLoading = ({ children, loading }) => {
   return (
     <>
       <div className={`w-full h-full ${loading && 'pointer-events-none select-none'} relative `}>
@@ -17,4 +16,4 @@ const OverlayCart = ({ children, loading }) => {
   );
 };
 
-export default OverlayCart;
+export default OverlayLoading;

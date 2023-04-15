@@ -7,7 +7,6 @@ import { toast } from 'react-toastify';
 import { db } from '../../firebase/config';
 import { useDispatch, useSelector } from 'react-redux';
 import Pagination from '../pagination/Pagination';
-import OverlayLoading from '../overlayLoading/OverlayLoading';
 import { selectIsAdmin } from '../../redux-toolkit/slice/authSlice';
 import { Skeleton } from '../../animation-loading';
 
