@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Pagination from '../pagination/Pagination';
 import OverlayLoading from '../overlayLoading/OverlayLoading';
 import { selectIsAdmin } from '../../redux-toolkit/slice/authSlice';
+import { Skeleton } from '../../animation-loading';
 
 const solvePrice = (price) => {
   return Number(price).toLocaleString('vi-VN');
@@ -159,115 +160,112 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
     <>
       <div className='min-h-[666px]'>
         {/* top */}
-        {loading || (
-          <div className=" max-w-[1230px] px-[15px] mx-auto min-h-[60px] pt-5 flex items-center justify-between">
-            <div className="flex-1">
-              <NavLink
-                to='/'
-                className='uppercase text-[18px] text-[#95959f]'>
-                Trang chủ
-              </NavLink>
-              <div className="mx-2 inline-block">/</div>
-              <span className='uppercase text-[18px] font-bold '>{currentName}</span>
-            </div>
-            <div className="flex items-center">
-              <p className='inline-block text-[16px] text-[#353535] mr-8'>
-                <span className='font-bold'>Số lượng</span>: {productPreview.length} sản phẩm
-              </p>
-              <select
-                ref={queryRef}
-                onChange={handleQueryProduct}
-                className='outline-none mr-[12px] px-3 py-3 pr-16 text-bgPrimary cursor-pointer border bg-white border-solid border-[#ccc] shadow-shadowSearch'
-                name="sort-by" id="">
-                <option key='0' value="default">Sắp xếp theo</option>
-                <option key='1' value="latest">Mới nhất</option>
-                <option key='2' value="oldest">Cũ nhất</option>
-                <option key='3' value="lowest-price">Giá tăng dần</option>
-                <option key='4' value="highest-price">Giá giảm dần</option>
-                <option key='5' value="a-z">A - Z</option>
-                <option key='6' value="z-a">Z - A</option>
-              </select>
-
-              <select
-                ref={filterRef}
-                onChange={handleFilterProduct}
-                className='outline-none mr-[12px] px-3 py-3 pr-16 text-bgPrimary cursor-pointer border bg-white border-solid border-[#ccc] shadow-shadowSearch'
-                name="sort-by" id="">
-                <option key='0' value="default">Lọc sản phẩm theo</option>
-                <option key='1' value="all">Tất cả</option>
-                <option key='2' value="classic">Classic</option>
-                <option key='3' value="sunbaked">Sunbaked</option>
-                <option key='4' value="chuck-07s">Chuck 07S</option>
-                <option key='5' value="one-star">One Star</option>
-                <option key='6' value="psy-kicks">PSY Kicks</option>
-              </select>
-            </div>
+        <div className=" max-w-[1230px] px-[15px] mx-auto min-h-[60px] pt-5 flex items-center justify-between">
+          <div className="flex-1">
+            <NavLink
+              to='/'
+              className='uppercase text-[18px] text-[#95959f]'>
+              Trang chủ
+            </NavLink>
+            <div className="mx-2 inline-block">/</div>
+            <span className='uppercase text-[18px] font-bold '>{currentName}</span>
           </div>
-        )}
+          <div className="flex items-center">
+            <p className='inline-block text-[16px] text-[#353535] mr-8'>
+              <span className='font-bold'>Số lượng</span>: {productPreview.length} sản phẩm
+            </p>
+            <select
+              ref={queryRef}
+              onChange={handleQueryProduct}
+              className='outline-none mr-[12px] px-3 py-3 pr-16 text-bgPrimary cursor-pointer border bg-white border-solid border-[#ccc] shadow-shadowSearch'
+              name="sort-by" id="">
+              <option key='0' value="default">Sắp xếp theo</option>
+              <option key='1' value="latest">Mới nhất</option>
+              <option key='2' value="oldest">Cũ nhất</option>
+              <option key='3' value="lowest-price">Giá tăng dần</option>
+              <option key='4' value="highest-price">Giá giảm dần</option>
+              <option key='5' value="a-z">A - Z</option>
+              <option key='6' value="z-a">Z - A</option>
+            </select>
+
+            <select
+              ref={filterRef}
+              onChange={handleFilterProduct}
+              className='outline-none mr-[12px] px-3 py-3 pr-16 text-bgPrimary cursor-pointer border bg-white border-solid border-[#ccc] shadow-shadowSearch'
+              name="sort-by" id="">
+              <option key='0' value="default">Lọc sản phẩm theo</option>
+              <option key='1' value="all">Tất cả</option>
+              <option key='2' value="classic">Classic</option>
+              <option key='3' value="sunbaked">Sunbaked</option>
+              <option key='4' value="chuck-07s">Chuck 07S</option>
+              <option key='5' value="one-star">One Star</option>
+              <option key='6' value="psy-kicks">PSY Kicks</option>
+            </select>
+          </div>
+        </div>
 
         {/* bot */}
         <div className="w-full">
           <div className='max-w-[1230px] min-h-[666px] pt-[30px] mx-auto flex'>
             {/* left */}
-            {loading || (
-              <div className='max-w-[25%] px-[15px] pb-[30px]'>
-                <div className="w-full ">
-                  <ValueFilter
-                    productPreview={productPreview}
-                    setProductPreview={setProductPreview}
-                    queryRef={queryRef}
-                    filterRef={filterRef}
-                    selectNameProduct={selectNameProduct}
-                    setCurrentPage={setCurrentPage}
-                  />
-                  <NewestProduct productDemo={productDemo}></NewestProduct>
-                </div>
+            <div className='max-w-[25%] px-[15px] pb-[30px]'>
+              <div className="w-full ">
+                <ValueFilter
+                  productPreview={productPreview}
+                  setProductPreview={setProductPreview}
+                  queryRef={queryRef}
+                  filterRef={filterRef}
+                  selectNameProduct={selectNameProduct}
+                  setCurrentPage={setCurrentPage}
+                />
+                <NewestProduct loading={loading} productDemo={productDemo}></NewestProduct>
               </div>
-            )}
+            </div>
 
             {/* right */}
-            {loading
-              ? <OverlayLoading />
-              : <div className="flex-1">
-                <div className={`px-[15px] ${productPreview.length > 0 && 'min-h-[596px]'} grid grid-cols-4`}>
-                  {pageProducts.map((item) => (
+            <div className="flex-1">
+              <div className={`px-[15px] ${productPreview.length > 0 && 'min-h-[596px]'} grid grid-cols-4`}>
+                {(pageProducts.length === 0
+                  ? Array(8).fill()
+                  : pageProducts).map((item, idx) => (
                     <div
-                      key={item.id}
+                      key={idx}
                       className="w-full px-[10px] pb-5">
-                      <Card width='w-full' >
-                        <ProductItem
-                          product={item}
-                          id={item.id}
-                          img={item.imgURL}
-                          name={item.name}
-                          price={solvePrice(item.price)}
-                          idURL={fieldValue}
-                          text={admin ? 'Sửa sản phẩm' : 'Thêm vào giỏ'}
-                        />
-                      </Card>
+                      <Skeleton loading={loading} className={`${loading && 'overflow-hidden rounded-[4px]'}`}>
+                        <Card width='w-full' >
+                          <ProductItem
+                            product={item}
+                            id={item?.id}
+                            img={item?.imgURL}
+                            name={item?.name}
+                            price={solvePrice(item?.price)}
+                            idURL={fieldValue}
+                            text={admin ? 'Sửa sản phẩm' : 'Thêm vào giỏ'}
+                          />
+                        </Card>
+                      </Skeleton>
                     </div>
                   ))}
-                </div>
-                {productPreview?.length > itemsPerPage
-                  && <Pagination
-                    products={productPreview}
-                    currentPage={currentPage}
-                    setCurrentPage={setCurrentPage}
-                    itemsPerPage={itemsPerPage}
-                    quantity={quantity}
-                    setPageProducts={setPageProducts} />
-                }
-                {productPreview.length == 0
-                  && <div className='flex flex-col items-center'>
-                    <img
-                      className='w-[350px] object-cover'
-                      src="./notFound.jpg" alt=""
-                    />
-                    <h1 className='text-[26px] text-center text-bgPrimary font-mono'>Không tìm thấy sản phẩm nào</h1>
-                  </div>
-                }
               </div>
-            }
+              {productPreview?.length > itemsPerPage
+                && <Pagination
+                  products={productPreview}
+                  currentPage={currentPage}
+                  setCurrentPage={setCurrentPage}
+                  itemsPerPage={itemsPerPage}
+                  quantity={quantity}
+                  setPageProducts={setPageProducts} />
+              }
+              {productPreview.length == 0 && !loading
+                && <div className='flex flex-col items-center'>
+                  <img
+                    className='w-[350px] object-cover'
+                    src="./notFound.jpg" alt=""
+                  />
+                  <h1 className='text-[26px] text-center text-bgPrimary font-mono'>Không tìm thấy sản phẩm nào</h1>
+                </div>
+              }
+            </div>
           </div>
         </div>
       </div>

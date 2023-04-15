@@ -4,6 +4,7 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { useEffect, useState } from "react";
 
+//duchaunee
 // export const firebaseConfig = {
 //   apiKey: "AIzaSyDUzHs-1GZd5wwcYSplp5T14hagQZ4l8pY",
 //   authDomain: "shoes-shopping-web.firebaseapp.com",
@@ -13,6 +14,8 @@ import { useEffect, useState } from "react";
 //   appId: "1:979140287595:web:fb49fba850abadd3f9252e"
 // };
 
+
+//biibi2504
 const firebaseConfig = {
   apiKey: "AIzaSyBkiYSMVck0-9VyqDklXfrGiWPZaES4aS4",
   authDomain: "shoes-shopping-web-f6dc7.firebaseapp.com",

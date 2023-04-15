@@ -11,7 +11,7 @@ import { selectProducts } from '../../redux-toolkit/slice/productSlice';
 import { Card, ProductItem } from '../../components';
 import OverlayProduct from './OverlayProduct';
 import { ADD_TO_CART } from '../../redux-toolkit/slice/cartSlice';
-import { Spinning } from '../../animation-loading';
+import { Skeleton, Spinning } from '../../animation-loading';
 import { toast } from 'react-toastify';
 
 const solvePrice = (price) => {
@@ -222,24 +222,23 @@ const ProductDetail = () => {
 
   return (
     <>
-      {loading
-        ? <CarLoading />
-        : <>
-          {/* top */}
-          <div className="w-full">
-            <div className="w-full h-full py-10">
-              <div className="max-w-[1230px] h-full mx-auto px-[15px] flex gap-8">
-                {/* left  */}
-                <div className="flex-1">
-                  <div
-                    onMouseEnter={() => setHoverShowProduct(true)}
-                    onMouseLeave={() => setHoverShowProduct(false)}
-                    className="relative mb-4 w-[584px] h-[425px] overflow-hidden whitespace-nowrap">
-                    <button
-                      className={`${hoverShowProduct ? '' : 'left-2 opacity-0'} outline-none py-8 px-4 absolute cursor-pointer left-0 top-1/2 translate-y-[-50%] z-30 transition-all ease-in-out duration-500 ${imgProductsPreview.length === 1 ? 'hidden' : ''}`}
-                      onClick={() => { setTranslateShowX(translateShowX - 584) }}>
-                      <FontAwesomeIcon className='text-[36px]' icon={faChevronLeft} />
-                    </button>
+      <>
+        {/* top */}
+        <div className="w-full">
+          <div className="w-full h-full py-10">
+            <div className="max-w-[1230px] h-full mx-auto px-[15px] flex gap-8">
+              {/* left  */}
+              <div className="flex-1">
+                <div
+                  onMouseEnter={() => (!loading && setHoverShowProduct(true))}
+                  onMouseLeave={() => (!loading && setHoverShowProduct(false))}
+                  className="relative mb-4 w-[584px] h-[425px] overflow-hidden whitespace-nowrap">
+                  <button
+                    className={`${hoverShowProduct ? '' : 'left-2 opacity-0'} outline-none py-8 px-4 absolute cursor-pointer left-0 top-1/2 translate-y-[-50%] z-30 transition-all ease-in-out duration-500 ${imgProductsPreview.length === 1 ? 'hidden' : ''}`}
+                    onClick={() => { setTranslateShowX(translateShowX - 584) }}>
+                    <FontAwesomeIcon className='text-[36px]' icon={faChevronLeft} />
+                  </button>
+                  <Skeleton loading={loading} className='overflow-hidden' rounded='rounded-sm' height='h-full'>
                     <div
                       style={{
                         transform: `translateX(-${translateShowX}px)`
@@ -251,17 +250,20 @@ const ProductDetail = () => {
                           className='inline-flex w-[584px] h-full cursor-pointer object-contain' src={imgProduct} alt="" />
                       ))}
                     </div>
-                    <button
-                      className={`${hoverShowProduct ? '' : 'right-2 opacity-0'} outline-none py-8 px-4 absolute cursor-pointer right-0 top-1/2 translate-y-[-50%] z-30 transition-all ease-in-out duration-500 ${imgProductsPreview.length === 1 ? 'hidden' : ''}`}
-                      onClick={() => { setTranslateShowX(translateShowX + 584) }}>
-                      <FontAwesomeIcon className='text-[36px]' icon={faChevronRight} />
-                    </button>
-                  </div>
+                  </Skeleton>
+                  <button
+                    className={`${hoverShowProduct ? '' : 'right-2 opacity-0'} outline-none py-8 px-4 absolute cursor-pointer right-0 top-1/2 translate-y-[-50%] z-30 transition-all ease-in-out duration-500 ${imgProductsPreview.length === 1 ? 'hidden' : ''}`}
+                    onClick={() => { setTranslateShowX(translateShowX + 584) }}>
+                    <FontAwesomeIcon className='text-[36px]' icon={faChevronRight} />
+                  </button>
+                </div>
 
-                  <div className="w-full h-[70px] min-[1024px]:h-[95px] mb-6">
-                    {/* fix height cứng để slide nè, responsive cẩn thận nhé */}
-                    <div className="w-[584px] h-full cursor-grab overflow-hidden whitespace-nowrap">
-                      {imgProductsPreview.map((imgProduct, idx) => (
+                <div className="w-full h-[70px] min-[1024px]:h-[95px] mb-6">
+                  {/* fix height cứng để slide nè, responsive cẩn thận nhé */}
+                  <div className="w-[584px] h-full cursor-grab overflow-hidden whitespace-nowrap">
+                    {(imgProductsPreview.length === 0
+                      ? Array(5).fill()
+                      : imgProductsPreview).map((imgProduct, idx) => (
                         <div
                           onClick={() => {
                             setIdxActive(idx)
@@ -269,27 +271,39 @@ const ProductDetail = () => {
                           }}
                           key={idx}
                           className={`inline-flex ${idx > 0 ? 'pl-[10px]' : ''} w-1/5 h-full`}>
-                          <img
-                            className={`cursor-pointer border-[2px] rounded-[4px] ${idxActive === idx ? 'border-bgPrimary' : ' border-[#aaa] opacity-40'} h-full inline-block w-full object-contain transition-all ease-in-out duration-150 `}
-                            src={imgProduct}
-                            alt="" />
+                          <Skeleton className='overflow-hidden' loading={loading} rounded='rounded-[4px]' width='w-full'>
+                            <img
+                              className={`cursor-pointer border-[2px] rounded-[4px] ${idxActive === idx ? 'border-bgPrimary' : ' border-[#aaa] opacity-40'} h-full inline-block w-full object-contain transition-all ease-in-out duration-150 `}
+                              src={imgProduct || ''}
+                              alt="" />
+                          </Skeleton>
                         </div>
                       ))}
-                    </div>
                   </div>
                 </div>
+              </div>
 
-                {/* right */}
-                <div className="flex-1 pb-[30px]">
-                  <nav className='text-[#94949e] uppercase text-[14px]'>
+              {/* right */}
+              <div className="flex-1 pb-[30px]">
+                <nav className='text-[#94949e] uppercase text-[14px]'>
+                  <Skeleton className='overflow-hidden' loading={loading} rounded='rounded-[4px]'>
                     <NavLink className='transition-all ease-linear duration-100 hover:text-bgPrimary hover:opacity-70mb-2' to='/'>Trang chủ</NavLink>
                     <div className="mx-2 inline-block">/</div>
                     <NavLink
                       to={`/${product.category}`}
                       className='transition-all ease-linear duration-100 hover:text-bgPrimary hover:opacity-70mb-2'>{solveCategory(product.category)}</NavLink>
-                  </nav>
-                  <h1 className='text-[28px] text-bgPrimary font-semibold mb-[14px]'>{product.name}</h1>
-                  <div className="flex gap-3">
+                  </Skeleton>
+                </nav>
+                <div className={`${loading && 'mt-[14px] mb-[14px]'}`}>
+                  <Skeleton className='overflow-hidden' loading={loading} rounded='rounded-[4px]'>
+                    <h1 className='text-[28px] text-bgPrimary font-semibold'>
+                      {product.name || 'Day la ten san pham de chay skeleton'}
+                    </h1>
+                  </Skeleton>
+                </div>
+                <Skeleton
+                  loading={loading} className='inline-flex overflow-hidden' rounded='rounded-[4px]'>
+                  <div className="inline-flex gap-3">
                     <div className="">
                       <FontAwesomeIcon className='text-[#f9dc4b] text-[18px] mr-2' icon={faStar} />
                       <p className='inline-block text-[#767676] font-medium'>4.6</p>
@@ -297,7 +311,9 @@ const ProductDetail = () => {
                     <div className="w-[2px] bg-[#e6e6e6]"></div>
                     <p className='text-[#767676] font-medium'>432 Đánh giá</p>
                   </div>
-                  <div className="mt-5 mb-4 flex items-center gap-3">
+                </Skeleton>
+                <Skeleton loading={loading} className='mt-5 mb-4 overflow-hidden'>
+                  <div className={`flex items-center gap-3 ${loading && 'mt-5 mb-4'}`}>
                     {/* cái đề để tránh flex nó làm cho height tăng theo thằng con dài nhất mà mình chỉ muốn nó py-1 theo font thui */}
                     <div className="">
                       <div className="inline-flex rounded-[12px] items-center gap-1 w-auto bg-[#6ab87e]/20 py-1 px-2">
@@ -314,8 +330,12 @@ const ProductDetail = () => {
                       <span className='text-[22px] align-top'>₫</span>
                     </p>
                   </div>
-                  <div className="w-[50px] h-[2px] bg-black/20 my-[20px]"></div>
-                  <div className="mb-[20px] grid grid-cols-5 items-start">
+                </Skeleton>
+                <Skeleton loading={loading} className='my-[10px] h-[8px] inline-block overflow-hidden'>
+                  <div className="w-[50px] h-[2px] bg-black/20"></div>
+                </Skeleton>
+                <Skeleton loading={loading} className='mb-[20px] overflow-hidden'>
+                  <div className={`${!loading && 'mb-[20px]'} grid grid-cols-5 items-start`}>
                     <div className="col-span-1 mb-3 font-medium text-[18px] text-[#1b1b1b] inline-flex items-center gap-3">
                       <p className=''>Vận chuyển</p>
                     </div>
@@ -327,7 +347,9 @@ const ProductDetail = () => {
                       <p className='text-[16px] opacity-80 ml-[30px]'>Miễn phí vận chuyển cho đơn hàng trên 850.000₫</p>
                     </div>
                   </div>
-                  <div className="mb-[20px] grid grid-cols-5 items-center">
+                </Skeleton>
+                <Skeleton loading={loading} className='mb-[20px] overflow-hidden'>
+                  <div className={`${!loading && 'mb-[20px]'} grid grid-cols-5 items-center`}>
                     <div className="col-span-1 mb-3 font-medium text-[18px] text-[#1b1b1b] inline-flex items-center gap-3">
                       <p className=''>Số lượng</p>
                     </div>
@@ -360,12 +382,14 @@ const ProductDetail = () => {
                       <p className='text-[#767676] opacity-80 font-medium'>{product.inventory} sản phẩm có sẵn</p>
                     </div>
                   </div>
-                  {/* <div className="mb-[15px]">
+                </Skeleton>
+                {/* <div className="mb-[15px]">
                     <p className='font-medium text-[18px] text-[#1b1b1b] mb-3'>
 
                     </p>
                   </div> */}
-                  <div className="mb-[25px] inline-grid grid-cols-12 gap-6 w-[373px] h-[46px]">
+                <Skeleton loading={loading} className='inline-block mb-[25px] w-[373px] h-[46px] overflow-hidden'>
+                  <div className={`${!loading && 'mb-[25px]'} inline-grid grid-cols-12 gap-6 w-[373px] h-[46px]`}>
                     <button
                       onClick={(e) => {
                         if (!logined) navigate('/dang-nhap')
@@ -385,6 +409,8 @@ const ProductDetail = () => {
                           </div>)}
                     </button>
                   </div>
+                </Skeleton>
+                <Skeleton loading={loading} className={loading && 'overflow-hidden'}>
                   <div className="w-full py-4 px-6 shadow-shadowHover">
                     <p className="font-bold text-[18px] leading-[22px] mt-1 mb-5">Quyền lợi khách hàng & Bảo hành</p>
                     <div className="inline-flex gap-2 my-2">
@@ -399,12 +425,14 @@ const ProductDetail = () => {
                     </div>
                     <p className='text-[16px] ml-[30px]'>Bảo hành bao gồm các lỗi do nhà sản xuất như lỗi về chất liệu, lỗi thiết kế. Không bao gồm các lỗi do sử dụng sai cách hoặc tai nạn gây ra.</p>
                   </div>
-                </div>
+                </Skeleton>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* bottom */}
+        {/* bottom */}
+        {!loading && (
           <div className="w-full">
             <div className="max-w-[1230px] h-full px-[15px] mx-auto">
               {/* thong tin bo sung */}
@@ -534,14 +562,12 @@ const ProductDetail = () => {
                       <FontAwesomeIcon className='text-[18px]' icon={faArrowRight} />
                     </div>
                   </div>
-
-
                 </div>
               </div>
             </div>
           </div>
-        </>
-      }
+        )}
+      </>
     </>
   );
 };
