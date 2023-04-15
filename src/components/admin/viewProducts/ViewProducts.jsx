@@ -83,6 +83,7 @@ const ViewProducts = () => {
       {
         zindex: 2000,
         width: '320px',
+        zindex: 999999,
         fontFamily: 'Roboto',
         borderRadius: '4px',
         titleFontSize: '20px',

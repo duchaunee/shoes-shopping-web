@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLongArrowAltLeft, faTags } from '@fortawesome/free-solid-svg-icons';
-import { collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserID } from '../../redux-toolkit/slice/authSlice';
@@ -13,6 +13,7 @@ import { toast } from 'react-toastify';
 import { CAlC_TOTAL_PAYMENT } from '../../redux-toolkit/slice/cartSlice';
 import { VOUCHERS } from '../../voucherShop';
 import { OverlayLoading, Skeleton } from '../../animation-loading';
+import Notiflix from 'notiflix';
 
 const Cart = () => {
   const [loading, setLoading] = useState(true)
@@ -73,6 +74,7 @@ const Cart = () => {
           resolve(allCartProducts)
         }).then((allCartProducts) => {
           //
+          console.log(allCartProducts);
           const totalPayment = allCartProducts.reduce((total, item) => {
             return total + item.price * item.quantity
           }, 0)
@@ -131,6 +133,75 @@ const Cart = () => {
     })
   }
 
+  const confirmDelete = () => {
+    window.scrollTo({
+      top: 0,
+      // behavior: 'smooth'
+    })
+    Notiflix.Confirm.show(
+      'Xóa giỏ hàng',
+      'Bạn có muốn xóa giỏ hàng ?',
+      'Xóa',
+      'Hủy bỏ',
+      function okCb() {
+        handleDeleteAllCart()
+      },
+      function cancelCb() {
+        // console.log();
+      },
+      {
+        zindex: 2000,
+        width: '320px',
+        zindex: 999999,
+        fontFamily: 'Roboto',
+        borderRadius: '4px',
+        titleFontSize: '20px',
+        titleColor: '#c30005',
+        messageFontSize: '18px',
+        cssAnimationDuration: 300,
+        cssAnimationStyle: 'zoom',
+        buttonsFontSize: '16px',
+        okButtonBackground: '#c30005',
+        cancelButtonBackground: '#a5a3a3',
+        backgroundColor: '##d8d8d8',
+        backOverlayColor: 'rgba(0,0,0,0.4)',
+      },
+    );
+  }
+
+  const handleDeleteAllCart = async () => {
+    setLoading(true)
+    const productsRef = query(
+      collection(db, "cartProducts"),
+      where('userID', "==", userID));
+    const q = query(productsRef);
+    try {
+      const querySnapshot = await getDocs(q);
+      console.log(querySnapshot.docs);
+      //doc.id là id của firebase tạo riêng cho mỗi sản phẩm, còn doc.data() là dữ liệu của sản phẩm, nên doc.data().id tức là id của bên trong cái object sản phẩm {}
+      Promise.all(
+        querySnapshot.docs.map(async (docQuery) => {
+          try {
+            await deleteDoc(doc(db, "cartProducts", docQuery.id));
+            return Promise.resolve()
+          } catch (e) {
+            console.log(e.message);
+          }
+        })
+      )
+      setDone(true)
+      setTimeout(() => {
+        toast.success(`Xóa giỏ hàng thành công`, {
+          position: "top-left",
+          autoClose: 1200
+        })
+      }, 500)
+    }
+    catch (e) {
+      console.log(e.message);
+    }
+  }
+
   const deliveryDate = () => {
     const today = new Date()
     const startDelivary = new Date()
@@ -149,6 +220,7 @@ const Cart = () => {
   }
 
   useEffect(() => {
+    console.log('dasd');
     setDone(false)
 
     getProducts()
@@ -209,19 +281,26 @@ const Cart = () => {
                             ))}
                           </tbody>
                         </table>
-                        <div className="mt-6 flex gap-4">
-                          <NavLink
-                            to='/'
-                            className='border-[2px] border-primary text-primary px-4 py-1 hover:bg-primary hover:text-white flex items-center font-medium transition-all ease-linear duration-[120ms]'>
-                            <FontAwesomeIcon className='mr-[6px]' icon={faLongArrowAltLeft} />
-                            <span className='text-[14] uppercase'>Tiếp tục xem sản phẩm</span>
-                          </NavLink>
-                          <button
-                            onClick={handleUpdateCartProduct}
-                            className='px-4 py-1 bg-primary hover:bg-[#9f0d11] text-white font-medium transition-all ease-linear flex items-center duration-[120ms]'>
-                            <span className='text-[14] uppercase'>Cập nhật giỏ hàng</span>
-                          </button>
-                        </div>
+                        {!loading && (
+                          <div className="mt-6 flex gap-4">
+                            <NavLink
+                              to='/'
+                              className='border-[2px] border-primary text-primary px-4 py-1 hover:bg-primary hover:text-white flex items-center font-medium transition-all ease-linear duration-[120ms]'>
+                              <FontAwesomeIcon className='mr-[6px]' icon={faLongArrowAltLeft} />
+                              <span className='text-[14] uppercase'>Tiếp tục xem sản phẩm</span>
+                            </NavLink>
+                            <button
+                              onClick={handleUpdateCartProduct}
+                              className='px-4 py-1 bg-primary hover:bg-[#9f0d11] text-white font-medium transition-all ease-linear flex items-center duration-[120ms]'>
+                              <span className='text-[14] uppercase'>Cập nhật giỏ hàng</span>
+                            </button>
+                            <button
+                              onClick={confirmDelete}
+                              className='px-4 py-1 bg-primary hover:bg-[#9f0d11] text-white font-medium transition-all ease-linear flex items-center duration-[120ms]'>
+                              <span className='text-[14] uppercase'>Xóa giỏ hàng</span>
+                            </button>
+                          </div>
+                        )}
                       </div>
                       {/* right */}
                       <div className={`flex-1 pt-[15px] pb-[30px] px-[30px] h-full border-[2px] border-solid ${!loading && 'border-primary'}`}>

@@ -21,7 +21,9 @@ const App = () => {
   return (
     <>
       <BrowserRouter>
-        <ToastContainer />
+        <ToastContainer style={{
+          zIndex: 999999
+        }} />
         <Header logined={logined} setLogined={setLogined} admin={admin} setAdmin={setAdmin} isGoogleUser={isGoogleUser} setIsGoogleUser={setIsGoogleUser} />
 
         <Routes>

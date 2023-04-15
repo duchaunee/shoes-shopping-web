@@ -10,6 +10,7 @@ import { faTags } from '@fortawesome/free-solid-svg-icons';
 import { selectEmail } from '../../redux-toolkit/slice/authSlice';
 import { selectUserName } from '../../redux-toolkit/slice/authSlice';
 import { OverlayLoading, Skeleton } from '../../animation-loading';
+import { toast } from 'react-toastify';
 
 const CheckOut = () => {
   const [loading, setLoading] = useState(false)
@@ -133,7 +134,25 @@ const CheckOut = () => {
           <div className="max-w-[1230px] mx-auto ">
             <div className="w-full px-[15px] pb-[30px]">
               <div className="w-full flex">
-                <>
+                <form className='flex' onSubmit={(e) => {
+                  if (!loading) {
+                    e.preventDefault()
+                    window.scrollTo({
+                      top: 0,
+                      // behavior: 'smooth'
+                    });
+                    setLoadingNavigate(true)
+                    setTimeout(() => {
+                      navigate('/')
+                      // navigate('/')  den trang thanh toan thanh cong
+                      // setLoading(false)
+                      toast.success('Đặt hàng thành công', {
+                        autoClose: 1200,
+                        position: 'top-left'
+                      })
+                    }, 1600)
+                  }
+                }}>
                   {/* left */}
                   <div className="basis-[58.33%] pr-[30px] border border-transparent border-r-[#ececec]">
                     <h1 className='text-[18px] mb-4 font-bold text-bgPrimary uppercase'>
@@ -164,6 +183,7 @@ const CheckOut = () => {
                         <input
                           name="national"
                           autoComplete="off"
+                          required
                           placeholder="Hãy chọn quốc gia của bạn"
                           className='align-middle bg-white shadow-sm text-[#222] w-full h-10 outline-none border border-solid border-[#ddd] text-[16px] px-3 mb-2' type="text" />
                       </p>
@@ -173,6 +193,7 @@ const CheckOut = () => {
                         <input
                           name="city"
                           autoComplete="off"
+                          required
                           placeholder="Nhập vào tỉnh/ thành phố"
                           className='align-middle bg-white shadow-sm text-[#222] w-full h-10 outline-none border border-solid border-[#ddd] text-[16px] px-3 mb-2' type="text" />
                       </p>
@@ -182,6 +203,7 @@ const CheckOut = () => {
                         <input
                           name="address"
                           autoComplete="off"
+                          required
                           placeholder="Nhập vào địa chỉ nhà cụ thể"
                           className='align-middle bg-white shadow-sm text-[#222] w-full h-10 outline-none border border-solid border-[#ddd] text-[16px] px-3 mb-2' type="text" />
                       </p>
@@ -191,6 +213,7 @@ const CheckOut = () => {
                         <input
                           name="phoneNumber"
                           autoComplete="off"
+                          required
                           placeholder="Nhập vào số điện thoại liên hệ"
                           className='align-middle bg-white shadow-sm text-[#222] w-full h-10 outline-none border border-solid border-[#ddd] text-[16px] px-3 mb-2' type="text" />
                       </p>
@@ -209,7 +232,7 @@ const CheckOut = () => {
                     </div>
                   </div>
                   {/* right */}
-                  <div className="flex-1 pt-[15px] pb-[30px] px-[30px] h-full border-[2px] border-solid border-primary">
+                  <div className={`self-start flex-1 pt-[15px] pb-[30px] px-[30px] border-[2px] border-solid ${!loadingNavigate && 'border-primary'}`}>
                     <div className="w-full border-[3px] border-transparent border-b-[#ececec] text-[18px] font-bold py-2 uppercase tracking-wider">
                       <h1 className='mb-4'>Đơn hàng của bạn</h1>
                       <div className="flex justify-between">
@@ -279,7 +302,7 @@ const CheckOut = () => {
                     <div className='mt-6 text-[14px]'>
                       <div className="flex flex-col gap-4 mb-8">
                         <div className="flex gap-2">
-                          <input type="radio" name="checkbox" id="checkbox-1" />
+                          <input type="radio" checked name="checkbox" id="checkbox-1" />
                           <label htmlFor='checkbox-1' className='text-[14px] font-bold'>Trả tiền mặt khi nhận hàng</label>
                         </div>
                         <div className="flex gap-2">
@@ -287,21 +310,12 @@ const CheckOut = () => {
                           <label htmlFor='checkbox-2' className='text-[14px] font-bold'>Chuyển khoản ngân hàng</label>
                         </div>
                       </div>
-                      <NavLink
-                        onClick={(e) => {
-                          e.preventDefault()
-                          setLoadingNavigate(true)
-                          setTimeout(() => {
-                            navigate('/')
-                            // navigate('/')  den trang thanh toan thanh cong
-                            // setLoading(false)
-                          }, 1600)
-                        }}
-                        className='w-full px-6 py-3 bg-secondary font-bold tracking-widest text-white hover:brightness-90 transition-all ease-in-out duration-100 uppercase'>Đặt hàng
-                      </NavLink>
+                      <button
+                        className='px-6 py-3 bg-secondary font-bold tracking-widest text-white hover:brightness-90 transition-all ease-in-out duration-100 uppercase'>Đặt hàng
+                      </button>
                     </div>
                   </div>
-                </>
+                </form>
               </div>
             </div>
           </div>
