@@ -96,6 +96,10 @@ const Cart = () => {
   }
 
   const handleUpdateCartProduct = async () => {
+    window.scrollTo({
+      top: 0,
+      // behavior: 'smooth'
+    })
     setLoading(true)
     cartProducts.forEach(async (cartProduct, idx) => {
       // console.log(quantityCart[cartProduct.idCartProduct]);
@@ -235,7 +239,7 @@ const Cart = () => {
     <>
       <OverlayLoading loading={loading}>
         <div className="w-full py-[30px]">
-          <div className="max-w-[1230px] min-h-[800px] mx-auto ">
+          <div className="max-w-[1230px] min-h-[600px] mx-auto ">
             <div className="w-full px-[15px] pb-[30px]">
               <div className="w-full flex">
                 {(cartProducts.length === 0
@@ -326,6 +330,10 @@ const Cart = () => {
                         <div className='mt-6 text-[14px]'>
                           <button
                             onClick={(e) => {
+                              window.scrollTo({
+                                top: 0,
+                                // behavior: 'smooth'
+                              })
                               e.preventDefault()
                               setLoading(true)
                               setTimeout(() => {
