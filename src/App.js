@@ -41,8 +41,8 @@ const App = () => {
           <Route path='/admin/*' element={admin ? <Admin /> : <PermissionDenied />} />
           <Route path="/san-pham/:id" element={<ProductDetail></ProductDetail>}></Route>
           <Route path='/gio-hang' element={logined ? <Cart /> : <Navigate to="/dang-nhap" />} />
-          <Route path="/thanh-toan" element={<CheckOut></CheckOut>}></Route>
-          <Route path="/order-received" element={<CheckoutSuccess></CheckoutSuccess>}></Route>
+          <Route path='/thanh-toan' element={logined ? <CheckOut /> : <Navigate to="/dang-nhap" />} />
+          <Route path='/order-received' element={logined ? <CheckoutSuccess /> : <Navigate to="/dang-nhap" />} />
 
           <Route path="/*" element={<Page404></Page404>}></Route>
         </Routes>

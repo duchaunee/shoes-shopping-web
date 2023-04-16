@@ -223,47 +223,54 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
 
             {/* right */}
             <div className="flex-1">
-              <div className={`px-[15px] ${productPreview.length > 0 && 'min-h-[596px]'} grid grid-cols-4`}>
-                {(pageProducts.length === 0
-                  ? Array(8).fill()
-                  : pageProducts).map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="w-full px-[10px] pb-5">
-                      <Skeleton loading={loading} className={`${loading && 'overflow-hidden rounded-[6px]'}`}>
-                        <Card width='w-full' >
-                          <ProductItem
-                            product={item}
-                            id={item?.id}
-                            img={item?.imgURL}
-                            name={item?.name}
-                            price={solvePrice(item?.price)}
-                            idURL={fieldValue}
-                            text={admin ? 'Sửa sản phẩm' : 'Thêm vào giỏ'}
-                          />
-                        </Card>
-                      </Skeleton>
-                    </div>
-                  ))}
-              </div>
-              {productPreview?.length > itemsPerPage
-                && <Pagination
-                  products={productPreview}
-                  currentPage={currentPage}
-                  setCurrentPage={setCurrentPage}
-                  itemsPerPage={itemsPerPage}
-                  quantity={quantity}
-                  setPageProducts={setPageProducts} />
-              }
               {productPreview.length == 0 && !loading
-                && <div className='flex flex-col items-center'>
-                  <img
-                    className='w-[350px] object-cover'
-                    src="./notFound.jpg" alt=""
-                  />
-                  <h1 className='text-[26px] text-center text-bgPrimary font-mono'>Không tìm thấy sản phẩm nào</h1>
-                </div>
+                ? (
+                  <div className='flex flex-col items-center'>
+                    <img
+                      className='w-[350px] object-cover'
+                      src="./notFound.jpg" alt=""
+                    />
+                    <h1 className='text-[26px] text-center text-bgPrimary font-mono'>Không tìm thấy sản phẩm nào</h1>
+                  </div>
+                )
+                : (
+                  <>
+                    <div className={`px-[15px] ${productPreview.length > 0 && 'min-h-[596px]'} grid grid-cols-4`}>
+                      {(pageProducts.length === 0
+                        ? Array(8).fill()
+                        : pageProducts).map((item, idx) => (
+                          <div
+                            key={idx}
+                            className="w-full px-[10px] pb-5">
+                            <Skeleton loading={loading} className={`${loading && 'overflow-hidden rounded-[6px]'}`}>
+                              <Card width='w-full' >
+                                <ProductItem
+                                  product={item}
+                                  id={item?.id}
+                                  img={item?.imgURL}
+                                  name={item?.name}
+                                  price={solvePrice(item?.price)}
+                                  idURL={fieldValue}
+                                  text={admin ? 'Sửa sản phẩm' : 'Thêm vào giỏ'}
+                                />
+                              </Card>
+                            </Skeleton>
+                          </div>
+                        ))}
+                    </div>
+                    {productPreview?.length > itemsPerPage
+                      && <Pagination
+                        products={productPreview}
+                        currentPage={currentPage}
+                        setCurrentPage={setCurrentPage}
+                        itemsPerPage={itemsPerPage}
+                        quantity={quantity}
+                        setPageProducts={setPageProducts} />
+                    }
+                  </>
+                )
               }
+
             </div>
           </div>
         </div>
