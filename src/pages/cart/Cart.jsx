@@ -179,7 +179,7 @@ const Cart = () => {
 
     await handleAciveCode() //sửa lại activeCode bằng true
     setTimeout(() => {
-      navigate('/thanh-toan')
+      navigate('/thanh-toan/bill-info')
       // setLoading(false)
     }, 1200)
   }
@@ -299,7 +299,12 @@ const Cart = () => {
                 {(cartProducts.length === 0
                   || JSON.parse(localStorage.getItem('cartLength')) === 0) && !loading
                   ? <div className="w-full h-[480px] flex flex-col gap-10 items-center justify-center">
-                    <img className='w-full h-[300px] object-contain' src="../../emptyCart.png" alt="" />
+                    {/* <img className='w-full h-[300px] object-contain' src="../../emptyCart.png" alt="" /> */}
+                    <div
+                      style={{
+                        backgroundImage: "url('/emptyCart.png')"
+                      }}
+                      className="w-full h-[300px] bg-contain bg-no-repeat bg-center"></div>
                     <NavLink
                       to='/'
                       className='bg-primary text-white px-4 py-3 hover:bg-[#a40206] transition-all ease-linear duration-[120ms]'>

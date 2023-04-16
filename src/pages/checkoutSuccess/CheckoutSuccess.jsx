@@ -1,9 +1,38 @@
 import React, { useState } from 'react';
 import { OverlayLoading } from '../../animation-loading';
 import { NavLink } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { selectEmail, selectUserName } from '../../redux-toolkit/slice/authSlice';
 
-const CheckoutSuccess = () => {
-  const [loading, setLoading] = useState(false)
+const CheckoutSuccess = ({
+  cartProducts,
+  totalPayment,
+  shippingAddress,
+  deliveryFee,
+  discount }) => {
+  const displayEmail = useSelector(selectEmail) || localStorage.getItem('displayEmail')
+  const displayName = useSelector(selectUserName) || localStorage.getItem('displayName')
+
+  const showDateNow = () => {
+    const today = new Date();
+    const day = today.getDate();
+    const month = today.toLocaleString('default', { month: 'long' });
+    const year = today.getFullYear();
+    return `${day} ${month}, ${year}`;
+  }
+
+  const solveCategory = (category) => {
+    switch (category) {
+      case 'giay-nam':
+        return 'Giày nam'
+      case 'giay-nu':
+        return 'Giày nữ'
+      case 'giay-tre-em':
+        return 'Giày trẻ em'
+      default:
+        break;
+    }
+  }
 
   const solvePrice = (price) => {
     return Number(price).toLocaleString('vi-VN');
@@ -11,132 +40,151 @@ const CheckoutSuccess = () => {
 
   return (
     <>
-      <OverlayLoading loading={loading}>
-        <div className="w-full py-[30px]">
-          <div className="max-w-[1230px] mx-auto ">
-            <div className="w-full px-[15px] pb-[30px]">
-              <div className="w-full flex">
-                <form className='w-full flex'>
-                  {/* left */}
-                  <div className="basis-[58.33%] pr-[30px] flex flex-col gap-6">
-                    <div className="w-full">
-                      <h1 className='text-[26px] text-bgPrimary font-bold'>Chi tiết đơn hàng</h1>
-                      <div className="">
-                        <div className="flex justify-between uppercase font-bold border-[3px] border-transparent border-b-[#ececec]">
-                          <h2 className='text-[14px] tracking-widest text-bgPrimary py-2'>Sản phẩm</h2>
-                          <h2 className='text-[14px] tracking-widest text-bgPrimary py-2'>Tổng</h2>
-                        </div>
-                        <div className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
+      <div className="w-full py-[30px]">
+        <div className="max-w-[1230px] mx-auto ">
+          <div className="w-full px-[15px] pb-[30px]">
+            <div className="w-full flex">
+              <form className='w-full flex'>
+                {/* left */}
+                <div className="basis-[58.33%] pr-[30px] flex flex-col gap-6">
+                  <div className="w-full">
+                    <h1 className='text-[26px] text-bgPrimary font-bold'>Chi tiết đơn hàng</h1>
+                    <div className="">
+                      <div className="flex justify-between uppercase font-bold border-[3px] border-transparent border-b-[#ececec]">
+                        <h2 className='text-[14px] tracking-widest text-bgPrimary py-2'>Sản phẩm</h2>
+                        <h2 className='text-[14px] tracking-widest text-bgPrimary py-2'>Tổng</h2>
+                      </div>
+                      {cartProducts.map((cartProduct) => (
+                        <div
+                          key={cartProduct.id}
+                          className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
                           <NavLink
-                            to='/dakjk'
-                            className='text-[#334862] text-[14px] cursor-pointer'>Chuck Taylor All Star Simple Step Summer Fundamentals
-                            <strong className='text-bgPrimary font-blod ml-1 text-[14px]'>× 1</strong>
+                            to={`/san-pham/${cartProduct.id}`}
+                            className='text-[#334862] text-[14px] cursor-pointer flex items-center'>
+                            {cartProduct.name}
+                            <div className="inline-block mx-1 w-[2px] h-4 bg-[#aaa]"></div>
+                            <p className='text-[#666] inline text-[14px] cursor-pointer'>{solveCategory(cartProduct.category)}</p>
+                            <strong className='text-bgPrimary font-blod ml-1 text-[14px]'>× {cartProduct.quantity}</strong>
                           </NavLink>
                           <h2 className='font-bold inline-block text-[14px]'>
-                            30.000 ₫
+                            {solvePrice(cartProduct.price)} ₫
                           </h2>
                         </div>
-                        <div className="flex justify-between text-[14px] py-2 border border-transparent border-b-[#ddd]">
-                          <h2 className=''>Tổng phụ</h2>
-                          <h2 className='font-bold inline-block text-[14px]'>
-                            30.000 ₫
-                          </h2>
-                        </div>
-                        <div className="flex justify-between text-[14px] py-2 border border-transparent border-b-[#ddd]">
-                          <h2 className=''>Phương thức thanh toán</h2>
-                          <h2 className='font-bold inline-block text-[14px]'>
-                            Trả tiền mặt khi nhận hàng
-                          </h2>
-                        </div>
-                        <div className="flex justify-between text-[14px] py-2 border border-transparent border-b-[#ddd]">
-                          <h2 className=''>Tổng cộng</h2>
-                          <h2 className='font-bold inline-block text-[14px]'>
-                            1.600.000 ₫
-                          </h2>
-                        </div>
+                      ))}
+                      <div className="flex justify-between text-[14px] py-2 border border-transparent border-b-[#ddd]">
+                        <h2 className=''>Tổng phụ</h2>
+                        <h2 className='font-bold inline-block text-[14px]'>
+                          {solvePrice(totalPayment)} ₫
+                        </h2>
                       </div>
-                    </div>
-                    <div className="w-full">
-                      <h1 className='text-[26px] text-bgPrimary font-bold'>Địa chỉ giao hàng</h1>
-                      <div className="">
-                        <div className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
-                          <h2 className='text-[14px]'>Tỉnh / Thành phố
-                          </h2>
-                          <h2 className='font-bold inline-block text-[14px]'>
-                            Bắc Ninh
-                          </h2>
-                        </div>
-                        <div className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
-                          <h2 className='text-[14px]'>Quận / Huyện
-                          </h2>
-                          <h2 className='font-bold inline-block text-[14px]'>
-                            Quế Võ
-                          </h2>
-                        </div>
-                        <div className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
-                          <h2 className='text-[14px]'>Phường / Xã
-                          </h2>
-                          <h2 className='font-bold inline-block text-[14px]'>
-                            Ngọc Xá
-                          </h2>
-                        </div>
-                        <div className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
-                          <h2 className='text-[14px]'>Địa chỉ cụ thể
-                          </h2>
-                          <h2 className='font-bold inline-block text-[14px]'>
-                            Hữu Bằng - Ngọc Xá - Quế Võ - Bắc Ninh
-                          </h2>
-                        </div>
-                        <div className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
-                          <h2 className='text-[14px]'>Số điện thoại
-                          </h2>
-                          <h2 className='font-bold inline-block text-[14px]'>
-                            0912332132
-                          </h2>
-                        </div>
-                        <div className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
-                          <h2 className='text-[14px]'>Ghi chú
-                          </h2>
-                          <h2 className='font-bold inline-block text-[14px]'>
-                            <p className='italic'>Không có ghi chú</p>
-                          </h2>
-                        </div>
+                      <div className="flex justify-between text-[14px] py-2 border border-transparent border-b-[#ddd]">
+                        <h2 className=''>Giao hàng</h2>
+                        <h2 className='font-bold inline-block text-[14px]'>
+                          {solvePrice(deliveryFee)} ₫
+                        </h2>
+                      </div>
+                      <div className="flex justify-between text-[14px] py-2 border border-transparent border-b-[#ddd]">
+                        <h2 className=''>Phương thức thanh toán</h2>
+                        <h2 className='font-bold inline-block text-[14px]'>
+                          {shippingAddress.paymentMethod === "cash"
+                            ? 'Trả tiền mặt khi nhận hàng'
+                            : 'Chuyển khoản ngân hàng'}
+                        </h2>
+                      </div>
+                      <div className="flex justify-between text-[14px] py-2 border border-transparent border-b-[#ddd]">
+                        <h2 className=''>Tổng cộng</h2>
+                        <h2 className='font-bold inline-block text-[14px]'>
+                          {solvePrice(totalPayment + deliveryFee - discount)} ₫
+                        </h2>
                       </div>
                     </div>
                   </div>
+                  <div className="w-full">
+                    <h1 className='text-[26px] text-bgPrimary font-bold'>Địa chỉ giao hàng</h1>
+                    <div className="">
+                      <div className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
+                        <h2 className='text-[14px]'>Tỉnh / Thành phố
+                        </h2>
+                        <h2 className='font-bold inline-block text-[14px]'>
+                          {shippingAddress.city}
+                        </h2>
+                      </div>
+                      <div className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
+                        <h2 className='text-[14px]'>Quận / Huyện
+                        </h2>
+                        <h2 className='font-bold inline-block text-[14px]'>
+                          {shippingAddress.district}
+                        </h2>
+                      </div>
+                      <div className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
+                        <h2 className='text-[14px]'>Phường / Xã
+                        </h2>
+                        <h2 className='font-bold inline-block text-[14px]'>
+                          {shippingAddress.wards}
+                        </h2>
+                      </div>
+                      <div className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
+                        <h2 className='text-[14px]'>Địa chỉ cụ thể
+                        </h2>
+                        <h2 className='font-bold inline-block text-[14px]'>
+                          {shippingAddress.address}
+                        </h2>
+                      </div>
+                      <div className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
+                        <h2 className='text-[14px]'>Số điện thoại
+                        </h2>
+                        <h2 className='font-bold inline-block text-[14px]'>
+                          {shippingAddress.phoneNumber}
+                        </h2>
+                      </div>
+                      <div className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
+                        <h2 className='text-[14px]'>Ghi chú
+                        </h2>
+                        <h2 className='font-bold inline-block text-[14px]'>
+                          {shippingAddress.note
+                            ? shippingAddress.note
+                            : <p className='italic'>Không có ghi chú</p>}
+                        </h2>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-                  {/* right */}
-                  <div className='self-start flex-1 py-6 bg-[#fafafa] shadow-md px-[30px] border-[2px] border-solid'>
-                    <strong className='text-[#7a9c59] font-bold block mb-5'>Cảm ơn bạn đã đặt hàng. Đơn hàng của bạn đã được nhận</strong>
-                    <ul className=''>
-                      <li className='flex mb-3'>
-                        <p className='mr-1'>Ngày:</p>
-                        <strong> 15 Tháng Tư, 2023</strong>
-                      </li>
-                      <li className='flex mb-3'>
-                        <p className='mr-1'>Tên hiển thị:</p>
-                        <strong> Đỗ Đức Hậu</strong>
-                      </li>
-                      <li className='flex mb-3'>
-                        <p className='mr-1'>Email:</p>
-                        <strong>duchaunee@gmail.com</strong>
-                      </li>
-                      <li className='flex mb-3'>
-                        <p className='mr-1'>Tổng cộng:</p>
-                        <strong>1.600.000 ₫</strong>
-                      </li>
-                      <li className='flex mb-3'>
-                        <p className='mr-1'>Phương thức thanh toán:</p>
-                        <strong>Trả tiền mặt khi nhận hàng</strong>
-                      </li>
-                    </ul>
-                  </div>
-                </form>
-              </div>
+                {/* right */}
+                <div className='self-start flex-1 py-6 bg-[#fafafa] shadow-md px-[30px] border-[2px] border-solid'>
+                  <strong className='text-[#7a9c59] font-bold block mb-5'>Cảm ơn bạn đã đặt hàng. Đơn hàng của bạn đã được nhận</strong>
+                  <ul className=''>
+                    <li className='flex mb-3'>
+                      <p className='mr-1'>Ngày:</p>
+                      <strong>{showDateNow()}</strong>
+                    </li>
+                    <li className='flex mb-3'>
+                      <p className='mr-1'>Tên hiển thị:</p>
+                      <strong>{displayName}</strong>
+                    </li>
+                    <li className='flex mb-3'>
+                      <p className='mr-1'>Email:</p>
+                      <strong>{displayEmail}</strong>
+                    </li>
+                    <li className='flex mb-3'>
+                      <p className='mr-1'>Tổng cộng:</p>
+                      <strong>{solvePrice(totalPayment + deliveryFee - discount)} ₫</strong>
+                    </li>
+                    <li className='flex mb-3'>
+                      <p className='mr-1'>Phương thức thanh toán:</p>
+                      <strong>
+                        {shippingAddress.paymentMethod === "cash"
+                          ? 'Trả tiền mặt khi nhận hàng'
+                          : 'Chuyển khoản ngân hàng'}
+                      </strong>
+                    </li>
+                  </ul>
+                </div>
+              </form>
             </div>
           </div>
-        </div >
-      </OverlayLoading>
+        </div>
+      </div >
     </>
   );
 };

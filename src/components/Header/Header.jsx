@@ -5,7 +5,7 @@ import Nav from './Nav';
 import './headerScroll.scss'
 import { navData } from './navData';
 import DropDownAccount from './DropDownAccount';
-import { onAuthStateChanged, signOut, updateEmail } from 'firebase/auth';
+import { onAuthStateChanged, signOut, updateEmail, updateProfile } from 'firebase/auth';
 import { auth, db } from '../../firebase/config';
 import { toast, ToastContainer } from 'react-toastify';
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -103,6 +103,11 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
     onAuthStateChanged(auth, (user) => {
       if (user) {
         if (user.photoURL) localStorage.setItem('imgAvatar', user.photoURL); //set avatar cho user login by google
+        else { //avatar default cho account
+          const currentUser = auth.currentUser;
+          updateProfile(currentUser, { photoURL: '../../defaultAvatar.jpg' })
+          localStorage.setItem('imgAvatar', '../../defaultAvatar.jpg');
+        }
 
         const uid = user.uid;
         const providerData = user.providerData;
@@ -244,7 +249,12 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
                 });
               }}
               className="col-span-4 py-[10px] h-full">
-              <img className='w-full h-full object-contain' src="/logo.png" alt="" />
+              <div
+                style={{
+                  backgroundImage: "url(../../logo.png)"
+                }}
+                className="w-full h-full bg-contain bg-no-repeat bg-center"></div>
+              {/* <img className='w-full h-full object-contain' src="/logo.png" alt="" /> */}
             </NavLink>
 
             {
