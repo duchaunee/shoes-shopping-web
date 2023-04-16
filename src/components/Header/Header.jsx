@@ -8,7 +8,7 @@ import DropDownAccount from './DropDownAccount';
 import { onAuthStateChanged, signOut, updateEmail } from 'firebase/auth';
 import { auth, db } from '../../firebase/config';
 import { toast, ToastContainer } from 'react-toastify';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   REMOVE_ACTIVE_USER,
@@ -32,6 +32,7 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
   const [hoverAccount, setHoverAccount] = useState(false)
   // const totalPayment = useSelector(selectTotalPayment) || JSON.parse(localStorage.getItem('totalPayment'))
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const userEmail = useSelector(selectEmail)
   const userID = useSelector(selectUserID) || localStorage.getItem('userID')
 
@@ -264,8 +265,14 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
                   <div className="relative">
                     <FontAwesomeIcon icon={faSearch} className='cursor-pointer py-[10px] text-[18px]' />
                   </div>
-                  <NavLink
-                    to={`${logined ? '/gio-hang' : "/dang-nhap"} `}
+                  <button
+                    onClick={() => {
+                      window.scrollTo({
+                        top: 0,
+                      })
+                      if (logined) navigate('/gio-hang')
+                      else navigate('/dang-nhap')
+                    }}
                     className="flex gap-[10px] cursor-pointer py-[10px] text-[13px] font-bold items-center no-underline tracking-[0.32px] uppercase hover:text-white transition-all ease-linear duration-200">
                     <span className="header-cart-title">
                       Giỏ hàng / Thanh toán
@@ -273,7 +280,7 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
                     <span className="text-[22px]">
                       <FontAwesomeIcon icon={faShoppingCart} className='' />
                     </span>
-                  </NavLink>
+                  </button>
                 </div>
             }
 
