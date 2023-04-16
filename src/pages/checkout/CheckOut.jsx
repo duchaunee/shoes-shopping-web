@@ -25,6 +25,7 @@ const CheckOut = () => {
   const navigate = useNavigate()
   //
   const [deliveryFee, setDeliveryFee] = useState(30000)
+  const [discount, setDiscount] = useState(0)
 
   const getProducts = async () => {
     const productsRef = collection(db, "products");
@@ -94,7 +95,7 @@ const CheckOut = () => {
         const { code, activeCode } = doc.data()
         console.log(code, activeCode);
         if (code === 'FREESHIP' && activeCode) setDeliveryFee(0)
-        if (code === 'GIAM50K' && activeCode) setTotalPayment(prev => prev - 50000)
+        if (code === 'GIAM50K' && activeCode) setDiscount(50000)
       })
     } catch (e) {
       console.log(e.message);
@@ -138,10 +139,10 @@ const CheckOut = () => {
 
       await handleDeleteAllCart() //xóa tất cả sp trong giỏ hàng khi ấn đặt hàng
       setTimeout(() => {
-        navigate('/')
+        navigate('/order-received')
         // navigate('/')  den trang thanh toan thanh cong
         // setLoading(false)
-        toast.success("Đặt hàng thành công. Vui lòng kiếm tra trong 'Đơn hàng'", {
+        toast.success("Đặt hàng thành công. Cảm ơn bạn đã đặt hàng", {
           autoClose: 1200,
           position: 'top-left'
         })
@@ -338,7 +339,7 @@ const CheckOut = () => {
                           <Skeleton loading={loading} className='overflow-hidden'>
                             <h2 className='font-bold'>
                               {totalPayment
-                                ? `${solvePrice(totalPayment + deliveryFee)} ₫`
+                                ? `${solvePrice(totalPayment + deliveryFee - discount)} ₫`
                                 : 'day la tong tien'}
                             </h2>
                           </Skeleton>

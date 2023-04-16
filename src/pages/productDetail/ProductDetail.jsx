@@ -155,6 +155,7 @@ const ProductDetail = () => {
   const handleAddToCart = async (e) => {
     if (!loadingAddtoCart) { //nếu đang quay thì không cho bấm
       e.preventDefault()
+      setQuantity(1)
       // console.log(quantity);
       setLoadingAddtoCart(true)
       const productsRef = query(
@@ -175,7 +176,6 @@ const ProductDetail = () => {
                 addAt: Timestamp.now().toDate().toString()
               });
               //reset init
-              setQuantity(1)
               //
               setLoadingAddtoCart(false)
               toast.success(`Thêm sản phẩm thành công`, {

@@ -25,6 +25,7 @@ const Cart = () => {
     GIAM50K: false
   })
   const [deliveryFee, setDeliveryFee] = useState(30000)
+  const [discount, setDiscount] = useState(0)
   const inputVoucher = useRef()
   const [totalPayment, setTotalPayment] = useState(0)
   const [cartProducts, setCartProducts] = useState([])
@@ -124,7 +125,6 @@ const Cart = () => {
         code: 'GIAM50K',
         activeCode: true
       });
-      setTotalPayment(totalPayment - 50000) //mien phi van chuyen
     }
   }
 
@@ -380,7 +380,7 @@ const Cart = () => {
                         </div>
                         <div className='flex items-center justify-between border-[3px] border-transparent border-b-[#ddd] py-4 text-[14px]'>
                           <h2 className=''>Tổng thanh toán</h2>
-                          <h2 className='font-bold'>{solvePrice(totalPayment + deliveryFee)}₫</h2>
+                          <h2 className='font-bold'>{solvePrice(totalPayment + deliveryFee - discount)}₫</h2>
                         </div>
                         <div className='mt-6 text-[14px]'>
                           <button
@@ -412,7 +412,7 @@ const Cart = () => {
                                 inputVoucher.current.value = ''
                               }
                               else if (inputVoucher.current.value === 'GIAM50K') {
-                                setTotalPayment(totalPayment - 50000)
+                                setDiscount(50000)
                                 vouchersAction.current.GIAM50K = true
                                 toast.success('Áp dụng mã giảm 50k thành công', {
                                   autoClose: 1200,
