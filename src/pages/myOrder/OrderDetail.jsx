@@ -4,10 +4,11 @@ import { NavLink, useParams } from 'react-router-dom';
 import { selectEmail, selectUserName } from '../../redux-toolkit/slice/authSlice';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase/config';
+import { OverlayLoading, Skeleton } from '../../animation-loading';
 
 const OrderDetail = () => {
   const { id } = useParams()
-  const [order, setOrder] = useState([])
+  const [order, setOrder] = useState(null)
   const [loading, setLoading] = useState(true)
   const displayEmail = useSelector(selectEmail) || localStorage.getItem('displayEmail')
   const displayName = useSelector(selectUserName) || localStorage.getItem('displayName')
@@ -54,12 +55,12 @@ const OrderDetail = () => {
   }, [])
 
   useEffect(() => {
-    console.log(order.cartProducts);
+    console.log('order: ', order);
   }, [order])
 
   return (
     <>
-      {!loading && (
+      <OverlayLoading loading={loading}>
         <div className="w-full py-[30px]">
           <div className="max-w-[1230px] mx-auto ">
             <div className="w-full px-[15px] pb-[30px]">
@@ -68,60 +69,78 @@ const OrderDetail = () => {
                   {/* left */}
                   <div className="basis-[58.33%] pr-[30px] flex flex-col gap-6">
                     <div className="w-full">
-                      <h1 className='text-[26px] text-bgPrimary font-bold'>Chi tiết đơn hàng</h1>
+                      <h1 className='text-[26px] text-bgPrimary font-bold'>
+                        Chi tiết đơn hàng
+                      </h1>
                       <div className="">
                         <div className="flex justify-between uppercase font-bold border-[3px] border-transparent border-b-[#ececec]">
                           <h2 className='text-[14px] tracking-widest text-bgPrimary py-2'>Sản phẩm</h2>
                           <h2 className='text-[14px] tracking-widest text-bgPrimary py-2'>Tổng</h2>
                         </div>
-                        {order?.cartProducts.map((cartProduct) => (
-                          <div
-                            key={cartProduct.id}
-                            className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
-                            <NavLink
-                              // to={`/san-pham/${cartProduct.id}`}
-                              className='text-[#334862] text-[14px] cursor-pointer flex items-center'>
-                              {cartProduct.name}
-                              <div className="inline-block mx-1 w-[2px] h-4 bg-[#aaa]"></div>
-                              <p className='text-[#666] inline text-[14px] cursor-pointer'>
-                                {solveCategory(cartProduct.category)}
-                              </p>
-                              <strong className='text-bgPrimary font-blod ml-1 text-[14px]'>×
-                                {cartProduct.quantity}
-                              </strong>
-                            </NavLink>
-                            <h2 className='font-bold inline-block text-[14px]'>
-                              {solvePrice(cartProduct.price)} ₫
-                            </h2>
-                          </div>
-                        ))}
+                        {(order?.cartProducts
+                          ? order.cartProducts
+                          : Array(3).fill()).map((cartProduct, idx) => (
+                            <div
+                              key={cartProduct?.id || idx}
+                              className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
+                              <Skeleton loading={loading}>
+                                <NavLink
+                                  // to={`/san-pham/${cartProduct?.id}`}
+                                  className='text-[#334862] text-[14px] cursor-pointer flex items-center'>
+                                  {cartProduct?.name || 'day la ten de chay skeleton'}
+                                  <div className="inline-block mx-1 w-[2px] h-4 bg-[#aaa]"></div>
+                                  <p className='text-[#666] inline text-[14px] cursor-pointer'>
+                                    {solveCategory(cartProduct?.category) || 'Giày nam'}
+                                  </p>
+                                  <strong className='text-bgPrimary font-blod ml-1 text-[14px]'>×
+                                    {cartProduct?.quantity | '1'}
+                                  </strong>
+                                </NavLink>
+                              </Skeleton >
+                              <Skeleton className={`${loading && 'w-[100px]'} inline-block`} loading={loading}>
+                                <h2 className='font-bold inline-block text-[14px]'>
+                                  {solvePrice(cartProduct?.price) || '9.999.999'} ₫
+                                </h2>
+                              </Skeleton>
+                            </div>
+                          ))}
                         <div className="flex justify-between text-[14px] py-2 border border-transparent border-b-[#ddd]">
                           <h2 className=''>Tổng phụ</h2>
-                          <h2 className='font-bold inline-block text-[14px]'>
-                            {solvePrice(order.totalPayment)} ₫
-                          </h2>
+                          <Skeleton className='inline-block' loading={loading}>
+                            <h2 className={`${loading && 'w-[100px]'} font-bold inline-block text-[14px]`}>
+                              {solvePrice(order?.totalPayment) || '9.999.999'} ₫
+                            </h2>
+                          </Skeleton>
                         </div>
                         <div className="flex justify-between text-[14px] py-2 border border-transparent border-b-[#ddd]">
                           <h2 className=''>Giao hàng</h2>
-                          <h2 className='font-bold inline-block text-[14px]'>
-                            {solvePrice(order.deliveryFee)} ₫
-                          </h2>
+                          <Skeleton className={`${loading && 'w-[100px]'} inline-block`} loading={loading}>
+                            <h2 className='font-bold inline-block text-[14px]'>
+                              {solvePrice(order?.deliveryFee) || '9.999.999'} ₫
+                            </h2>
+                          </Skeleton>
                         </div>
                         <div className="flex justify-between text-[14px] py-2 border border-transparent border-b-[#ddd]">
                           <h2 className=''>Phương thức thanh toán</h2>
-                          <h2 className='font-bold inline-block text-[14px]'>
-                            {order.shippingAddress.paymentMethod === "cash"
-                              ? 'Trả tiền mặt khi nhận hàng'
-                              : 'Chuyển khoản ngân hàng'}
-                          </h2>
+                          <Skeleton className='inline-block' loading={loading}>
+                            <h2 className='font-bold inline-block text-[14px]'>
+                              {order && order?.shippingAddress.paymentMethod
+                                ? `${order?.shippingAddress.paymentMethod === "cash"
+                                  ? 'Trả tiền mặt khi nhận hàng'
+                                  : 'Chuyển khoản ngân hàng'}`
+                                : 'Trả tiền mặt khi nhận hàng'}
+                            </h2>
+                          </Skeleton>
                         </div>
                         <div className="flex justify-between text-[14px] py-2 border border-transparent border-b-[#ddd]">
                           <h2 className=''>Tổng cộng</h2>
-                          <h2 className='font-bold inline-block text-[14px]'>
-                            {order.totalPayment + order.deliveryFee - order.discount > 0
-                              ? solvePrice(order.totalPayment + order.deliveryFee - order.discount)
-                              : 0} ₫
-                          </h2>
+                          <Skeleton className={`${loading && 'w-[100px]'} inline-block`} loading={loading}>
+                            <h2 className='font-bold inline-block text-[14px]'>
+                              {`${order && order?.totalPayment + order?.deliveryFee - order?.discount > 0
+                                ? solvePrice(order?.totalPayment + order?.deliveryFee - order?.discount)
+                                : 0} ₫` || '9.999.999 ₫'}
+                            </h2>
+                          </Skeleton>
                         </div>
                       </div>
                     </div>
@@ -131,46 +150,58 @@ const OrderDetail = () => {
                         <div className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
                           <h2 className='text-[14px]'>Tỉnh / Thành phố
                           </h2>
-                          <h2 className='font-bold inline-block text-[14px]'>
-                            {order.shippingAddress.city}
-                          </h2>
+                          <Skeleton className='inline-block' loading={loading}>
+                            <h2 className='font-bold inline-block text-[14px]'>
+                              {(order && order?.shippingAddress.city) || 'Bắc Ninhhhhhhhhhhhhhhhhhhh'}
+                            </h2>
+                          </Skeleton>
                         </div>
                         <div className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
                           <h2 className='text-[14px]'>Quận / Huyện
                           </h2>
-                          <h2 className='font-bold inline-block text-[14px]'>
-                            {order.shippingAddress.district}
-                          </h2>
+                          <Skeleton className='inline-block' loading={loading}>
+                            <h2 className='font-bold inline-block text-[14px]'>
+                              {(order && order?.shippingAddress.district) || 'Bắc Ninhhhhhhhhhhhhhhhhhhh'}
+                            </h2>
+                          </Skeleton>
                         </div>
                         <div className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
                           <h2 className='text-[14px]'>Phường / Xã
                           </h2>
-                          <h2 className='font-bold inline-block text-[14px]'>
-                            {order.shippingAddress.wards}
-                          </h2>
+                          <Skeleton className='inline-block' loading={loading}>
+                            <h2 className='font-bold inline-block text-[14px]'>
+                              {(order && order?.shippingAddress.wards) || 'Bắc Ninhhhhhhhhhhhhhhhhhhh'}
+                            </h2>
+                          </Skeleton>
                         </div>
                         <div className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
                           <h2 className='text-[14px]'>Địa chỉ cụ thể
                           </h2>
-                          <h2 className='font-bold inline-block text-[14px]'>
-                            {order.shippingAddress.address}
-                          </h2>
+                          <Skeleton className='inline-block' loading={loading}>
+                            <h2 className='font-bold inline-block text-[14px]'>
+                              {(order && order?.shippingAddress.address) || 'Bắc Ninhhhhhhhhhhhhhhhhhhh'}
+                            </h2>
+                          </Skeleton>
                         </div>
                         <div className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
                           <h2 className='text-[14px]'>Số điện thoại
                           </h2>
-                          <h2 className='font-bold inline-block text-[14px]'>
-                            {order.shippingAddress.phoneNumber}
-                          </h2>
+                          <Skeleton className='inline-block' loading={loading}>
+                            <h2 className='font-bold inline-block text-[14px]'>
+                              {(order && order?.shippingAddress.phoneNumber) || 'Bắc Ninhhhhhhhhhhhhhhhhhhh'}
+                            </h2>
+                          </Skeleton>
                         </div>
                         <div className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
                           <h2 className='text-[14px]'>Ghi chú
                           </h2>
-                          <h2 className='font-bold inline-block text-[14px]'>
-                            {order.shippingAddress.note
-                              ? order.shippingAddress.note
-                              : <p className='italic'>Không có ghi chú</p>}
-                          </h2>
+                          <Skeleton className='inline-block' loading={loading}>
+                            <h2 className='font-bold inline-block text-[14px]'>
+                              {order && order?.shippingAddress.note
+                                ? order.shippingAddress.note
+                                : <p className={`${loading || 'italic'}`}>Không có ghi chú</p>}
+                            </h2>
+                          </Skeleton>
                         </div>
                       </div>
                     </div>
@@ -183,31 +214,43 @@ const OrderDetail = () => {
                     <ul className=''>
                       <li className='flex mb-3'>
                         <p className='mr-1'>Ngày:</p>
-                        <strong>{order.orderDate}</strong>
+                        <Skeleton className='inline-block' loading={loading}>
+                          <strong>{(order && order?.orderDate) || '25 tháng 4 năm 2002'}</strong>
+                        </Skeleton>
                       </li>
                       <li className='flex mb-3'>
                         <p className='mr-1'>Tên hiển thị:</p>
-                        <strong>{order.displayName || displayName}</strong>
+                        <Skeleton className='inline-block' loading={loading}>
+                          <strong>{(order && order?.displayName) || displayName}</strong>
+                        </Skeleton>
                       </li>
                       <li className='flex mb-3'>
                         <p className='mr-1'>Email:</p>
-                        <strong>{order.displayEmail || displayEmail}</strong>
+                        <Skeleton className='inline-block' loading={loading}>
+                          <strong>{(order && order?.displayEmail) || displayEmail}</strong>
+                        </Skeleton>
                       </li>
                       <li className='flex mb-3'>
                         <p className='mr-1'>Tổng cộng:</p>
-                        <strong>
-                          {order.totalPayment + order.deliveryFee - order.discount > 0
-                            ? solvePrice(order.totalPayment + order.deliveryFee - order.discount)
-                            : 0} ₫
-                        </strong>
+                        <Skeleton className='inline-block' loading={loading}>
+                          <strong>
+                            {`${order && order?.totalPayment + order?.deliveryFee - order?.discount > 0
+                              ? solvePrice(order?.totalPayment + order?.deliveryFee - order?.discount)
+                              : 0} ₫` || '9.999.999 ₫'}
+                          </strong>
+                        </Skeleton>
                       </li>
                       <li className='flex mb-3'>
                         <p className='mr-1'>Phương thức thanh toán:</p>
-                        <strong>
-                          {order.shippingAddress.paymentMethod === "cash"
-                            ? 'Trả tiền mặt khi nhận hàng'
-                            : 'Chuyển khoản ngân hàng'}
-                        </strong>
+                        <Skeleton className='inline-block' loading={loading}>
+                          <strong className='font-bold inline-block text-[14px]'>
+                            {order && order?.shippingAddress.paymentMethod
+                              ? `${order?.shippingAddress.paymentMethod === "cash"
+                                ? 'Trả tiền mặt khi nhận hàng'
+                                : 'Chuyển khoản ngân hàng'}`
+                              : 'Trả tiền mặt khi nhận hàng'}
+                          </strong>
+                        </Skeleton>
                       </li>
                     </ul>
                   </div>
@@ -215,8 +258,8 @@ const OrderDetail = () => {
               </div>
             </div>
           </div>
-        </div >
-      )}
+        </div>
+      </OverlayLoading>
     </>
   );
 };

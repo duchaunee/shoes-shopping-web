@@ -233,7 +233,7 @@ const CheckOut = () => {
                       || JSON.parse(localStorage.getItem('cartLength')) === 0) && !loading
                       ? <div className="w-full h-[480px] flex flex-col gap-10 items-center justify-center">
                         <img className='w-full h-[300px] object-contain' src="../../orderNoExist.png" alt="" />
-                        <h1 className='text-center text-[36px] font-bold text-bgPrimary font-mono leading-[32px] uppercase'>Đơn hàng không tồn tại</h1>
+                        <h1 className='text-center text-[36px] font-bold text-bgPrimary font-mono leading-[32px] uppercase'>Đơn thanh toán không tồn tại</h1>
                         <NavLink
                           to='/'
                           className='bg-primary text-white px-4 py-3 hover:bg-[#a40206] transition-all ease-linear duration-[120ms]'>

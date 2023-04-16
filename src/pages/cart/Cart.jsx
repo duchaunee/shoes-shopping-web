@@ -298,13 +298,18 @@ const Cart = () => {
               <div className="w-full flex">
                 {(cartProducts.length === 0
                   || JSON.parse(localStorage.getItem('cartLength')) === 0) && !loading
-                  ? <div className="w-full h-[480px] flex flex-col gap-10 items-center justify-center">
+                  ? <div className="w-full h-[480px] flex flex-col gap-7 items-center justify-center">
                     {/* <img className='w-full h-[300px] object-contain' src="../../emptyCart.png" alt="" /> */}
                     <div
                       style={{
                         backgroundImage: "url('/emptyCart.png')"
                       }}
-                      className="w-full h-[300px] bg-contain bg-no-repeat bg-center"></div>
+                      className="w-[520px] h-[500px] bg-contain bg-no-repeat bg-center"></div>
+                    <div className='text-center text-[28px] font-bold text-bgPrimary font-mono leading-[32px] uppercase'>Giỏ hàng của bạn hiện đang trống
+                      <div className="">
+                        <p className='font-mono font-normal text-[24px] text-center'>Vui lòng quay lại trang chủ để thêm sản phẩm vào giỏ</p>
+                      </div>
+                    </div>
                     <NavLink
                       to='/'
                       className='bg-primary text-white px-4 py-3 hover:bg-[#a40206] transition-all ease-linear duration-[120ms]'>
