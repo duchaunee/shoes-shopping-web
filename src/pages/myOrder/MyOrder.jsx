@@ -26,10 +26,13 @@ const MyOrder = () => {
         id: doc.id,
         ...doc.data()
       }))
+      const allOrdersConverted = allOrders
+        .sort((orderA, orderB) => (new Date(orderA.creatAt)) - (new Date(orderB.creatAt)))
+
       localStorage.setItem('orderLength', JSON.stringify(allOrders.length))
       setTimeout(() => {
         setLoading(false)
-        setAllOrders(allOrders)
+        setAllOrders(allOrdersConverted)
       }, 1000)
     }
     catch (e) {

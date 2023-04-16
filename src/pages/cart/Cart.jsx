@@ -450,10 +450,13 @@ const Cart = () => {
                                 inputVoucher.current.value = ''
                               }
                               else {
-                                toast.error('Phiếu ưu đãi không tồn tại', {
-                                  autoClose: 1200,
-                                  position: 'top-left'
-                                })
+                                if (inputVoucher.current.value !== '') {
+                                  toast.error('Phiếu ưu đãi không tồn tại', {
+                                    autoClose: 1200,
+                                    position: 'top-left'
+                                  })
+                                  inputVoucher.current.value = ''
+                                }
                               }
                             }}
                             className='w-full p-2 border border-[#ccc] bg-[#f9f9f9] hover:bg-[#c7c7c7] flex items-center justify-center -tracking-tighter text-[16px] text-[#666] transition-all ease-in-out duration-100'>Áp dụng</button>

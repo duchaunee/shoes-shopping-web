@@ -166,7 +166,7 @@ const CheckOut = () => {
         orderStatus: "Đang xử lý",
         cartProducts,
         shippingAddress,
-        createAt: Timestamp.now().toDate().toString()
+        creatAt: Timestamp.now().toDate().toString()
       })
     } catch (e) {
       console.log(e.message);
@@ -242,7 +242,7 @@ const CheckOut = () => {
                         </NavLink>
                       </div>
                       : (
-                        <form className='w-full flex flex-row' onSubmit={handleOrder}>
+                        <div className='w-full flex flex-row'>
                           {/* left */}
                           <div className="basis-[58.33%] pr-[30px]">
                             <h1 className='text-[18px] mb-4 font-bold text-bgPrimary uppercase'>
@@ -439,12 +439,12 @@ const CheckOut = () => {
                                 </div>
                               </div>
                               <button
-                                type='submit'
+                                onClick={handleOrder}
                                 className='px-6 py-3 bg-secondary font-bold tracking-widest text-white hover:brightness-90 transition-all ease-in-out duration-100 uppercase'>Đặt hàng
                               </button>
                             </div>
                           </div>
-                        </form>
+                        </div>
                       )}
 
                   </div>
