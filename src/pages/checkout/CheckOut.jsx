@@ -41,6 +41,7 @@ const CheckOut = () => {
   })
   const [checkoutSuccess, setCheckoutSuccess] = useState(false)
 
+
   const getProducts = async () => {
     const productsRef = collection(db, "products");
     const q = query(productsRef);
@@ -152,24 +153,16 @@ const CheckOut = () => {
     const today = new Date()
     const date = today.toDateString()
     const time = today.toLocaleDateString()
-    console.log({
-      userID,
-      displayEmail,
-      orderDate: date,
-      orderTime: time,
-      orderAmout: cartProducts.length,
-      orderStatus: "Đang xử lý",
-      cartProducts,
-      shippingAddress,
-      createAt: Timestamp.now().toDate().toString()
-    });
     try {
       addDoc(collection(db, "orders"), {
         userID,
+        displayName,
         displayEmail,
-        orderDate: date,
-        orderTime: time,
-        orderAmout: cartProducts.length,
+        totalPayment,
+        deliveryFee,
+        discount,
+        orderDate: solveDate(),
+        orderAmount: cartProducts.length,
         orderStatus: "Đang xử lý",
         cartProducts,
         shippingAddress,
@@ -196,12 +189,20 @@ const CheckOut = () => {
         setLoadingNavigate(false)
         setCheckoutSuccess(true)
         navigate('/thanh-toan/success')
-        toast.success("Đặt hàng thành công. Cảm ơn bạn đã đặt hàng", {
+        toast.success("Đặt hàng thành công", {
           autoClose: 1200,
           position: 'top-left'
         })
       }, 1600)
     }
+  }
+
+  const solveDate = () => {
+    const today = new Date();
+    const day = today.getDate();
+    const month = today.toLocaleString('default', { month: 'long' });
+    const year = today.getFullYear();
+    return `${day} ${month}, ${year}`;
   }
 
   const solvePrice = (price) => {
@@ -458,6 +459,7 @@ const CheckOut = () => {
           shippingAddress={shippingAddress}
           deliveryFee={deliveryFee}
           discount={discount}
+          orderDate={solveDate()}
         />
       }
 

@@ -8,4 +8,5 @@ export { default as ProductDetail } from "./productDetail/ProductDetail"
 export { default as Cart } from "./cart/Cart"
 export { default as CheckOut } from "./checkout/CheckOut"
 export { default as CheckoutSuccess } from "./checkoutSuccess/CheckoutSuccess"
+export { default as MyOrder } from "./myOrder/MyOrder"
 

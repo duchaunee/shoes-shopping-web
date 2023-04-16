@@ -9,17 +9,10 @@ const CheckoutSuccess = ({
   totalPayment,
   shippingAddress,
   deliveryFee,
-  discount }) => {
+  discount,
+  orderDate }) => {
   const displayEmail = useSelector(selectEmail) || localStorage.getItem('displayEmail')
   const displayName = useSelector(selectUserName) || localStorage.getItem('displayName')
-
-  const showDateNow = () => {
-    const today = new Date();
-    const day = today.getDate();
-    const month = today.toLocaleString('default', { month: 'long' });
-    const year = today.getFullYear();
-    return `${day} ${month}, ${year}`;
-  }
 
   const solveCategory = (category) => {
     switch (category) {
@@ -94,7 +87,9 @@ const CheckoutSuccess = ({
                       <div className="flex justify-between text-[14px] py-2 border border-transparent border-b-[#ddd]">
                         <h2 className=''>Tổng cộng</h2>
                         <h2 className='font-bold inline-block text-[14px]'>
-                          {solvePrice(totalPayment + deliveryFee - discount)} ₫
+                          {totalPayment + deliveryFee - discount > 0
+                            ? solvePrice(totalPayment + deliveryFee - discount)
+                            : 0} ₫
                         </h2>
                       </div>
                     </div>
@@ -156,7 +151,7 @@ const CheckoutSuccess = ({
                   <ul className=''>
                     <li className='flex mb-3'>
                       <p className='mr-1'>Ngày:</p>
-                      <strong>{showDateNow()}</strong>
+                      <strong>{orderDate}</strong>
                     </li>
                     <li className='flex mb-3'>
                       <p className='mr-1'>Tên hiển thị:</p>
@@ -168,7 +163,11 @@ const CheckoutSuccess = ({
                     </li>
                     <li className='flex mb-3'>
                       <p className='mr-1'>Tổng cộng:</p>
-                      <strong>{solvePrice(totalPayment + deliveryFee - discount)} ₫</strong>
+                      <strong>
+                        {totalPayment + deliveryFee - discount > 0
+                          ? solvePrice(totalPayment + deliveryFee - discount)
+                          : 0} ₫
+                      </strong>
                     </li>
                     <li className='flex mb-3'>
                       <p className='mr-1'>Phương thức thanh toán:</p>
