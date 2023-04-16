@@ -339,7 +339,9 @@ const CheckOut = () => {
                           <Skeleton loading={loading} className='overflow-hidden'>
                             <h2 className='font-bold'>
                               {totalPayment
-                                ? `${solvePrice(totalPayment + deliveryFee - discount)} ₫`
+                                ? `${totalPayment + deliveryFee - discount > 0
+                                  ? solvePrice(totalPayment + deliveryFee - discount)
+                                  : 0} ₫`
                                 : 'day la tong tien'}
                             </h2>
                           </Skeleton>

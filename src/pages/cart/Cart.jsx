@@ -367,7 +367,8 @@ const Cart = () => {
                         </div>
                         <div className='flex items-center justify-between border border-transparent border-b-[#ddd] py-4 text-[14px]'>
                           <h2 className=''>Tổng phụ</h2>
-                          <h2 className='font-bold'>{solvePrice(totalPayment)}₫</h2>
+                          <h2 className='font-bold'>
+                            {totalPayment > 0 ? solvePrice(totalPayment) : 0}₫</h2>
                         </div>
                         <div className='flex items-center justify-between border border-transparent border-b-[#ddd] py-4 text-[14px]'>
                           <h2 className=''>Giao hàng</h2>
@@ -380,7 +381,10 @@ const Cart = () => {
                         </div>
                         <div className='flex items-center justify-between border-[3px] border-transparent border-b-[#ddd] py-4 text-[14px]'>
                           <h2 className=''>Tổng thanh toán</h2>
-                          <h2 className='font-bold'>{solvePrice(totalPayment + deliveryFee - discount)}₫</h2>
+                          <h2 className='font-bold'>
+                            {totalPayment + deliveryFee - discount > 0
+                              ? solvePrice(totalPayment + deliveryFee - discount)
+                              : 0}₫</h2>
                         </div>
                         <div className='mt-6 text-[14px]'>
                           <button
@@ -403,21 +407,36 @@ const Cart = () => {
                             onClick={(e) => {
                               e.preventDefault()
                               if (inputVoucher.current.value === 'FREESHIP') {
-                                setDeliveryFee(0)
-                                vouchersAction.current.FREESHIP = true
-                                toast.success('Áp dụng mã miễn phí vận chuyển thành công', {
-                                  autoClose: 1200,
-                                  position: 'top-left'
-                                })
+                                if (deliveryFee > 0) {
+                                  setDeliveryFee(0)
+                                  vouchersAction.current.FREESHIP = true
+                                  toast.success('Áp dụng mã miễn phí vận chuyển thành công', {
+                                    autoClose: 1200,
+                                    position: 'top-left'
+                                  })
+                                } else {
+                                  toast.error('Mã đã được sử dụng', {
+                                    autoClose: 1200,
+                                    position: 'top-left'
+                                  })
+                                }
+
                                 inputVoucher.current.value = ''
                               }
                               else if (inputVoucher.current.value === 'GIAM50K') {
-                                setDiscount(50000)
-                                vouchersAction.current.GIAM50K = true
-                                toast.success('Áp dụng mã giảm 50k thành công', {
-                                  autoClose: 1200,
-                                  position: 'top-left'
-                                })
+                                if (discount === 0) {
+                                  setDiscount(50000)
+                                  vouchersAction.current.GIAM50K = true
+                                  toast.success('Áp dụng mã giảm 50k thành công', {
+                                    autoClose: 1200,
+                                    position: 'top-left'
+                                  })
+                                } else {
+                                  toast.error('Mã đã được sử dụng', {
+                                    autoClose: 1200,
+                                    position: 'top-left'
+                                  })
+                                }
                                 inputVoucher.current.value = ''
                               }
                               else {
