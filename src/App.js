@@ -3,7 +3,7 @@ import './index.scss' //tailwindcss
 import './App.css' //reset css
 
 import { Header, Footer, Auth, Admin } from "./components"
-import { Home, GirlShoes, BoyShoes, ChildShoes, Page404, ProductDetail, Cart, CheckOut } from './pages';
+import { Home, GirlShoes, BoyShoes, ChildShoes, Page404, ProductDetail, Cart, CheckOut, CheckoutSuccess } from './pages';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import InfoAccount from './pages/infoAccount/InfoAccount';
@@ -42,6 +42,7 @@ const App = () => {
           <Route path="/san-pham/:id" element={<ProductDetail></ProductDetail>}></Route>
           <Route path='/gio-hang' element={logined ? <Cart /> : <Navigate to="/dang-nhap" />} />
           <Route path="/thanh-toan" element={<CheckOut></CheckOut>}></Route>
+          <Route path="/order-received" element={<CheckoutSuccess></CheckoutSuccess>}></Route>
 
           <Route path="/*" element={<Page404></Page404>}></Route>
         </Routes>

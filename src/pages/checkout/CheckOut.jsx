@@ -94,7 +94,7 @@ const CheckOut = () => {
         const { code, activeCode } = doc.data()
         console.log(code, activeCode);
         if (code === 'FREESHIP' && activeCode) setDeliveryFee(0)
-        else if (code === 'GIAM50K' && activeCode) setTotalPayment(prev => prev - 50000)
+        if (code === 'GIAM50K' && activeCode) setTotalPayment(prev => prev - 50000)
       })
     } catch (e) {
       console.log(e.message);
@@ -184,7 +184,7 @@ const CheckOut = () => {
                     </NavLink>
                   </div>
                   : (
-                    <form className='w-full flex' onSubmit={handleOrder}>
+                    <form className='w-full flex flex-row' onSubmit={handleOrder}>
                       {/* left */}
                       <div className="basis-[58.33%] pr-[30px]">
                         <h1 className='text-[18px] mb-4 font-bold text-bgPrimary uppercase'>
@@ -209,17 +209,6 @@ const CheckOut = () => {
                               className='align-middle pointer-events-none bg-white shadow-sm text-[#222] w-full h-10 outline-none border border-solid border-[#ddd] text-[16px] px-3 mb-2' type="text" />
                             <span className='text-[#353535] text-[16px] italic'>Bạn không thể thay đổi email</span>
                           </p>
-
-                          <p>
-                            <label className='mb-2 font-bold block'>Quốc gia *</label>
-                            <input
-                              name="national"
-                              autoComplete="off"
-                              required
-                              placeholder="Hãy chọn quốc gia của bạn"
-                              className='align-middle bg-white shadow-sm text-[#222] w-full h-10 outline-none border border-solid border-[#ddd] text-[16px] px-3 mb-2' type="text" />
-                          </p>
-
                           <p>
                             <label className='mb-2 font-bold block'>Tỉnh / Thành phố *</label>
                             <input
@@ -227,6 +216,26 @@ const CheckOut = () => {
                               autoComplete="off"
                               required
                               placeholder="Nhập vào tỉnh/ thành phố"
+                              className='align-middle bg-white shadow-sm text-[#222] w-full h-10 outline-none border border-solid border-[#ddd] text-[16px] px-3 mb-2' type="text" />
+                          </p>
+
+                          <p>
+                            <label className='mb-2 font-bold block'>Quận / Huyện *</label>
+                            <input
+                              name="district"
+                              autoComplete="off"
+                              required
+                              placeholder="Nhập vào quận/ huyện"
+                              className='align-middle bg-white shadow-sm text-[#222] w-full h-10 outline-none border border-solid border-[#ddd] text-[16px] px-3 mb-2' type="text" />
+                          </p>
+
+                          <p>
+                            <label className='mb-2 font-bold block'>Phường / Xã *</label>
+                            <input
+                              name="wards"
+                              autoComplete="off"
+                              required
+                              placeholder="Nhập vào phường/ xã"
                               className='align-middle bg-white shadow-sm text-[#222] w-full h-10 outline-none border border-solid border-[#ddd] text-[16px] px-3 mb-2' type="text" />
                           </p>
 
@@ -277,8 +286,8 @@ const CheckOut = () => {
                           : cartProducts).map((cartProduct, idx) => (
                             <div
                               key={idx}
-                              className={`${!loading ? 'py-4' : 'my-2'} grid grid-cols-7 items-center justify-between border border-transparent border-b-[#ddd] text-[14px]`}>
-                              <Skeleton loading={loading} className={`${loading && 'w-3/4 h-[30px]'} overflow-hidden col-span-5`}>
+                              className={`${!loading ? 'py-4' : 'my-2'} grid grid-cols-7 items-center justify-center border border-transparent border-b-[#ddd] text-[14px]`}>
+                              <Skeleton loading={loading} className={`${loading && 'mb-2 w-3/4 h-[30px]'} overflow-hidden col-span-5`}>
                                 <h2
                                   className='text-[#666]'>{cartProduct?.name || 'day la ten de chay skeleton animation animation animation animation'}
                                   <strong className='text-bgPrimary font-blod ml-1'>× {cartProduct?.quantity}</strong>
@@ -315,7 +324,7 @@ const CheckOut = () => {
                           </Skeleton>
                           <Skeleton loading={loading} className='overflow-hidden'>
                             <div className="">
-                              <p>
+                              <p className='text-right'>
                                 Phí giao hàng toàn quốc:
                                 <span className='font-bold ml-1'>{`${solvePrice(deliveryFee)} ₫`}</span>
                               </p>

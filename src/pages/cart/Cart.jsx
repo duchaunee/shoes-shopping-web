@@ -20,7 +20,10 @@ const Cart = () => {
   const [done, setDone] = useState(false)
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  let vouchersAction = useRef()
+  let vouchersAction = useRef({
+    FREESHIP: false,
+    GIAM50K: false
+  })
   const [deliveryFee, setDeliveryFee] = useState(30000)
   const inputVoucher = useRef()
   const [totalPayment, setTotalPayment] = useState(0)
@@ -110,13 +113,13 @@ const Cart = () => {
   }
 
   const handleAciveCode = async () => {
-    if (vouchersAction.current === 'FREESHIP') {
+    if (vouchersAction.current.FREESHIP) {
       await setDoc(doc(db, "vouchers", 'FREESHIIP_SHOESPLUS'), {
         code: 'FREESHIP',
         activeCode: true
       });
     }
-    else if (vouchersAction.current === 'GIAM50K') {
+    if (vouchersAction.current.GIAM50K) {
       await setDoc(doc(db, "vouchers", 'GIAM50K_SHOESPLUS'), {
         code: 'GIAM50K',
         activeCode: true
@@ -401,19 +404,21 @@ const Cart = () => {
                               e.preventDefault()
                               if (inputVoucher.current.value === 'FREESHIP') {
                                 setDeliveryFee(0)
-                                vouchersAction.current = 'FREESHIP'
+                                vouchersAction.current.FREESHIP = true
                                 toast.success('Áp dụng mã miễn phí vận chuyển thành công', {
                                   autoClose: 1200,
                                   position: 'top-left'
                                 })
+                                inputVoucher.current.value = ''
                               }
                               else if (inputVoucher.current.value === 'GIAM50K') {
                                 setTotalPayment(totalPayment - 50000)
-                                vouchersAction.current = 'GIAM50K'
+                                vouchersAction.current.GIAM50K = true
                                 toast.success('Áp dụng mã giảm 50k thành công', {
                                   autoClose: 1200,
                                   position: 'top-left'
                                 })
+                                inputVoucher.current.value = ''
                               }
                               else {
                                 toast.error('Phiếu ưu đãi không tồn tại', {
@@ -421,7 +426,6 @@ const Cart = () => {
                                   position: 'top-left'
                                 })
                               }
-                              inputVoucher.current.value = ''
                             }}
                             className='w-full p-2 border border-[#ccc] bg-[#f9f9f9] hover:bg-[#c7c7c7] flex items-center justify-center -tracking-tighter text-[16px] text-[#666] transition-all ease-in-out duration-100'>Áp dụng</button>
                         </div>
