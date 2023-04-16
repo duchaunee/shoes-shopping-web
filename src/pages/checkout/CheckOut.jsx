@@ -13,7 +13,7 @@ import { OverlayLoading, Skeleton } from '../../animation-loading';
 import { toast } from 'react-toastify';
 
 const CheckOut = () => {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [loadingNavigate, setLoadingNavigate] = useState(false)
   const [totalPayment, setTotalPayment] = useState(0)
   const [allProducts, setAllProducts] = useState([])
@@ -21,7 +21,10 @@ const CheckOut = () => {
   const userID = useSelector(selectUserID) || localStorage.getItem('userID')
   const displayEmail = useSelector(selectEmail) || localStorage.getItem('displayEmail')
   const displayName = useSelector(selectUserName) || localStorage.getItem('displayName')
+  //
   const navigate = useNavigate()
+  //
+  const [deliveryFee, setDeliveryFee] = useState(30000)
 
   const getProducts = async () => {
     const productsRef = collection(db, "products");
@@ -82,6 +85,21 @@ const CheckOut = () => {
     }
   }
 
+  const getVouchers = async () => {
+    const productsRef = query(collection(db, "vouchers"));
+    const q = query(productsRef);
+    try {
+      const querySnapshot = await getDocs(q);
+      querySnapshot.docs.map(doc => {
+        const { code, activeCode } = doc.data()
+        console.log(code, activeCode);
+        if (code === 'FREESHIP' && activeCode) setDeliveryFee(0)
+        else if (code === 'GIAM50K' && activeCode) setTotalPayment(prev => prev - 50000)
+      })
+    } catch (e) {
+      console.log(e.message);
+    }
+  }
 
   //để xử lí khi ấn đặt hàng thì sẽ xóa tất cả sản phẩm trong giỏ hàng
   const handleDeleteAllCart = async () => {
@@ -140,7 +158,10 @@ const CheckOut = () => {
   }, [])
 
   useEffect(() => {
-    getCartProducts()
+    (async function () {
+      await getCartProducts()
+      await getVouchers()
+    })()
   }, [allProducts])
 
   return (
@@ -165,7 +186,7 @@ const CheckOut = () => {
                   : (
                     <form className='w-full flex' onSubmit={handleOrder}>
                       {/* left */}
-                      <div className="basis-[58.33%] pr-[30px] border border-transparent border-r-[#ececec]">
+                      <div className="basis-[58.33%] pr-[30px]">
                         <h1 className='text-[18px] mb-4 font-bold text-bgPrimary uppercase'>
                           Thông tin thanh toán
                         </h1>
@@ -176,7 +197,7 @@ const CheckOut = () => {
                               placeholder={displayName || localStorage.getItem('displayName') || ""}
                               name="name"
                               className='align-middle pointer-events-none bg-white shadow-sm text-[#333] w-full h-10 outline-none border border-solid border-[#ddd] text-[16px] px-3 mb-2 transition-all ease-linear duration-150 focus:shadow-shadowPink focus:border focus:border-[#ea4c8966]' id='account_display_name' type="text" />
-                            <span className='text-[#353535] text-[16px] italic'>Để thay đổi tên hãy vào "Thông tin tài khoản"</span>
+                            <span className='text-[#353535] text-[16px] italic'>Để thay đổi tên, hãy vào "Thông tin tài khoản"</span>
                           </p>
 
                           <p>
@@ -255,7 +276,7 @@ const CheckOut = () => {
                           ? Array(3).fill()
                           : cartProducts).map((cartProduct, idx) => (
                             <div
-                              key={cartProduct?.idCartProduct}
+                              key={idx}
                               className={`${!loading ? 'py-4' : 'my-2'} grid grid-cols-7 items-center justify-between border border-transparent border-b-[#ddd] text-[14px]`}>
                               <Skeleton loading={loading} className={`${loading && 'w-3/4 h-[30px]'} overflow-hidden col-span-5`}>
                                 <h2
@@ -294,7 +315,10 @@ const CheckOut = () => {
                           </Skeleton>
                           <Skeleton loading={loading} className='overflow-hidden'>
                             <div className="">
-                              <p>Phí giao hàng toàn quốc: <span className='font-bold'>30.000 ₫</span></p>
+                              <p>
+                                Phí giao hàng toàn quốc:
+                                <span className='font-bold ml-1'>{`${solvePrice(deliveryFee)} ₫`}</span>
+                              </p>
                             </div>
                           </Skeleton>
                         </div>
@@ -305,7 +329,7 @@ const CheckOut = () => {
                           <Skeleton loading={loading} className='overflow-hidden'>
                             <h2 className='font-bold'>
                               {totalPayment
-                                ? `${solvePrice(totalPayment + 30000)} ₫`
+                                ? `${solvePrice(totalPayment + deliveryFee)} ₫`
                                 : 'day la tong tien'}
                             </h2>
                           </Skeleton>
@@ -313,7 +337,7 @@ const CheckOut = () => {
                         <div className='mt-6 text-[14px]'>
                           <div className="flex flex-col gap-4 mb-8">
                             <div className="flex gap-2">
-                              <input type="radio" checked name="checkbox" id="checkbox-1" />
+                              <input type="radio" defaultChecked name="checkbox" id="checkbox-1" />
                               <label htmlFor='checkbox-1' className='text-[14px] font-bold'>Trả tiền mặt khi nhận hàng</label>
                             </div>
                             <div className="flex gap-2">

@@ -230,7 +230,7 @@ const PageProducts = ({ currentName, fieldValue, STORE_NAME_PRODUCTS, selectName
                     <div
                       key={idx}
                       className="w-full px-[10px] pb-5">
-                      <Skeleton loading={loading} className={`${loading && 'overflow-hidden rounded-[4px]'}`}>
+                      <Skeleton loading={loading} className={`${loading && 'overflow-hidden rounded-[6px]'}`}>
                         <Card width='w-full' >
                           <ProductItem
                             product={item}

@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLongArrowAltLeft, faTags } from '@fortawesome/free-solid-svg-icons';
@@ -20,6 +20,9 @@ const Cart = () => {
   const [done, setDone] = useState(false)
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  let vouchersAction = useRef()
+  const [deliveryFee, setDeliveryFee] = useState(30000)
+  const inputVoucher = useRef()
   const [totalPayment, setTotalPayment] = useState(0)
   const [cartProducts, setCartProducts] = useState([])
   const [allProducts, setAllProducts] = useState([])
@@ -95,6 +98,33 @@ const Cart = () => {
     }
   }
 
+  const resetVouchers = async (e) => {
+    await setDoc(doc(db, "vouchers", 'FREESHIIP_SHOESPLUS'), {
+      code: 'FREESHIP',
+      activeCode: false
+    });
+    await setDoc(doc(db, "vouchers", 'GIAM50K_SHOESPLUS'), {
+      code: 'GIAM50K',
+      activeCode: false
+    });
+  }
+
+  const handleAciveCode = async () => {
+    if (vouchersAction.current === 'FREESHIP') {
+      await setDoc(doc(db, "vouchers", 'FREESHIIP_SHOESPLUS'), {
+        code: 'FREESHIP',
+        activeCode: true
+      });
+    }
+    else if (vouchersAction.current === 'GIAM50K') {
+      await setDoc(doc(db, "vouchers", 'GIAM50K_SHOESPLUS'), {
+        code: 'GIAM50K',
+        activeCode: true
+      });
+      setTotalPayment(totalPayment - 50000) //mien phi van chuyen
+    }
+  }
+
   const handleUpdateCartProduct = async () => {
     window.scrollTo({
       top: 0,
@@ -135,6 +165,20 @@ const Cart = () => {
         console.log(e.message);
       }
     })
+  }
+
+  const handleCheckOut = async (e) => {
+    window.scrollTo({
+      top: 0,
+    })
+    e.preventDefault()
+    setLoading(true)
+
+    await handleAciveCode() //sửa lại activeCode bằng true
+    setTimeout(() => {
+      navigate('/thanh-toan')
+      // setLoading(false)
+    }, 1200)
   }
 
   const confirmDelete = () => {
@@ -224,16 +268,23 @@ const Cart = () => {
   }
 
   useEffect(() => {
-    console.log('dasd');
+    resetVouchers()
+  }, [])
+
+  useEffect(() => {
+    // console.log('dasd');
     setDone(false)
 
     getProducts()
     getCartProducts()
   }, [done])
 
+
+
   useEffect(() => {
     getCartProducts()
   }, [allProducts])
+
 
   return (
     <>
@@ -317,30 +368,20 @@ const Cart = () => {
                         </div>
                         <div className='flex items-center justify-between border border-transparent border-b-[#ddd] py-4 text-[14px]'>
                           <h2 className=''>Giao hàng</h2>
-                          <div className="">
+                          <div className="text-right">
                             {/* lấy 1% giá trị hàng */}
-                            <p>Phí giao hàng toàn quốc: <span className='font-bold'>30.000 ₫</span></p>
+                            <p>Phí giao hàng toàn quốc:
+                              <span className='font-bold ml-1'>{solvePrice(deliveryFee)}₫</span></p>
                             <p className=''>Nhận hàng vào <span className='font-bold'>{deliveryDate()}</span></p>
                           </div>
                         </div>
                         <div className='flex items-center justify-between border-[3px] border-transparent border-b-[#ddd] py-4 text-[14px]'>
                           <h2 className=''>Tổng thanh toán</h2>
-                          <h2 className='font-bold'>{solvePrice(totalPayment + 30000)}₫</h2>
+                          <h2 className='font-bold'>{solvePrice(totalPayment + deliveryFee)}₫</h2>
                         </div>
                         <div className='mt-6 text-[14px]'>
                           <button
-                            onClick={(e) => {
-                              window.scrollTo({
-                                top: 0,
-                                // behavior: 'smooth'
-                              })
-                              e.preventDefault()
-                              setLoading(true)
-                              setTimeout(() => {
-                                navigate('/thanh-toan')
-                                // setLoading(false)
-                              }, 1200)
-                            }}
+                            onClick={handleCheckOut}
                             className='block text-center w-full px-2 py-3 bg-secondary font-bold tracking-widest text-white hover:brightness-90 transition-all ease-in-out duration-100 uppercase'>Tiến hành thanh toán
                           </button>
                           <div className="pt-6 pb-3 flex gap-2 border-[2px] border-transparent border-b-[#ddd]">
@@ -351,11 +392,37 @@ const Cart = () => {
                             <p className='font-bold text-[16px]'>Phiếu ưu đãi</p>
                           </div>
                           <input
+                            ref={inputVoucher}
                             className='my-5 text-[16px] w-full px-3 py-2 outline-none border border-[#ccc] focus:shadow-shadowPink'
                             placeholder='Mã ưu đãi'
                             type="text" name="" id="" />
                           <button
-                            onClick={() => setTotalPayment(prev => prev - 30000)}
+                            onClick={(e) => {
+                              e.preventDefault()
+                              if (inputVoucher.current.value === 'FREESHIP') {
+                                setDeliveryFee(0)
+                                vouchersAction.current = 'FREESHIP'
+                                toast.success('Áp dụng mã miễn phí vận chuyển thành công', {
+                                  autoClose: 1200,
+                                  position: 'top-left'
+                                })
+                              }
+                              else if (inputVoucher.current.value === 'GIAM50K') {
+                                setTotalPayment(totalPayment - 50000)
+                                vouchersAction.current = 'GIAM50K'
+                                toast.success('Áp dụng mã giảm 50k thành công', {
+                                  autoClose: 1200,
+                                  position: 'top-left'
+                                })
+                              }
+                              else {
+                                toast.error('Phiếu ưu đãi không tồn tại', {
+                                  autoClose: 1200,
+                                  position: 'top-left'
+                                })
+                              }
+                              inputVoucher.current.value = ''
+                            }}
                             className='w-full p-2 border border-[#ccc] bg-[#f9f9f9] hover:bg-[#c7c7c7] flex items-center justify-center -tracking-tighter text-[16px] text-[#666] transition-all ease-in-out duration-100'>Áp dụng</button>
                         </div>
                       </div>
