@@ -213,24 +213,24 @@ const OrderDetail = () => {
                     </strong>
                     <ul className=''>
                       <li className='flex mb-3'>
-                        <p className='mr-1'>Ngày:</p>
+                        <p className='mr-1'>Thời gian đặt hàng:</p>
                         <Skeleton className='inline-block' loading={loading}>
-                          <strong>{(order && order?.orderDate) || '25 tháng 4 năm 2002'}</strong>
+                          <strong className='text-[16px]'>{(order && `${order?.orderDate} | ${order?.orderTime}`) || '25 tháng 4 năm 2002'}</strong>
                         </Skeleton>
                       </li>
-                      <li className='flex mb-3'>
+                      <li className='flex mb-3 text-[16px]'>
                         <p className='mr-1'>Tên hiển thị:</p>
                         <Skeleton className='inline-block' loading={loading}>
                           <strong>{(order && order?.displayName) || displayName}</strong>
                         </Skeleton>
                       </li>
-                      <li className='flex mb-3'>
+                      <li className='flex mb-3 text-[16px]'>
                         <p className='mr-1'>Email:</p>
                         <Skeleton className='inline-block' loading={loading}>
                           <strong>{(order && order?.displayEmail) || displayEmail}</strong>
                         </Skeleton>
                       </li>
-                      <li className='flex mb-3'>
+                      <li className='flex mb-3 text-[16px]'>
                         <p className='mr-1'>Tổng cộng:</p>
                         <Skeleton className='inline-block' loading={loading}>
                           <strong>
@@ -240,10 +240,10 @@ const OrderDetail = () => {
                           </strong>
                         </Skeleton>
                       </li>
-                      <li className='flex mb-3'>
+                      <li className='flex mb-3 text-[16px]'>
                         <p className='mr-1'>Phương thức thanh toán:</p>
                         <Skeleton className='inline-block' loading={loading}>
-                          <strong className='font-bold inline-block text-[14px]'>
+                          <strong className='font-bold inline-block'>
                             {order && order?.shippingAddress.paymentMethod
                               ? `${order?.shippingAddress.paymentMethod === "cash"
                                 ? 'Trả tiền mặt khi nhận hàng'

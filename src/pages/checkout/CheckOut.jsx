@@ -150,9 +150,6 @@ const CheckOut = () => {
   }
 
   const saveOrder = async () => {
-    const today = new Date()
-    const date = today.toDateString()
-    const time = today.toLocaleDateString()
     try {
       addDoc(collection(db, "orders"), {
         userID,
@@ -162,6 +159,7 @@ const CheckOut = () => {
         deliveryFee,
         discount,
         orderDate: solveDate(),
+        orderTime: solveTime(),
         orderAmount: cartProducts.length,
         orderStatus: "Đang xử lý",
         cartProducts,
@@ -213,9 +211,17 @@ const CheckOut = () => {
   const solveDate = () => {
     const today = new Date();
     const day = today.getDate();
-    const month = today.toLocaleString('default', { month: 'long' });
+    const month = today.toLocaleString('vi-VN', { month: 'long' });
     const year = today.getFullYear();
     return `${day} ${month}, ${year}`;
+  }
+
+  const solveTime = () => {
+    const now = new Date()
+    const hour = now.getHours().toString().padStart(2, '0');
+    const minute = now.getMinutes().toString().padStart(2, '0');
+    const second = now.getSeconds().toString().padStart(2, '0');
+    return `${hour}:${minute}:${second}`;
   }
 
   const solvePrice = (price) => {
@@ -473,6 +479,7 @@ const CheckOut = () => {
           deliveryFee={deliveryFee}
           discount={discount}
           orderDate={solveDate()}
+          orderTime={solveTime()}
         />
       }
 

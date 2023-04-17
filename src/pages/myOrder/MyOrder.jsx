@@ -101,7 +101,7 @@ const MyOrder = () => {
                         <div>
                           <div className='border-[3px] border-transparent border-b-[#ececec] grid gap-10 grid-cols-10 grid-rows-1 text-[14px] font-bold py-2 uppercase tracking-wider'>
                             <div className='col-span-1 text-center'>Đơn hàng</div>
-                            <div className='col-span-2'>Ngày</div>
+                            <div className='col-span-2'>Thời gian đặt hàng</div>
                             <div className='col-span-2'>Tình trạng</div>
                             <div className='col-span-4'>Tổng</div>
                             <div className='col-span-1'>Thao tác</div>
@@ -124,7 +124,9 @@ const MyOrder = () => {
                                   </div>
                                 </Skeleton>
                                 <Skeleton className='col-span-2' loading={loading}>
-                                  <div className='col-span-2 text-[#666]'>{order?.orderDate || 'text de chay skeleton'}</div>
+                                  <div className='col-span-2 text-[#666]'>
+                                    {`${order?.orderDate} | ${order?.orderTime}` || 'text de chay skeleton'}
+                                  </div>
                                 </Skeleton>
                                 <Skeleton className='col-span-2' loading={loading}>
                                   <div className='col-span-2 text-[#666]'>{order?.orderStatus || 'text de chay skeleton'}</div>

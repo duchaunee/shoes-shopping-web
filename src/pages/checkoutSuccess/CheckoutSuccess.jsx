@@ -10,7 +10,8 @@ const CheckoutSuccess = ({
   shippingAddress,
   deliveryFee,
   discount,
-  orderDate }) => {
+  orderDate,
+  orderTime }) => {
   const displayEmail = useSelector(selectEmail) || localStorage.getItem('displayEmail')
   const displayName = useSelector(selectUserName) || localStorage.getItem('displayName')
 
@@ -150,8 +151,8 @@ const CheckoutSuccess = ({
                   <strong className='text-[#7a9c59] font-bold block mb-5'>Cảm ơn bạn đã đặt hàng. Đơn hàng của bạn đã được nhận</strong>
                   <ul className=''>
                     <li className='flex mb-3'>
-                      <p className='mr-1'>Ngày:</p>
-                      <strong>{orderDate}</strong>
+                      <p className='mr-1'>Thời gian đặt hàng:</p>
+                      <strong>{`${orderDate} | ${orderTime}`}</strong>
                     </li>
                     <li className='flex mb-3'>
                       <p className='mr-1'>Tên hiển thị:</p>
