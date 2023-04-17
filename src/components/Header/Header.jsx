@@ -25,6 +25,7 @@ import { SET_CURRENT_USER, STORE_PRODUCTS } from '../../redux-toolkit/slice/prod
 import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 import { selectTotalPayment } from '../../redux-toolkit/slice/cartSlice';
 import DropDownCart from './DropDownCart';
+import DropDownSearch from './DropDownSearch';
 
 const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogleUser }) => {
   // khi reload lại window, logined bị chạy lại const [logined, setLogined] = useState(false) nên nó sẽ nhấp nháy ở "Đăng nhập/đăng xuất" (logined = false) rồi mới chuyển qua Tài khoản (logined = false), do đó phải khởi tạo lấy giá trị từ localstrogate
@@ -32,6 +33,7 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
   const [scrolled, setScrolled] = useState(false);
   const [hoverAccount, setHoverAccount] = useState(false)
   const [hoverCart, setHoverCart] = useState(false)
+  const [hoverSearch, setHoverSearch] = useState(false)
   // const totalPayment = useSelector(selectTotalPayment) || JSON.parse(localStorage.getItem('totalPayment'))
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -218,7 +220,7 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
       <div className={`${scrolled ? "" : "absolute"} z-[99999] h-[133px] w-full`}></div>
       <header className={`${scrolled ? "stuck fixed" : "relative"} z-[99999] h-[133px] w-full text-white/80`}>
         <div className="h-[80px] bg-bgPrimary">
-          <div className=" grid grid-cols-12 grid-rows-1 h-[80px] px-[15px] max-w-[1230px]  mx-auto">
+          <div className=" grid grid-cols-12 grid-rows-1 h-full px-[15px] max-w-[1230px]  mx-auto">
             <div className='col-span-4 flex items-center'>
               {
                 logined
@@ -276,8 +278,12 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
                   Dashboard
                 </NavLink>
                 : <div className="col-span-4 ml-auto flex gap-[15px] items-center">
-                  <div className="relative">
-                    <FontAwesomeIcon icon={faSearch} className='cursor-pointer py-[10px] text-[18px]' />
+                  <div
+                    onMouseEnter={() => setHoverSearch(true)}
+                    onMouseLeave={() => setHoverSearch(false)}
+                    className="relative flex items-center py-[22px] pl-4 pr-2">
+                    <FontAwesomeIcon icon={faSearch} className='cursor-pointer text-[18px]' />
+                    {hoverSearch && <DropDownSearch setHoverSearch={setHoverSearch} />}
                   </div>
                   <div
                     onMouseEnter={() => {
