@@ -263,9 +263,16 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
               {/* <img className='w-full h-full object-contain' src="/logo.png" alt="" /> */}
             </NavLink>
 
-            {
-              admin
-                ? <NavLink
+            <div className="col-span-4 ml-auto flex gap-[15px] items-center">
+              <div
+                onMouseEnter={() => setHoverSearch(true)}
+                onMouseLeave={() => setHoverSearch(false)}
+                className="relative flex items-center py-[22px] pl-4 pr-2">
+                <FontAwesomeIcon icon={faSearch} className='cursor-pointer text-[18px]' />
+                {hoverSearch && <DropDownSearch setHoverSearch={setHoverSearch} />}
+              </div>
+              {admin
+                ? (<NavLink
                   to='/admin/home'
                   onClick={() => {
                     window.scrollTo({
@@ -273,18 +280,11 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
                       // behavior: 'smooth'
                     });
                   }}
-                  className="col-span-4 flex items-center ml-auto cursor-pointer py-[10px] text-[13px] font-bold no-underline tracking-[0.32px] uppercase hover:text-white transition-all ease-linear duration-200">
-                  <FontAwesomeIcon icon={faShapes} className='cursor-pointer pr-[10px] text-[18px]' />
+                  className="col-span-4 flex items-center ml-auto cursor-pointer py-[10px] text-[13px] font-bold no-underline tracking-[0.32px] uppercase hover:text-white transition-all ease-linear duration-200 justify-center">
                   Dashboard
-                </NavLink>
-                : <div className="col-span-4 ml-auto flex gap-[15px] items-center">
-                  <div
-                    onMouseEnter={() => setHoverSearch(true)}
-                    onMouseLeave={() => setHoverSearch(false)}
-                    className="relative flex items-center py-[22px] pl-4 pr-2">
-                    <FontAwesomeIcon icon={faSearch} className='cursor-pointer text-[18px]' />
-                    {hoverSearch && <DropDownSearch setHoverSearch={setHoverSearch} />}
-                  </div>
+                  <FontAwesomeIcon icon={faShapes} className='cursor-pointer pl-[10px] text-[18px]' />
+                </NavLink>)
+                : (
                   <div
                     onMouseEnter={() => {
                       if (currentPath !== '/gio-hang'
@@ -319,8 +319,9 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
                     </span>
                     {hoverCart && logined && <DropDownCart logined={logined} logoutUser={logoutUser} setHoverCart={setHoverCart} admin={admin} />}
                   </div>
-                </div>
-            }
+                )}
+
+            </div>
 
           </div>
         </div >

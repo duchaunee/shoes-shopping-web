@@ -24,6 +24,7 @@ const SearchResult = () => {
 
   const getProductsSearch = async () => {
     setLoading(true)
+    setCurrentPage(1)
     const productsRef = collection(db, "products");
     const q = query(productsRef);
     try {
