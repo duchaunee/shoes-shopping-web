@@ -120,7 +120,7 @@ const DropDownCart = ({ logined, logoutUser, setHoverCart, admin }) => {
 
         {loading
           ? (
-            <div className="h-[150px] cursor-default">
+            <div className="h-[180px] cursor-default">
               <Spinning color='#1f2028' size='30px' />
             </div>
           )
@@ -182,7 +182,7 @@ const DropDownCart = ({ logined, logoutUser, setHoverCart, admin }) => {
             <div className='text-center text-[16px] font-bold text-bgPrimary font-mono leading-[32px] uppercase'>Giỏ hàng hiện đang trống
             </div>
           </div>
-          : (
+          : loading || (
             <div className="flex py-[10px] justify-center gap-1 text-[#777] font-bold border border-transparent border-b-[#ececec] cursor-default">
               <h1 className=''>Tổng phụ:</h1>
               <p className=''>{solvePrice(totalPayment)} ₫</p>
@@ -196,18 +196,28 @@ const DropDownCart = ({ logined, logoutUser, setHoverCart, admin }) => {
           || (
             <>
               <div className="w-full pt-[10px] pb-2">
-                <NavLink
-                  to='/'
+                <button
+                  onClick={() => {
+                    if (!loading) {
+                      setHoverCart(false)
+                      navigate('/gio-hang')
+                    }
+                  }}
                   className='w-full flex justify-center bg-primary text-white px-4 py-2 hover:bg-[#a40206] transition-all ease-linear duration-[120ms]'>
                   <span className='text-[16px] text-center uppercase'>Xem giỏ hàng</span>
-                </NavLink>
+                </button>
               </div>
               <div className="w-full">
-                <NavLink
-                  to='/'
+                <button
+                  onClick={() => {
+                    if (!loading) {
+                      setHoverCart(false)
+                      navigate('/thanh-toan/bill-info')
+                    }
+                  }}
                   className='w-full flex justify-center bg-secondary text-white px-4 py-2 hover:bg-[#a6573c] transition-all ease-linear duration-[120ms]'>
                   <span className='text-[16px] text-center uppercase'>Thanh toán</span>
-                </NavLink>
+                </button>
               </div>
             </>
           )}

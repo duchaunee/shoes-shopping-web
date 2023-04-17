@@ -282,7 +282,9 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
                   }}
                   className="col-span-4 flex items-center ml-auto cursor-pointer py-[10px] text-[13px] font-bold no-underline tracking-[0.32px] uppercase hover:text-white transition-all ease-linear duration-200 justify-center">
                   Dashboard
-                  <FontAwesomeIcon icon={faShapes} className='cursor-pointer pl-[10px] text-[18px]' />
+                  <FontAwesomeIcon
+                    icon={faShapes}
+                    className='cursor-pointer pl-[10px] text-[18px] mb-1' />
                 </NavLink>)
                 : (
                   <div

@@ -178,7 +178,7 @@ const SearchResult = () => {
                                   img={item?.imgURL}
                                   name={item?.name}
                                   price={solvePrice(item?.price)}
-                                  idURL={`/tim-kiem/${queryValue}`}
+                                  idURL={`tim-kiem/${queryValue}`}
                                   text={admin ? 'Sửa sản phẩm' : 'Thêm vào giỏ'}
                                 />
                               </Card>
