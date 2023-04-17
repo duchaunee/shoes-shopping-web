@@ -48,3 +48,20 @@
   background-color: transparent;
   transform: translateY(-100%);
 }
+
+///////////////////////////////////
+// drop down cart
+.drop-down-cart::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 55%;
+  border: 10px solid transparent;
+  border-bottom-color: #fff;
+  transform: translateY(-100%);
+}
+
+.drop-down-cart {
+  top: calc(100% - 12px);
+  animation: dropdown 0.5s ease forwards;
+}

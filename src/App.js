@@ -41,11 +41,12 @@ const App = () => {
 
           <Route path='/admin/*' element={admin ? <Admin /> : <PermissionDenied />} />
           <Route path="/san-pham/:id" element={<ProductDetail></ProductDetail>}></Route>
-          <Route path='/gio-hang' element={logined ? <Cart /> : <Navigate to="/dang-nhap" />} />
-          <Route path='/thanh-toan/:id' element={logined ? <CheckOut /> : <Navigate to="/dang-nhap" />} />
+          {/* những trang dưới chỉ user mới vào, admin k vào làm gì cả */}
+          <Route path='/gio-hang' element={(!admin && logined) ? <Cart /> : <Navigate to="/dang-nhap" />} />
+          <Route path='/thanh-toan/:id' element={(!admin && logined) ? <CheckOut /> : <Navigate to="/dang-nhap" />} />
 
-          <Route path='/don-hang' element={!admin ? <MyOrder /> : <Navigate to="/dang-nhap" />} />
-          <Route path='/chi-tiet/:id' element={!admin ? <OrderDetail /> : <Navigate to="/dang-nhap" />} />
+          <Route path='/don-hang' element={(!admin && logined) ? <MyOrder /> : <Navigate to="/dang-nhap" />} />
+          <Route path='/chi-tiet/:id' element={(!admin && logined) ? <OrderDetail /> : <Navigate to="/dang-nhap" />} />
 
           {/* <Route path="/don-hang" element={<MyOrder></MyOrder>}></Route> */}
           {/* <Route path="/chi-tiet/:id" element={<OrderDetail></OrderDetail>}></Route> */}

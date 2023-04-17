@@ -175,25 +175,38 @@ const CheckOut = () => {
 
   const handleOrder = async (e) => {
     //CHỈ KHI NÀO BẤM VÀO ĐẶT HÀNG MỚI CHUYỂN ĐẾN TRANG THÀNH CÔNG
-    if (!loading) {
-      e.preventDefault()
-      window.scrollTo({
-        top: 0,
-        // behavior: 'smooth'
-      });
-      setLoadingNavigate(true)
-      await saveOrder() // await HANDLE VIỆC ĐẨY ORDER LÊN FIREBASE SAU ĐÓ MỚI XÓA SẢN PHẨM TRONG GIỎ HÀNG
-      await handleDeleteAllCart() //xóa tất cả sp trong giỏ hàng khi ấn đặt hàng
-      //chuyển hướng tới /thanh-toan/success
-      setTimeout(() => {
-        setLoadingNavigate(false)
-        setCheckoutSuccess(true)
-        navigate('/thanh-toan/success')
-        toast.success("Đặt hàng thành công", {
-          autoClose: 1200,
-          position: 'top-left'
-        })
-      }, 1600)
+    e.preventDefault()
+    if (shippingAddress.city === ''
+      || shippingAddress.district === ''
+      || shippingAddress.wards === ''
+      || shippingAddress.address === ''
+      || shippingAddress.phoneNumber === '') {
+      toast.error('Vui lòng điền hết các trường hợp', {
+        autoClose: 1200,
+        position: 'top-left'
+      })
+    }
+    else {
+      if (!loading) {
+        e.preventDefault()
+        window.scrollTo({
+          top: 0,
+          // behavior: 'smooth'
+        });
+        setLoadingNavigate(true)
+        await saveOrder() // await HANDLE VIỆC ĐẨY ORDER LÊN FIREBASE SAU ĐÓ MỚI XÓA SẢN PHẨM TRONG GIỎ HÀNG
+        await handleDeleteAllCart() //xóa tất cả sp trong giỏ hàng khi ấn đặt hàng
+        //chuyển hướng tới /thanh-toan/success
+        setTimeout(() => {
+          setLoadingNavigate(false)
+          setCheckoutSuccess(true)
+          navigate('/thanh-toan/success')
+          toast.success("Đặt hàng thành công", {
+            autoClose: 1200,
+            position: 'top-left'
+          })
+        }, 1600)
+      }
     }
   }
 

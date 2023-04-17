@@ -24,17 +24,21 @@ import { adminAccount } from '../../AdminAccount';
 import { SET_CURRENT_USER, STORE_PRODUCTS } from '../../redux-toolkit/slice/productSlice';
 import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 import { selectTotalPayment } from '../../redux-toolkit/slice/cartSlice';
+import DropDownCart from './DropDownCart';
 
 const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogleUser }) => {
   // khi reload lại window, logined bị chạy lại const [logined, setLogined] = useState(false) nên nó sẽ nhấp nháy ở "Đăng nhập/đăng xuất" (logined = false) rồi mới chuyển qua Tài khoản (logined = false), do đó phải khởi tạo lấy giá trị từ localstrogate
   // const [logined, setLogined] = useState(localStorage.getItem('logined') === 'true' ? true : false)
   const [scrolled, setScrolled] = useState(false);
   const [hoverAccount, setHoverAccount] = useState(false)
+  const [hoverCart, setHoverCart] = useState(false)
   // const totalPayment = useSelector(selectTotalPayment) || JSON.parse(localStorage.getItem('totalPayment'))
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const userEmail = useSelector(selectEmail)
   const userID = useSelector(selectUserID) || localStorage.getItem('userID')
+  //
+  const currentPath = window.location.pathname;
 
   const getProducts = async () => {
     const productsRef = collection(db, "products");
@@ -238,8 +242,8 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
                     Đăng nhập / Đăng ký
                   </NavLink>
               }
-
             </div>
+
             <NavLink
               to="/"
               onClick={() => {
@@ -275,22 +279,40 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
                   <div className="relative">
                     <FontAwesomeIcon icon={faSearch} className='cursor-pointer py-[10px] text-[18px]' />
                   </div>
-                  <button
+                  <div
+                    onMouseEnter={() => {
+                      if (currentPath !== '/gio-hang'
+                        && currentPath !== '/thanh-toan/bill-info'
+                        && currentPath !== '/thanh-toan/success') {
+                        setHoverCart(true)
+                      }
+                    }}
+                    onMouseLeave={() => {
+                      if (currentPath !== '/gio-hang'
+                        && currentPath !== '/thanh-toan/bill-info'
+                        && currentPath !== '/thanh-toan/success') {
+                        setHoverCart(false)
+                      }
+                    }}
                     onClick={() => {
                       window.scrollTo({
                         top: 0,
                       })
-                      if (logined) navigate('/gio-hang')
+                      if (logined) {
+                        navigate('/gio-hang')
+                        setHoverCart(false)
+                      }
                       else navigate('/dang-nhap')
                     }}
-                    className="flex gap-[10px] cursor-pointer py-[10px] text-[13px] font-bold items-center no-underline tracking-[0.32px] uppercase hover:text-white transition-all ease-linear duration-200">
-                    <span className="header-cart-title">
+                    className="flex gap-[10px] cursor-pointer py-[22px] text-[13px] font-bold items-center no-underline tracking-[0.32px] hover:text-white transition-all ease-linear duration-200 relative">
+                    <span className="uppercase">
                       Giỏ hàng / Thanh toán
                     </span>
-                    <span className="text-[22px]">
-                      <FontAwesomeIcon icon={faShoppingCart} className='' />
+                    <span className="">
+                      <FontAwesomeIcon icon={faShoppingCart} className='text-[18px]' />
                     </span>
-                  </button>
+                    {hoverCart && logined && <DropDownCart logined={logined} logoutUser={logoutUser} setHoverCart={setHoverCart} admin={admin} />}
+                  </div>
                 </div>
             }
 
