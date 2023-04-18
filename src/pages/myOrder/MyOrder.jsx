@@ -46,9 +46,8 @@ const solvePrice = (price) => {
 
 
 const MyOrder = () => {
-  const [loading, setLoading] = useState(false) //sua thanh true
+  const [loading, setLoading] = useState(true)
   const [allOrders, setAllOrders] = useState([])
-  const [ordersGroup, setOrderGroup] = useState([])
   const displayEmail = useSelector(selectEmail) || localStorage.getItem('displayEmail')
   const displayName = useSelector(selectUserName) || localStorage.getItem('displayName')
   const userID = useSelector(selectUserID) || localStorage.getItem('userID')
@@ -73,7 +72,7 @@ const MyOrder = () => {
       setTimeout(() => {
         setLoading(false)
         setAllOrders(allOrdersConverted)
-      }, 1000)
+      }, 500)
     }
     catch (e) {
       console.log(e.message);
@@ -96,37 +95,67 @@ const MyOrder = () => {
   return (
     <>
       <OverlayLoading loading={loading}>
-        <div className="w-full py-[30px] min-h-[600px] bg-white">
+        <div className="w-full py-[30px] min-h-[800px] bg-white">
           <div className="max-w-[1230px] mx-auto ">
             <div className="w-full px-[15px] pb-[30px]">
               <div className='w-full'>
-                {/* nav */}
-                <div className="w-full grid grid-cols-5 grid-rows-1 item shadow-shadowPrimary mb-5">
-                  {['Tất cả', 'Đang xử lý', 'Vận chuyển', 'Đang giao', 'Hoàn thành']
-                    .map(item => (
-                      <button
-                        key={item}
-                        onClick={() => setActiveStatus(item)}
-                        value={item}
-                        className={`${activeStatus === item && 'border-b-primary text-primary'} text-center text-bgPrimary cursor-pointer transition-all ease-in-out duration-150 border-[2px] border-transparent hover:text-primary font-medium py-3`}>{item.toUpperCase()}</button>
-                    ))}
-                </div>
-                {/* products */}
-                {allOrders.map((order, idx) => {
-                  countProducts++;
-                  if (countProducts === order.orderAmount && idx < allOrders.length - 1) {
-                    countProducts = 0;
-                    return (
-                      <div className='w-full' key={order.id} >
-                        <OrderProduct order={order} />
-                        <div className="w-full bg-primary h-[2px] mb-4"></div>
+                {(allOrders.length === 0 || JSON.parse(localStorage.getItem('orderLength')) === 0) && !loading
+                  ? (
+                    <div className="w-full h-[480px] flex flex-col gap-8 items-center justify-center">
+                      <div
+                        style={{
+                          backgroundImage: "url('/emptyOrder.jpg')"
+                        }}
+                        className="w-[420px] h-[500px] bg-cover bg-no-repeat bg-center"></div>
+                      <div className='text-center text-[28px] font-bold text-bgPrimary font-mono leading-[32px] uppercase'>Chưa có đơn hàng nào được tạo ra
+                        <p className='font-mono font-normal text-[24px] text-center'>Vui lòng quay lại trang chủ để tìm sản phẩm phù hợp và đặt hàng</p>
                       </div>
-                    )
-                  }
-                  else return (
-                    <OrderProduct key={order.id} order={order} />
+                      <NavLink
+                        to='/'
+                        className='bg-primary text-white px-4 py-3 hover:bg-[#a40206] transition-all ease-linear duration-[120ms]'>
+                        <FontAwesomeIcon className='mr-[6px]' icon={faLongArrowAltLeft} />
+                        <span className='text-[20px]'>Quay lại trang chủ</span>
+                      </NavLink>
+                    </div>
                   )
-                })}
+                  : (
+                    <>
+                      {/* nav */}
+                      <div className="w-full grid grid-cols-5 grid-rows-1 item shadow-shadowPrimary mb-5">
+                        {['Tất cả', 'Đang xử lý', 'Vận chuyển', 'Đang giao', 'Hoàn thành']
+                          .map(item => (
+                            <button
+                              key={item}
+                              onClick={() => setActiveStatus(item)}
+                              value={item}
+                              className={`${activeStatus === item && 'border-b-primary text-primary'} text-center text-bgPrimary cursor-pointer transition-all ease-in-out duration-150 border-[2px] border-transparent hover:text-primary font-medium py-3`}>{item.toUpperCase()}</button>
+                          ))}
+                      </div>
+                      {/* products */}
+                      {allOrders.map((order, idx) => {
+                        countProducts++;
+                        if (countProducts === order.orderAmount && idx < allOrders.length - 1) {
+                          countProducts = 0;
+                          return (
+                            <div className='w-full' key={order.id} >
+                              <OrderProduct order={order} />
+                              <div style={{
+                                height: '.1875rem',
+                                width: '100%',
+                                marginBottom: '16px',
+                                backgroundPositionX: '-1.875rem',
+                                backgroundSize: '7.25rem .1875rem',
+                                backgroundImage: 'repeating-linear-gradient(45deg,#6fa6d6,#6fa6d6 33px,transparent 0,transparent 41px,#f18d9b 0,#f18d9b 74px,transparent 0,transparent 82px)',
+                              }}></div>
+                            </div>
+                          )
+                        }
+                        else return (
+                          <OrderProduct key={order.id} order={order} />
+                        )
+                      })}
+                    </>
+                  )}
 
                 {/* {(allOrders.length === 0 || JSON.parse(localStorage.getItem('orderLength')) === 0) && !loading
                     ? (
@@ -264,7 +293,7 @@ const OrderProduct = ({ order }) => (
           <FontAwesomeIcon className='text-[20px]' icon={faMoneyCheckDollar} />
           <div className="font-medium">Thành tiền:
             <p className="text-primary font-medium inline-block ml-1">
-              {solvePrice((order.cartProduct.price - (order.discount - order.deliveryFee) / order.orderAmount).toFixed(3))} ₫
+              {solvePrice((order.cartProduct.price - (order.discount - order.deliveryFee)).toFixed(3))} ₫
             </p>
           </div>
         </div>

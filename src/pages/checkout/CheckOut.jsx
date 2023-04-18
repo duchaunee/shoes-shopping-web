@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import CarLoading from '../../components/carLoading/CarLoading';
-import { Timestamp, addDoc, collection, deleteDoc, doc, getDocs, query, where } from 'firebase/firestore';
+import { Timestamp, addDoc, collection, deleteDoc, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { useSelector } from 'react-redux';
 import { selectUserID } from '../../redux-toolkit/slice/authSlice';
@@ -149,6 +149,17 @@ const CheckOut = () => {
     }
   }
 
+  const resetVouchers = async (e) => {
+    await setDoc(doc(db, "vouchers", 'FREESHIIP_SHOESPLUS'), {
+      code: 'FREESHIP',
+      activeCode: false
+    });
+    await setDoc(doc(db, "vouchers", 'GIAM50K_SHOESPLUS'), {
+      code: 'GIAM50K',
+      activeCode: false
+    });
+  }
+
   const saveOrder = async () => {
     cartProducts.map((cartProduct) => {
       try {
@@ -157,8 +168,8 @@ const CheckOut = () => {
           displayName,
           displayEmail,
           // totalPayment,
-          deliveryFee,
-          discount,
+          deliveryFee: deliveryFee / cartProducts.length,
+          discount: discount / cartProducts.length,
           orderDate: solveDate(),
           orderTime: solveTime(),
           orderAmount: cartProducts.length,
@@ -197,13 +208,13 @@ const CheckOut = () => {
         await saveOrder() // await HANDLE VIỆC ĐẨY ORDER LÊN FIREBASE SAU ĐÓ MỚI XÓA SẢN PHẨM TRONG GIỎ HÀNG
         await handleDeleteAllCart() //xóa tất cả sp trong giỏ hàng khi ấn đặt hàng
         //chuyển hướng tới /thanh-toan/success
+        await resetVouchers() //mỗi khi bấm đặt hàng thì reset voucher (tránh TH đặt hàng qua nút Đặt hàng ở DropDownCart)
         setTimeout(() => {
           setLoadingNavigate(false)
           setCheckoutSuccess(true)
           navigate('/thanh-toan/success')
           toast.success("Đặt hàng thành công", {
             autoClose: 1200,
-            position: 'top-left'
           })
         }, 1600)
       }
@@ -422,6 +433,13 @@ const CheckOut = () => {
                                 </div>
                               </Skeleton>
                             </div>
+                            <Skeleton loading={loading}
+                              className={`${loading && 'h-6'} overflow-hidden`}>
+                              <div className='flex items-center justify-between border border-transparent border-b-[#ddd] py-3 text-[14px]'>
+                                <h2 className=''>Giảm giá từ shop:</h2>
+                                <span className='font-bold ml-1'>{solvePrice(discount)}₫</span>
+                              </div>
+                            </Skeleton>
                             <div className='flex items-center justify-between border-[3px] border-transparent border-b-[#ddd] py-2 text-[14px]'>
                               <Skeleton loading={loading} className='overflow-hidden'>
                                 <h2 className=''>Tổng thanh toán</h2>
@@ -484,7 +502,6 @@ const CheckOut = () => {
           orderTime={solveTime()}
         />
       }
-
     </>
   );
 };

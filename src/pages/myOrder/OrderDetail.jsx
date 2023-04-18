@@ -46,6 +46,23 @@ const OrderDetail = () => {
     }
   }
 
+  const solveBrand = (brand) => {
+    switch (brand) {
+      case 'classic':
+        return 'Classic'
+      case 'sunbaked':
+        return 'Sunbaked'
+      case 'chuck-07s':
+        return 'Chuck 07S'
+      case 'one-star':
+        return 'One Star'
+      case 'psy-kicks':
+        return 'PSY Kicks'
+      default:
+        break;
+    }
+  }
+
   const solvePrice = (price) => {
     return Number(price).toLocaleString('vi-VN');
   }
@@ -70,48 +87,62 @@ const OrderDetail = () => {
               <div className="w-full flex">
                 <form className='w-full flex'>
                   {/* left */}
-                  <div className="basis-[58.33%] pr-[30px] flex flex-col gap-6">
+                  <div className="basis-[58.33%] pr-[30px] flex flex-col gap-5">
                     <div className="w-full">
-                      <h1 className='text-[26px] text-bgPrimary font-bold'>
+                      <h1 className='text-[22px] text-bgPrimary font-bold uppercase'>
                         Chi tiết đơn hàng
                       </h1>
+                      <div className="w-[50px] h-[3px] my-[10px] bg-red-600"></div>
                       <div className="">
-                        <div className="flex justify-between uppercase font-bold border-[3px] border-transparent border-b-[#ececec]">
+                        <div className="flex justify-between uppercase font-bold border-[2px] border-transparent border-b-[#ccc]">
                           <h2 className='text-[14px] tracking-widest text-bgPrimary py-2'>Sản phẩm</h2>
                           <h2 className='text-[14px] tracking-widest text-bgPrimary py-2'>Tổng</h2>
                         </div>
-                        {(order?.cartProducts
-                          ? order.cartProducts
-                          : Array(3).fill()).map((cartProduct, idx) => (
-                            <div
-                              key={cartProduct?.id || idx}
-                              className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
+                        <div className="flex items-center justify-between border border-transparent border-b-[#ddd]">
+                          <div className="flex pb-4 mt-4">
+                            <Skeleton loading={loading}>
+                              <NavLink
+                                to={`/san-pham/${order?.cartProduct.id}`}
+                                className=''>
+                                <img className="w-[80px] h-[80px] object-cover"
+                                  src={order?.cartProduct.imgURL} alt="" />
+                              </NavLink>
+                            </Skeleton>
+                            <div className="pl-4">
+                              <div className="">
+                                <Skeleton loading={loading}>
+                                  <NavLink
+                                    to={`/san-pham/${order?.cartProduct.id}`}
+                                    className='text-[#334862]'>
+                                    {order?.cartProduct.name || 'day la ten de chay skeleton'}
+                                  </NavLink>
+                                </Skeleton>
+                                <Skeleton loading={loading} className='inline-block'>
+                                  <p className='inline-block ml-1'> ×{order?.cartProduct.quantity}</p>
+                                </Skeleton>
+                              </div>
                               <Skeleton loading={loading}>
-                                <NavLink
-                                  to={`/san-pham/${cartProduct?.id}`}
-                                  className='text-[#334862] text-[14px] cursor-pointer flex items-center'>
-                                  {cartProduct?.name || 'day la ten de chay skeleton'}
-                                  <div className="inline-block mx-1 w-[2px] h-4 bg-[#aaa]"></div>
-                                  <p className='text-[#666] inline text-[14px] cursor-pointer'>
-                                    {solveCategory(cartProduct?.category) || 'Giày nam'}
-                                  </p>
-                                  <strong className='text-bgPrimary font-blod ml-1 text-[14px]'>×
-                                    {cartProduct?.quantity | '1'}
-                                  </strong>
-                                </NavLink>
-                              </Skeleton >
-                              <Skeleton className={`${loading && 'w-[100px]'} inline-block`} loading={loading}>
-                                <h2 className='font-bold inline-block text-[14px]'>
-                                  {solvePrice(cartProduct?.price) || '9.999.999'} ₫
-                                </h2>
+                                <div className="text-[14px] text-[#777]">
+                                  <p className="mr-1 inline-block">Phân loại hàng:</p>
+                                  {`${solveCategory(order?.cartProduct.category)} | ${solveBrand(order?.cartProduct.brand)}`}
+                                </div>
                               </Skeleton>
+                              <div className="text-primary px-1 text-[12px] border border-primary inline-block">7 ngày trả hàng</div>
                             </div>
-                          ))}
+                          </div>
+                          {!loading && (
+                            <NavLink
+                              to={`/chi-tiet/${order?.id}`}
+                              className='bg-primary text-white px-4 py-1 hover:bg-[#a40206] transition-all ease-linear duration-[120ms]'>
+                              <span className='tracking-wider uppercase text-[14px] font-medium'>Đánh giá</span>
+                            </NavLink>
+                          )}
+                        </div>
                         <div className="flex justify-between text-[14px] py-2 border border-transparent border-b-[#ddd]">
                           <h2 className=''>Tổng phụ</h2>
                           <Skeleton className='inline-block' loading={loading}>
                             <h2 className={`${loading && 'w-[100px]'} font-bold inline-block text-[14px]`}>
-                              {solvePrice(order?.totalPayment) || '9.999.999'} ₫
+                              {solvePrice(order?.cartProduct.price) || '9.999.999'} ₫
                             </h2>
                           </Skeleton>
                         </div>
@@ -120,6 +151,14 @@ const OrderDetail = () => {
                           <Skeleton className={`${loading && 'w-[100px]'} inline-block`} loading={loading}>
                             <h2 className='font-bold inline-block text-[14px]'>
                               {solvePrice(order?.deliveryFee) || '9.999.999'} ₫
+                            </h2>
+                          </Skeleton>
+                        </div>
+                        <div className="flex justify-between text-[14px] py-2 border border-transparent border-b-[#ddd]">
+                          <h2 className=''>Giảm giá từ shop</h2>
+                          <Skeleton className={`${loading && 'w-[100px]'} inline-block`} loading={loading}>
+                            <h2 className='font-bold inline-block text-[14px]'>
+                              {solvePrice(order?.discount) || '9.999.999'} ₫
                             </h2>
                           </Skeleton>
                         </div>
@@ -139,16 +178,24 @@ const OrderDetail = () => {
                           <h2 className=''>Tổng cộng</h2>
                           <Skeleton className={`${loading && 'w-[100px]'} inline-block`} loading={loading}>
                             <h2 className='font-bold inline-block text-[14px]'>
-                              {`${order && order?.totalPayment + order?.deliveryFee - order?.discount > 0
-                                ? solvePrice(order?.totalPayment + order?.deliveryFee - order?.discount)
+                              {`${order && order?.cartProduct.price + order?.deliveryFee - order?.discount > 0
+                                ? solvePrice(order?.cartProduct.price + order?.deliveryFee - order?.discount)
                                 : 0} ₫` || '9.999.999 ₫'}
                             </h2>
                           </Skeleton>
                         </div>
                       </div>
                     </div>
+                    <div style={{
+                      height: '.1875rem',
+                      width: '100%',
+                      backgroundPositionX: '-1.875rem',
+                      backgroundSize: '7.25rem .1875rem',
+                      backgroundImage: 'repeating-linear-gradient(45deg,#6fa6d6,#6fa6d6 33px,transparent 0,transparent 41px,#f18d9b 0,#f18d9b 74px,transparent 0,transparent 82px)',
+                    }}></div>
                     <div className="w-full">
-                      <h1 className='text-[26px] text-bgPrimary font-bold'>Địa chỉ giao hàng</h1>
+                      <h1 className='text-[22px] text-bgPrimary font-bold uppercase'>Địa chỉ giao hàng</h1>
+                      <div className="w-[50px] h-[3px] my-[10px] bg-red-600"></div>
                       <div className="">
                         <div className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
                           <h2 className='text-[14px]'>Tỉnh / Thành phố
@@ -210,7 +257,7 @@ const OrderDetail = () => {
                     </div>
                   </div>
                   {/* right */}
-                  <div className='self-start flex-1 py-6 bg-[#fafafa] shadow-md px-[30px] border-[2px] border-solid'>
+                  <div className='self-start flex-1 py-6  bg-[#fafafa] shadow-md px-[30px] border-[2px] border-solid'>
                     <strong className='text-[#7a9c59] font-bold block mb-5 uppercase'>
                       Thông tin đặt hàng
                     </strong>
@@ -237,8 +284,8 @@ const OrderDetail = () => {
                         <p className='mr-1'>Tổng cộng:</p>
                         <Skeleton className='inline-block' loading={loading}>
                           <strong>
-                            {`${order && order?.totalPayment + order?.deliveryFee - order?.discount > 0
-                              ? solvePrice(order?.totalPayment + order?.deliveryFee - order?.discount)
+                            {`${order && order?.cartProduct.price + order?.deliveryFee - order?.discount > 0
+                              ? solvePrice(order?.cartProduct.price + order?.deliveryFee - order?.discount)
                               : 0} ₫` || '9.999.999 ₫'}
                           </strong>
                         </Skeleton>
@@ -261,8 +308,8 @@ const OrderDetail = () => {
               </div>
             </div>
           </div>
-        </div>
-      </OverlayLoading>
+        </div >
+      </OverlayLoading >
     </>
   );
 };

@@ -78,6 +78,12 @@ const CheckoutSuccess = ({
                         </h2>
                       </div>
                       <div className="flex justify-between text-[14px] py-2 border border-transparent border-b-[#ddd]">
+                        <h2 className=''>Giảm giá từ shop</h2>
+                        <h2 className='font-bold inline-block text-[14px]'>
+                          {solvePrice(discount)} ₫
+                        </h2>
+                      </div>
+                      <div className="flex justify-between text-[14px] py-2 border border-transparent border-b-[#ddd]">
                         <h2 className=''>Phương thức thanh toán</h2>
                         <h2 className='font-bold inline-block text-[14px]'>
                           {shippingAddress.paymentMethod === "cash"

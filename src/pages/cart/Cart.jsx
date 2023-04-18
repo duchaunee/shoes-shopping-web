@@ -389,6 +389,10 @@ const Cart = () => {
                             <p className=''>Nhận hàng vào <span className='font-bold'>{deliveryDate()}</span></p>
                           </div>
                         </div>
+                        <div className='flex items-center justify-between border border-transparent border-b-[#ddd] py-3 text-[14px]'>
+                          <h2 className=''>Giảm giá từ shop:</h2>
+                          <span className='font-bold ml-1'>{solvePrice(discount)}₫</span>
+                        </div>
                         <div className='flex items-center justify-between border-[3px] border-transparent border-b-[#ddd] py-4 text-[14px]'>
                           <h2 className=''>Tổng thanh toán</h2>
                           <h2 className='font-bold'>
