@@ -210,6 +210,9 @@ const ProductDetail = () => {
   }
 
   useEffect(() => {
+    window.scrollTo({
+      top: 0,
+    })
     getProduct() //lấy ra sản phẩm đó lúc vào trang
   }, [id]) //param là id để xử lí việc vẫn ở trang đó nhưng bấm vào sản phẩm khác (ở Sản phẩm tương tự cuối trang) thì nó phải re-render lại để hiển thị, nếu k có cái này thì hình ảnh vẫn là của sản phẩm trước
 

@@ -35,8 +35,8 @@ const DropDownSearch = ({ setHoverSearch }) => {
       setLoading(true)
       //
       setTimeout(() => {
-        setLoading(false)
         navigate(`/tim-kiem/${valueSearch}`)
+        setLoading(false)
         setHoverSearch(false)
         inputSearch.current.value = ''
       }, 800)

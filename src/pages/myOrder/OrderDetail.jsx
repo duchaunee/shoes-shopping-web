@@ -51,6 +51,9 @@ const OrderDetail = () => {
   }
 
   useEffect(() => {
+    window.scrollTo({
+      top: 0,
+    })
     getOrder()
   }, [])
 
@@ -85,7 +88,7 @@ const OrderDetail = () => {
                               className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
                               <Skeleton loading={loading}>
                                 <NavLink
-                                  // to={`/san-pham/${cartProduct?.id}`}
+                                  to={`/san-pham/${cartProduct?.id}`}
                                   className='text-[#334862] text-[14px] cursor-pointer flex items-center'>
                                   {cartProduct?.name || 'day la ten de chay skeleton'}
                                   <div className="inline-block mx-1 w-[2px] h-4 bg-[#aaa]"></div>
