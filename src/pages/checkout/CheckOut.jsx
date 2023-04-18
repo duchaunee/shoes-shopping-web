@@ -150,25 +150,27 @@ const CheckOut = () => {
   }
 
   const saveOrder = async () => {
-    try {
-      addDoc(collection(db, "orders"), {
-        userID,
-        displayName,
-        displayEmail,
-        totalPayment,
-        deliveryFee,
-        discount,
-        orderDate: solveDate(),
-        orderTime: solveTime(),
-        orderAmount: cartProducts.length,
-        orderStatus: "Đang xử lý",
-        cartProducts,
-        shippingAddress,
-        creatAt: Timestamp.now().toDate().toString()
-      })
-    } catch (e) {
-      console.log(e.message);
-    }
+    cartProducts.map((cartProduct) => {
+      try {
+        addDoc(collection(db, "orders"), {
+          userID,
+          displayName,
+          displayEmail,
+          // totalPayment,
+          deliveryFee,
+          discount,
+          orderDate: solveDate(),
+          orderTime: solveTime(),
+          orderAmount: cartProducts.length,
+          orderStatus: "Đang xử lý",
+          cartProduct,
+          shippingAddress,
+          creatAt: Timestamp.now().toDate().toString()
+        })
+      } catch (e) {
+        console.log(e.message);
+      }
+    })
   }
 
   const handleOrder = async (e) => {

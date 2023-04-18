@@ -74,7 +74,7 @@ const Footer = () => {
       </div>
       <div className="footer-cre">
         <p className='w-full text-center pt-[10px] pb-[15px] text-white/50'>
-          © Bản quyền thuộc về <a className='text-white/80' href="https://fb.com/duchaudeyy"> GroupTTCS</a>
+          © Bản quyền thuộc về <a className='text-white/80' href="https://fb.com/duchaudeyy"> ShoesPlus</a>
         </p>
       </div>
     </footer>

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { NavLink } from 'react-router-dom';
@@ -6,15 +6,55 @@ import { selectEmail, selectUserID, selectUserName } from '../../redux-toolkit/s
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { OverlayLoading, Skeleton } from '../../animation-loading';
-import { faLongArrowAltLeft } from '@fortawesome/free-solid-svg-icons';
+import { faLongArrowAltLeft, faMoneyCheckDollar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+
+const solveCategory = (category) => {
+  switch (category) {
+    case 'giay-nam':
+      return 'Giày nam'
+    case 'giay-nu':
+      return 'Giày nữ'
+    case 'giay-tre-em':
+      return 'Giày trẻ em'
+    default:
+      break;
+  }
+}
+
+const solveBrand = (brand) => {
+  switch (brand) {
+    case 'classic':
+      return 'Classic'
+    case 'sunbaked':
+      return 'Sunbaked'
+    case 'chuck-07s':
+      return 'Chuck 07S'
+    case 'one-star':
+      return 'One Star'
+    case 'psy-kicks':
+      return 'PSY Kicks'
+    default:
+      break;
+  }
+}
+
+const solvePrice = (price) => {
+  return Number(price).toLocaleString('vi-VN');
+}
+
+
 const MyOrder = () => {
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false) //sua thanh true
   const [allOrders, setAllOrders] = useState([])
+  const [ordersGroup, setOrderGroup] = useState([])
   const displayEmail = useSelector(selectEmail) || localStorage.getItem('displayEmail')
   const displayName = useSelector(selectUserName) || localStorage.getItem('displayName')
   const userID = useSelector(selectUserID) || localStorage.getItem('userID')
+  //
+  let countProducts = 0;
+  const [activeStatus, setActiveStatus] = useState('Tất cả')
 
   const getOrders = async () => {
     setLoading(true)
@@ -40,46 +80,57 @@ const MyOrder = () => {
     }
   }
 
+  const filderProductsDelivery = () => {
 
-  const solveCategory = (category) => {
-    switch (category) {
-      case 'giay-nam':
-        return 'Giày nam'
-      case 'giay-nu':
-        return 'Giày nữ'
-      case 'giay-tre-em':
-        return 'Giày trẻ em'
-      default:
-        break;
-    }
-  }
-
-  const solvePrice = (price) => {
-    return Number(price).toLocaleString('vi-VN');
   }
 
   useEffect(() => {
     getOrders()
   }, [])
 
-  useEffect(() => {
-    console.log(allOrders.length);
-    console.log(JSON.parse(localStorage.getItem('orderLength')));
-  }, [allOrders])
+  // useEffect(() => {
+  //   console.log(allOrders.length);
+  //   console.log(JSON.parse(localStorage.getItem('orderLength')));
+  // }, [allOrders])
 
   return (
     <>
       <OverlayLoading loading={loading}>
-        <div className="w-full py-[30px] min-h-[600px]">
+        <div className="w-full py-[30px] min-h-[600px] bg-white">
           <div className="max-w-[1230px] mx-auto ">
             <div className="w-full px-[15px] pb-[30px]">
-              <div className="w-full flex">
-                <form className='w-full flex'>
-                  {/* main */}
-                  {(allOrders.length === 0 || JSON.parse(localStorage.getItem('orderLength')) === 0) && !loading
+              <div className='w-full'>
+                {/* nav */}
+                <div className="w-full grid grid-cols-5 grid-rows-1 item shadow-shadowPrimary mb-5">
+                  {['Tất cả', 'Đang xử lý', 'Vận chuyển', 'Đang giao', 'Hoàn thành']
+                    .map(item => (
+                      <button
+                        key={item}
+                        onClick={() => setActiveStatus(item)}
+                        value={item}
+                        className={`${activeStatus === item && 'border-b-primary text-primary'} text-center text-bgPrimary cursor-pointer transition-all ease-in-out duration-150 border-[2px] border-transparent hover:text-primary font-medium py-3`}>{item.toUpperCase()}</button>
+                    ))}
+                </div>
+                {/* products */}
+                {allOrders.map((order, idx) => {
+                  countProducts++;
+                  if (countProducts === order.orderAmount && idx < allOrders.length - 1) {
+                    countProducts = 0;
+                    return (
+                      <div className='w-full' key={order.id} >
+                        <OrderProduct order={order} />
+                        <div className="w-full bg-primary h-[2px] mb-4"></div>
+                      </div>
+                    )
+                  }
+                  else return (
+                    <OrderProduct key={order.id} order={order} />
+                  )
+                })}
+
+                {/* {(allOrders.length === 0 || JSON.parse(localStorage.getItem('orderLength')) === 0) && !loading
                     ? (
                       <div className="w-full h-[480px] flex flex-col gap-8 items-center justify-center">
-                        {/* <img className='w-full h-[300px] object-contain' src="../../emptyCart.png" alt="" /> */}
                         <div
                           style={{
                             backgroundImage: "url('/emptyOrder.jpg')"
@@ -151,8 +202,7 @@ const MyOrder = () => {
                             ))}
                         </div>
                       </div>
-                    )}
-                </form>
+                    )} */}
               </div>
             </div>
           </div>
@@ -161,5 +211,66 @@ const MyOrder = () => {
     </>
   );
 };
+
+const OrderProduct = ({ order }) => (
+  <div className="w-full p-6 pt-3 mb-4 shadow-shadowPrimary">
+    {/* top */}
+    <div className=" pb-3 border border-transparent border-b-[#ddd] flex justify-between items-center">
+      <div className="text-bgPrimary font-bold text-[14px] uppercase ">
+        <p className="inline-block text-primary mr-1">Ngày đặt hàng:</p>
+        <p className='inline-block'>{`${order.orderDate} | ${order.orderTime}`}</p>
+      </div>
+      <NavLink
+        to={`/chi-tiet/${order?.id}`}
+        className='bg-primary text-white px-4 py-1 hover:bg-[#a40206] transition-all ease-linear duration-[120ms]'>
+        <span className='tracking-wider uppercase text-[14px] font-medium'>Xem đơn hàng</span>
+      </NavLink>
+    </div>
+    {/* bottom */}
+    <div className="w-full flex items-center justify-between pt-4">
+      <div className="flex">
+        <NavLink
+          to={`/san-pham/${order.cartProduct.id}`}
+          className=''>
+          <img className="w-[80px] h-[80px] object-cover"
+            src={order.cartProduct.imgURL} alt="" />
+        </NavLink>
+        <div className="pl-4">
+          <div className="">
+            <NavLink
+              to={`/san-pham/${order.cartProduct.id}`}
+              className='text-[#334862]'>
+              {order.cartProduct.name}
+            </NavLink>
+            <p className='inline-block ml-1'> ×{order.cartProduct.quantity}</p>
+          </div>
+          <div className="text-[14px] text-[#777]">
+            <p className="mr-1 inline-block">Phân loại hàng:</p>
+            {`${solveCategory(order.cartProduct.category)} | ${solveBrand(order.cartProduct.brand)}`}
+          </div>
+          <div className="text-primary px-1 text-[12px] border border-primary inline-block">7 ngày trả hàng</div>
+        </div>
+      </div>
+      <div className="flex flex-col items-end">
+        <div className="flex gap-2 items-center">
+          <p className="inline-block line-through text-[#aaa]">
+            {solvePrice(order.cartProduct.price * 2)} ₫
+          </p>
+          <p className="inline-block font-semibold  text-bgPrimary">
+            {solvePrice(order.cartProduct.price)} ₫
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <FontAwesomeIcon className='text-[20px]' icon={faMoneyCheckDollar} />
+          <div className="font-medium">Thành tiền:
+            <p className="text-primary font-medium inline-block ml-1">
+              {solvePrice((order.cartProduct.price - (order.discount - order.deliveryFee) / order.orderAmount).toFixed(3))} ₫
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+)
 
 export default MyOrder;
