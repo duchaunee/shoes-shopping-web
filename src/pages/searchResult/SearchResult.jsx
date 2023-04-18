@@ -36,9 +36,11 @@ const SearchResult = () => {
         }
       })
       const searchProducts = allProducts.filter(product => product.name.toLowerCase().includes(queryValue.toLowerCase()))
+      console.log(searchProducts);
       setTimeout(() => {
         setLoading(false)
         setSearchProducts(searchProducts)
+        setPageProducts(searchProducts.slice(0, itemsPerPage))
       }, 800)
     }
     catch (e) {
@@ -108,6 +110,11 @@ const SearchResult = () => {
   }
 
   useEffect(() => {
+    //reset init
+    setSearchProducts([])
+    setPageProducts([])
+    queryRef.current.value = 'default'
+    //
     window.scrollTo({
       top: 0,
       behavior: 'smooth'
@@ -168,7 +175,7 @@ const SearchResult = () => {
                 : (
                   <>
                     <div className={`px-[15px] ${searchProducts.length > 0 && 'min-h-[596px]'} grid grid-cols-5`}>
-                      {(pageProducts.length === 0
+                      {(pageProducts.length === 0 && loading
                         ? Array(10).fill()
                         : pageProducts).map((item, idx) => (
                           <div
