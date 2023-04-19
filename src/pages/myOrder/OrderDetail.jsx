@@ -104,7 +104,7 @@ const OrderDetail = () => {
                               <NavLink
                                 to={`/san-pham/${order?.cartProduct.id}`}
                                 className=''>
-                                <img className="w-[80px] h-[80px] object-cover"
+                                <img className="h-[80px] object-cover"
                                   src={order?.cartProduct.imgURL} alt="" />
                               </NavLink>
                             </Skeleton>
