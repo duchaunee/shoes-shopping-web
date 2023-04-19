@@ -10,4 +10,5 @@ export { default as CheckOut } from "./checkout/CheckOut"
 export { default as CheckoutSuccess } from "./checkoutSuccess/CheckoutSuccess"
 export { default as MyOrder } from "./myOrder/MyOrder"
 export { default as SearchResult } from "./searchResult/SearchResult"
+export { default as Review } from "./review/Review"
 
