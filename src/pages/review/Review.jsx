@@ -5,6 +5,8 @@ import { selectUserID, selectUserName } from '../../redux-toolkit/slice/authSlic
 import StarsRating from 'react-star-rate';
 import './review.scss'
 import { NavLink } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 const Review = ({ children, id, openReview, setOpenReview }) => {
   const overlayRef = useRef(null)
@@ -36,6 +38,7 @@ const Review = ({ children, id, openReview, setOpenReview }) => {
       setOpenReview(false)
     }
   }
+
   return (
     <>
       <div
@@ -45,7 +48,12 @@ const Review = ({ children, id, openReview, setOpenReview }) => {
             ref={overlayRef}
             onClick={handleClickOutside}
             className="wraper-review bg-black/20 absolute top-[-100px] left-0 bottom-0 right-0 z-[10000]">
-            <div className="review w-[520px] mx-auto px-6 py-6 bg-white rounded-[8px] mt-[200px]">
+            <div className="relative review w-[520px] mx-auto px-6 py-6 bg-white rounded-[8px] mt-[216px]">
+              <div
+                onClick={() => setOpenReview(false)}
+                className="absolute hover:text-primary transition-all ease-linear duration-100 top-1 right-[6px]">
+                <FontAwesomeIcon className='cursor-pointer text-[30px] p-2' icon={faXmark} />
+              </div>
               <h1 className="text-[18px] font-bold text-bgPrimary uppercase">
                 Đánh giá đơn hàng
               </h1>
