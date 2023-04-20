@@ -31,4 +31,20 @@
   body::-webkit-scrollbar-thumb {
     background-image: linear-gradient(-45deg, #5c8df6, #c30005);
   }
+
+  //css react-star-rate in product-detail
+  .detail-product-star .react-star-rate {
+    display: flex !important;
+    align-items: center !important;
+    font-size: 22px !important;
+    // height: 30px;
+  }
+
+  .detail-product-star .react-star-rate li .react-star-rate__star__first,
+  .detail-product-star .react-star-rate li .react-star-rate__star__second {
+    height: 24px;
+    display: flex;
+    font-size: 22px;
+    align-items: center;
+  }
 }

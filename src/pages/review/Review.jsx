@@ -8,7 +8,7 @@ import { NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { Timestamp, addDoc, collection, doc, setDoc } from 'firebase/firestore';
-import { db } from '../../firebase/config';
+import { auth, db } from '../../firebase/config';
 
 const Review = ({
   children,
@@ -22,6 +22,7 @@ const Review = ({
   //
   const [rate, setRate] = useState('');
   const [typeReview, setTypeReview] = useState('');
+  const currentUser = auth.currentUser;
   const userID = useSelector(selectUserID) || localStorage.getItem('userID')
   const displayName = useSelector(selectUserName) || localStorage.getItem('displayName')
   const displayEmail = useSelector(selectEmail) || localStorage.getItem('displayEmail')
@@ -78,6 +79,7 @@ const Review = ({
     try {
       await addDoc(collection(db, "reviews"), {
         userID,
+        imgAvatar: localStorage.getItem('imgAvatar') || currentUser?.photoURL,
         displayName,
         displayEmail,
         productID: id,
@@ -101,13 +103,14 @@ const Review = ({
     try {
       await setDoc(doc(db, "reviews", review.id), {
         userID,
+        imgAvatar: localStorage.getItem('imgAvatar') || currentUser?.photoURL,
         displayName,
         displayEmail,
         productID: id,
         rate,
         typeReview,
-        orderDate: solveDate(),
-        orderTime: solveTime(),
+        orderDate: review.orderDate,
+        orderTime: review.orderTime,
         creatAt: review.creatAt,
         editedAt: Timestamp.now().toDate().toString()
       })

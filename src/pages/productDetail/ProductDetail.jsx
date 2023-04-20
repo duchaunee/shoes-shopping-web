@@ -13,6 +13,7 @@ import OverlayProduct from './OverlayProduct';
 import { ADD_TO_CART } from '../../redux-toolkit/slice/cartSlice';
 import { Skeleton, Spinning } from '../../animation-loading';
 import { toast } from 'react-toastify';
+import StarsRating from 'react-star-rate';
 
 const solvePrice = (price) => {
   return Number(price).toLocaleString('vi-VN');
@@ -23,6 +24,8 @@ const ProductDetail = () => {
   const dispatch = useDispatch()
   const userID = useSelector(selectUserID) || localStorage.getItem('userID')
   const logined = useSelector(selectIsLoggedIn) || JSON.parse(localStorage.getItem('logined'))
+  //
+  const [allReviews, setAllReviews] = useState([])
   //
   const [openOverlay, setOpenOverlay] = useState(false)
   const [activeImg, setActiveImg] = useState(0)
@@ -107,6 +110,23 @@ const ProductDetail = () => {
     } else {
       // docSnap.data() will be undefined in this case
       // console.log("No such document!");
+    }
+  }
+
+  const getReviews = async () => {
+    const reviewsRef = query(collection(db, "reviews"),
+      where('productID', "==", id));
+    const q = query(reviewsRef);
+    try {
+      const querySnapshot = await getDocs(q);
+      const allReviews = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+      setAllReviews(allReviews)
+    }
+    catch (e) {
+      console.log(e.message);
     }
   }
 
@@ -217,6 +237,7 @@ const ProductDetail = () => {
       top: 0,
     })
     getProduct() //lấy ra sản phẩm đó lúc vào trang
+    getReviews()
   }, [id]) //param là id để xử lí việc vẫn ở trang đó nhưng bấm vào sản phẩm khác (ở Sản phẩm tương tự cuối trang) thì nó phải re-render lại để hiển thị, nếu k có cái này thì hình ảnh vẫn là của sản phẩm trước
 
   useEffect(() => {
@@ -494,24 +515,29 @@ const ProductDetail = () => {
                       <p className='text-[18px] font-medium opacity-75'>Chưa có đánh giá</p>
                     </div> */}
                       {/*comment */}
-                      {Array(2).fill().map((item, idx) => {
+                      {allReviews.map((review, idx) => {
                         return (
                           <div
                             key={idx}
-                            className={`flex gap-4 pt-5 pb-8 ${idx < Array(2).length - 1 ? 'border border-transparent border-b-[#ddd]' : ''}`}>
+                            className={`flex gap-4 pt-5 pb-8 ${idx < allReviews.length - 1 ? 'border border-transparent border-b-[#ddd]' : ''}`}>
                             <div className="w-[50px] h-[50px] rounded-full border border-[#ddd] overflow-hidden">
                               {/* phải xử lí nếu nó không có avatar thì cho avatar mặc định */}
-                              <img className='w-full h-full object-contain' src={localStorage.getItem('imgAvatar') || 'https://source.unsplash.com/random'} alt="" />
+                              <img className='w-full h-full object-contain'
+                                src={review.imgAvatar}
+                                alt="" />
                             </div>
                             <div className="flex-1 flex flex-col">
-                              <span className='font-medium'>{localStorage.getItem('displayName')}</span>
-                              <div className="">
-                                <FontAwesomeIcon className='text-[#f9dc4b] text-[14px]' icon={faStar} />
+                              <span className='font-medium'>{review.displayName}</span>
+                              <div className="text-[14px] detail-product-star">
+                                <StarsRating
+                                  disabled
+                                  value={review.rate}
+                                />
                               </div>
-                              <div className="text-black opacity-50 text-[14px]">
-                                {`Phân loại hàng: ${product.name} - ${solveCategory(product.category)}`}
+                              <div className="text-black opacity-50 text-[14px] mt-2">
+                                {`${review.orderDate} ${review.orderTime} | Phân loại hàng: ${solveCategory(product.category)}`}
                               </div>
-                              <div className="mt-2  ">Chất vải dày dặn, form đẹp. Mình 1m6 mặc size M vẫn ok nhé, ko có bị ngắn đâu nè. Rcm mng nên mua, shop còn tặng ktrang vải nữa, rất tốt...Chất vải dày dặn, form đẹp. Mình 1m6 mặc size M vẫn ok nhé, ko có bị ngắn đâu nè. Rcm mng nên mua, shop còn tặng ktrang vải nữa, rất tốt...</div>
+                              <div className="mt-2  ">{review.typeReview}</div>
                             </div>
                           </div>
                         )

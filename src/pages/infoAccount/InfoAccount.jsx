@@ -1,12 +1,13 @@
-import { auth, storage } from '../../firebase/config';
+import { auth, db, storage } from '../../firebase/config';
 import { EmailAuthProvider, reauthenticateWithCredential, updatePassword, updateProfile } from 'firebase/auth';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Spinning } from '../../animation-loading';
-import { SET_DISPLAY_NAME } from '../../redux-toolkit/slice/authSlice';
+import { SET_DISPLAY_NAME, selectUserID } from '../../redux-toolkit/slice/authSlice';
 import UploadSquare from '../../components/admin/addProduct/UploadSquare';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
+import { collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
 
 const InfoAccount = () => {
   const isGoogleUser = localStorage.getItem('isGoogleUser') === 'true' ? true : false
@@ -23,6 +24,9 @@ const InfoAccount = () => {
   const [haveChangeImg, setHaveChangeImg] = useState(false);
   const displayEmail = localStorage.getItem('displayEmail')
   const displayName = localStorage.getItem('displayName')
+  //
+  const [allOrders, setAllOrders] = useState([])
+  const userID = useSelector(selectUserID) || localStorage.getItem('userID')
   // const isGoogleUser = useSelector(state => state.auth.isGoogleUser)
   const dispatch = useDispatch()
 
@@ -131,60 +135,63 @@ const InfoAccount = () => {
 
   //sovle việc cập nhật avatar của user trên firebase
   //chỉ khi nào ấn cập nhật thì mới up ảnh lên firebase nhé :v tẹo về xử lí nốt că thằng add product
-  const handleUpdateAvatar = () => {
-    //nếu có thay đổi avatar (kéo vào ảnh mới thì mới xử lí)
-    if (haveChangeImg) {
-      const storageRef = ref(storage, `shoesPlus-avatar/${Date.now()}${fileImg.name}`);
-      const uploadTask = uploadBytesResumable(storageRef, fileImg);
+  const handleUpdateAvatar = async () => {
+    return new Promise((resolve, reject) => {
+      //nếu có thay đổi avatar (kéo vào ảnh mới thì mới xử lí)
+      if (haveChangeImg) {
+        const storageRef = ref(storage, `shoesPlus-avatar/${Date.now()}${fileImg.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, fileImg);
 
-      //xử lí việc nếu chọn 1 ảnh khác thì phải xóa ảnh cũ đi
-      // if ((infoChange.imgAvatar || avatar) && haveChangeImg && avatar !== 'avt-google') {
-      //   const desertRef = ref(storage, (infoChange.imgAvatar || avatar));
-      //   deleteObject(desertRef).then(() => {
-      //     console.log('xoa anh thanh cong');
-      //     setHaveChangeImg(false)
-      //   }).catch((error) => {
-      //     console.log(error.message);
-      //     console.log('xoa anh that bai');
-      //   });
-      // }
-      uploadTask.on('state_changed',
-        (snapshot) => { },
-        (e) => {
-          toast.error(e.message, {
+        //xử lí việc nếu chọn 1 ảnh khác thì phải xóa ảnh cũ đi
+        // if ((infoChange.imgAvatar || avatar) && haveChangeImg && avatar !== 'avt-google') {
+        //   const desertRef = ref(storage, (infoChange.imgAvatar || avatar));
+        //   deleteObject(desertRef).then(() => {
+        //     console.log('xoa anh thanh cong');
+        //     setHaveChangeImg(false)
+        //   }).catch((error) => {
+        //     console.log(error.message);
+        //     console.log('xoa anh that bai');
+        //   });
+        // }
+        uploadTask.on('state_changed',
+          (snapshot) => { },
+          (e) => {
+            toast.error(e.message, {
+              autoClose: 1200
+            })
+          },
+          () => {
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+              //mục đích lưu vào local strogate để khi reload lại nó hiển thị luôn mà không cần tgian load cái ảnh => gây mất thiện cảm người dùng
+              //downloadURL là link của ảnh trên firebase
+              localStorage.setItem('imgAvatar', downloadURL);
+              updateProfile(currentUser, { photoURL: downloadURL })
+              setInfoChange(prevState => {
+                return Object.assign({}, prevState, { imgAvatar: downloadURL });
+              })
+              checkInputDone.imgAvatar = true;
+              setLoading(false);
+              if (!checkInputDone.passwordError) {
+                toast.success('Thông tin tài khoản đã được cập nhật', {
+                  autoClose: 1200
+                })
+              }
+              resolve()
+            });
+          }
+        );
+      }
+      else {
+        checkInputDone.imgAvatar = true;
+        setLoading(false)
+        if (!checkInputDone.passwordError) {
+          toast.success('Thông tin tài khoản đã được cập nhật', {
             autoClose: 1200
           })
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            //mục đích lưu vào local strogate để khi reload lại nó hiển thị luôn mà không cần tgian load cái ảnh => gây mất thiện cảm người dùng
-            //downloadURL là link của ảnh trên firebase
-            localStorage.setItem('imgAvatar', downloadURL);
-            updateProfile(currentUser, { photoURL: downloadURL })
-            setInfoChange(prevState => {
-              return Object.assign({}, prevState, { imgAvatar: downloadURL });
-            })
-            checkInputDone.imgAvatar = true;
-            setLoading(false);
-            if (!checkInputDone.passwordError) {
-              toast.success('Thông tin tài khoản đã được cập nhật', {
-                autoClose: 1200
-              })
-            }
-          });
         }
-      );
-    }
-    else {
-      checkInputDone.imgAvatar = true;
-      setLoading(false)
-      if (!checkInputDone.passwordError) {
-        toast.success('Thông tin tài khoản đã được cập nhật', {
-          autoClose: 1200
-        })
+        resolve()
       }
-
-    }
+    })
   }
 
   //solve hiển thị và check xem có đổi avatar không
@@ -257,7 +264,8 @@ const InfoAccount = () => {
     //change displayName nhưng KHÔNG CHANGE PASSWORD
     else if (status && !changePass) {
       await handleChangeDisplayName(e);
-      handleUpdateAvatar()
+      await handleUpdateAvatar()
+      solveReviews()
     }
 
     //CÓ CHANGE PASSWORD & update password thành công
@@ -276,9 +284,48 @@ const InfoAccount = () => {
           await new Promise((resolve) => {
             handleUpdateAvatar()
             if (checkInputDone.imgAvatar === true) resolve()
-          }).then(() => resetAndUpdateInput())
+          }).then(() => {
+            resetAndUpdateInput()
+            solveReviews()
+          })
         }
       }
+    }
+  }
+
+  const solveReviews = async () => {
+    const ordersRef = query(collection(db, "reviews"), where('userID', "==", userID));
+    const q = query(ordersRef);
+    try {
+      const querySnapshot = await getDocs(q);
+      const allReviews = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+      Promise.all(
+        allReviews.map(async (review) => {
+          try {
+            await setDoc(doc(db, "reviews", review.id), {
+              userID: review.userID,
+              imgAvatar: localStorage.getItem('imgAvatar') || currentUser?.photoURL,
+              displayName: infoChange.name,
+              displayEmail: review.displayEmail,
+              productID: review.productID,
+              rate: review.rate,
+              typeReview: review.typeReview,
+              orderDate: review.orderDate,
+              orderTime: review.orderTime,
+              creatAt: review.creatAt,
+            })
+          } catch (e) {
+            console.log(e.message);
+          }
+        })
+      )
+      // setAllOrders(allOrders)
+    }
+    catch (e) {
+      console.log(e.message);
     }
   }
 
