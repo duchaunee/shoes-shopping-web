@@ -138,7 +138,7 @@ const Review = ({
         {openReview && (
           <div
             ref={overlayRef}
-            onClick={handleClickOutside}
+            // onClick={handleClickOutside}
             className="wraper-review bg-black/20 absolute top-[-100px] left-0 bottom-0 right-0 z-[10000]">
             <div className="relative review w-[520px] mx-auto px-6 py-6 bg-white rounded-[8px] mt-[216px]">
               <div

@@ -130,6 +130,14 @@ const ProductDetail = () => {
     }
   }
 
+  const averageRate = () => {
+    const totalRate = allReviews.reduce((total, review) => {
+      return total + review.rate;
+    }, 0)
+    if (allReviews.length === 0) return 0
+    return (totalRate / allReviews.length).toFixed(1)
+  }
+
   const solveCategory = (category) => {
     switch (category) {
       case 'giay-nam':
@@ -349,10 +357,12 @@ const ProductDetail = () => {
                     <div className="inline-flex gap-3">
                       <div className="">
                         <FontAwesomeIcon className='text-[#f9dc4b] text-[18px] mr-2' icon={faStar} />
-                        <p className='inline-block text-[#767676] font-medium'>4.6</p>
+                        <p className='inline-block text-[#767676] font-medium'>
+                          {averageRate() || 0}
+                        </p>
                       </div>
                       <div className="w-[2px] bg-[#e6e6e6]"></div>
-                      <p className='text-[#767676] font-medium'>432 Đánh giá</p>
+                      <p className='text-[#767676] font-medium'>{allReviews.length} Đánh giá</p>
                     </div>
                   </Skeleton>
                   <Skeleton loading={loading} className='mt-5 mb-4 overflow-hidden'>
