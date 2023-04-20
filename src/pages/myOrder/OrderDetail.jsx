@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { NavLink, useParams } from 'react-router-dom';
-import { selectEmail, selectUserName } from '../../redux-toolkit/slice/authSlice';
-import { doc, getDoc } from 'firebase/firestore';
+import { selectEmail, selectUserID, selectUserName } from '../../redux-toolkit/slice/authSlice';
+import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { OverlayLoading, Skeleton } from '../../animation-loading';
 import Review from '../review/Review';
@@ -10,8 +10,11 @@ import Review from '../review/Review';
 const OrderDetail = () => {
   const { id } = useParams()
   const [openReview, setOpenReview] = useState(false)
+  const [review, setReview] = useState('')
+  const [reviewDone, setReviewDone] = useState(false)
   const [order, setOrder] = useState(null)
   const [loading, setLoading] = useState(true)
+  const userID = useSelector(selectUserID) || localStorage.getItem('userID')
   const displayEmail = useSelector(selectEmail) || localStorage.getItem('displayEmail')
   const displayName = useSelector(selectUserName) || localStorage.getItem('displayName')
 
@@ -32,6 +35,26 @@ const OrderDetail = () => {
     } else {
       // docSnap.data() will be undefined in this case
       // console.log("No such document!");
+    }
+  }
+
+  const getReview = async () => {
+    if (order) {
+      const reviewsRef = query(collection(db, "reviews"),
+        where('userID', '==', userID),
+        where('productID', '==', order?.cartProduct.id));
+      const q = query(reviewsRef);
+      try {
+        const querySnapshot = await getDocs(q);
+        const dbReview = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data()
+        }))[0]
+        setReview(dbReview)
+      }
+      catch (e) {
+        console.log(e.message);
+      }
     }
   }
 
@@ -72,15 +95,23 @@ const OrderDetail = () => {
   useEffect(() => {
     window.scrollTo({
       top: 0,
-    })
+    });
     getOrder()
   }, [])
 
+  useEffect(() => {
+    getReview()
+  }, [order])
 
   return (
     <>
       <OverlayLoading loading={loading}>
-        <Review id={id} openReview={openReview} setOpenReview={setOpenReview}>
+        <Review
+          id={order?.cartProduct?.id}
+          openReview={openReview}
+          setOpenReview={setOpenReview}
+          review={review}
+          reviewDone={reviewDone}>
           <div className="w-full py-[30px]">
             <div className="max-w-[1230px] mx-auto ">
               <div className="w-full px-[15px] pb-[30px]">
@@ -134,7 +165,9 @@ const OrderDetail = () => {
                               <NavLink
                                 onClick={() => setOpenReview(true)}
                                 className='bg-primary text-white px-4 py-1 hover:bg-[#a40206] transition-all ease-linear duration-[120ms]'>
-                                <span className='tracking-wider uppercase text-[14px] font-medium'>Đánh giá</span>
+                                <span className='tracking-wider uppercase text-[14px] font-medium'>
+                                  {review ? 'Sửa đánh giá' : 'Đánh giá'}
+                                </span>
                               </NavLink>
                             )}
                           </div>

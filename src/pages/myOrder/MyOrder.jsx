@@ -44,10 +44,10 @@ const solvePrice = (price) => {
   return Number(price).toLocaleString('vi-VN');
 }
 
-
 const MyOrder = () => {
   const [loading, setLoading] = useState(true)
   const [allOrders, setAllOrders] = useState([])
+  const [allReviews, setAllReviews] = useState(new Map())
   const displayEmail = useSelector(selectEmail) || localStorage.getItem('displayEmail')
   const displayName = useSelector(selectUserName) || localStorage.getItem('displayName')
   const userID = useSelector(selectUserID) || localStorage.getItem('userID')
@@ -79,13 +79,35 @@ const MyOrder = () => {
     }
   }
 
+  const getReviews = async () => {
+    const mapReviews = new Map()
+    const reviewsRef = query(collection(db, "reviews"),
+      where('userID', "==", userID));
+    const q = query(reviewsRef);
+    try {
+      const querySnapshot = await getDocs(q);
+      const allReviews = querySnapshot.docs.map((doc) => {
+        mapReviews.set(doc.data().productID, doc.data())
+      })
+      setAllReviews(mapReviews)
+    }
+    catch (e) {
+      console.log(e.message);
+    }
+  }
+
   const filderProductsDelivery = () => {
 
   }
 
   useEffect(() => {
     getOrders()
+    getReviews()
   }, [])
+
+  useEffect(() => {
+    console.log(allReviews);
+  }, [allReviews])
 
   // useEffect(() => {
   //   console.log(allOrders.length);
@@ -138,7 +160,7 @@ const MyOrder = () => {
                           countProducts = 0;
                           return (
                             <div className='w-full' key={order.id} >
-                              <OrderProduct order={order} />
+                              <OrderProduct order={order} allReviews={allReviews} />
                               <div style={{
                                 height: '.1875rem',
                                 width: '100%',
@@ -151,7 +173,7 @@ const MyOrder = () => {
                           )
                         }
                         else return (
-                          <OrderProduct key={order.id} order={order} />
+                          <OrderProduct key={order.id} order={order} allReviews={allReviews} />
                         )
                       })}
                     </>
@@ -241,19 +263,25 @@ const MyOrder = () => {
   );
 };
 
-const OrderProduct = ({ order }) => (
+const OrderProduct = ({ order, allReviews }) => (
   <div className="w-full p-6 pt-3 mb-4 shadow-shadowPrimary">
     {/* top */}
+    {console.log(order.cartProduct.id)}
     <div className=" pb-3 border border-transparent border-b-[#ddd] flex justify-between items-center">
       <div className="text-bgPrimary font-bold text-[14px] uppercase ">
         <p className="inline-block text-primary mr-1">Ngày đặt hàng:</p>
         <p className='inline-block'>{`${order.orderDate} | ${order.orderTime}`}</p>
       </div>
-      <NavLink
-        to={`/chi-tiet/${order?.id}`}
-        className='bg-primary text-white px-4 py-1 hover:bg-[#a40206] transition-all ease-linear duration-[120ms]'>
-        <span className='tracking-wider uppercase text-[14px] font-medium'>Xem đơn hàng</span>
-      </NavLink>
+      <div className='flex gap-4 items-center'>
+        {allReviews.has(order.cartProduct.id) && (
+          <p className="text-primary uppercase text-[14px] tracking-wider">Đã đánh giá</p>
+        )}
+        <NavLink
+          to={`/chi-tiet/${order?.id}`}
+          className='bg-primary text-white px-4 py-1 hover:bg-[#a40206] transition-all ease-linear duration-[120ms]'>
+          <span className='tracking-wider uppercase text-[14px] font-medium'>Xem đơn hàng</span>
+        </NavLink>
+      </div>
     </div>
     {/* bottom */}
     <div className="w-full flex items-center justify-between pt-4">

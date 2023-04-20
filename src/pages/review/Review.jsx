@@ -1,20 +1,29 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
-import { selectUserID, selectUserName } from '../../redux-toolkit/slice/authSlice';
+import { selectEmail, selectUserID, selectUserName } from '../../redux-toolkit/slice/authSlice';
 import StarsRating from 'react-star-rate';
 import './review.scss'
 import { NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { Timestamp, addDoc, collection, doc, setDoc } from 'firebase/firestore';
+import { db } from '../../firebase/config';
 
-const Review = ({ children, id, openReview, setOpenReview }) => {
+const Review = ({
+  children,
+  id,
+  openReview,
+  setOpenReview,
+  review
+}) => {
   const overlayRef = useRef(null)
   //
   const [rate, setRate] = useState('');
-  const [review, setReview] = useState('');
+  const [typeReview, setTypeReview] = useState('');
   const userID = useSelector(selectUserID) || localStorage.getItem('userID')
   const displayName = useSelector(selectUserName) || localStorage.getItem('displayName')
+  const displayEmail = useSelector(selectEmail) || localStorage.getItem('displayEmail')
 
   const MAX_WORDS = 180;
   const handleChange = (e) => {
@@ -22,13 +31,13 @@ const Review = ({ children, id, openReview, setOpenReview }) => {
     const words = e.target.value.trim()
     if (words.length > MAX_WORDS) {
       const truncatedWords = words.slice(0, MAX_WORDS);
-      setReview(truncatedWords.trim());
+      setTypeReview(truncatedWords.trim());
       toast.warn('Giới hạn của ô là 180 ký tự', {
         autoClose: 1200,
         position: 'top-left'
       })
     } else {
-      setReview(e.target.value);
+      setTypeReview(e.target.value);
     }
   };
 
@@ -38,6 +47,83 @@ const Review = ({ children, id, openReview, setOpenReview }) => {
       setOpenReview(false)
     }
   }
+
+
+  const solveDate = () => {
+    const today = new Date();
+    const day = today.getDate();
+    const month = today.toLocaleString('vi-VN', { month: 'long' });
+    const year = today.getFullYear();
+    return `${day} ${month}, ${year}`;
+  }
+
+  const solveTime = () => {
+    const now = new Date()
+    const hour = now.getHours().toString().padStart(2, '0');
+    const minute = now.getMinutes().toString().padStart(2, '0');
+    const second = now.getSeconds().toString().padStart(2, '0');
+    return `${hour}:${minute}:${second}`;
+  }
+
+  const detectReview = (review, f1, f2) => {
+    if (review) return f1;
+    return f2
+  }
+
+  const saveReview = async (e) => {
+    e.preventDefault()
+    try {
+      await addDoc(collection(db, "reviews"), {
+        userID,
+        displayName,
+        displayEmail,
+        productID: id,
+        rate,
+        typeReview,
+        orderDate: solveDate(),
+        orderTime: solveTime(),
+        creatAt: Timestamp.now().toDate().toString()
+      })
+      toast.success('Đánh giá sản phẩm thành công', {
+        autoClose: 1200,
+        position: 'top-left'
+      })
+      setOpenReview(false)
+    } catch (e) {
+      console.log(e.message);
+    }
+  }
+
+  const editReview = async (e) => {
+    e.preventDefault()
+    try {
+      await setDoc(doc(db, "reviews", review.id), {
+        userID,
+        displayName,
+        displayEmail,
+        productID: id,
+        rate,
+        typeReview,
+        orderDate: solveDate(),
+        orderTime: solveTime(),
+        creatAt: Timestamp.now().toDate().toString()
+      })
+      toast.success('Sửa đánh giá thành công', {
+        autoClose: 1200,
+        position: 'top-left'
+      })
+      setOpenReview(false)
+    } catch (e) {
+      console.log(e.message);
+    }
+  }
+
+  useEffect(() => {
+    if (review) {
+      setRate(review.rate)
+      setTypeReview(review.typeReview)
+    }
+  }, [review])
 
   return (
     <>
@@ -73,7 +159,7 @@ const Review = ({ children, id, openReview, setOpenReview }) => {
                   Đánh giá về sản phẩm
                 </label>
                 <textarea
-                  value={review}
+                  value={typeReview}
                   onChange={handleChange}
                   required
                   className='px-[15px] py-5 pl-[20px] block w-full h-full text-[16px] border border-solid border-bgPrimary rounded-[4px] bg-transparent text-bgPrimary outline-none resize-none'
@@ -85,8 +171,11 @@ const Review = ({ children, id, openReview, setOpenReview }) => {
                   placeholder='Bạn có đóng góp gì về sản phẩm này? (Giới hạn 200 ký tự)' />
               </div>
               <NavLink
+                onClick={detectReview(review, editReview, saveReview)}
                 className='inline-block bg-primary text-white px-4 py-2 hover:bg-[#a40206] transition-all ease-linear duration-[120ms] mt-6 rounded-[8px]'>
-                <span className='tracking-wider uppercase text-[16px] font-medium'>Gửi đánh giá của bạn</span>
+                <span className='tracking-wider uppercase text-[16px] font-medium'>
+                  {review ? 'Sửa đánh giá của bạn' : 'Gửi đánh giá của bạn'}
+                </span>
               </NavLink>
             </div>
           </div>
