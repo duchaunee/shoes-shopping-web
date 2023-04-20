@@ -10,8 +10,8 @@ import Review from '../review/Review';
 const OrderDetail = () => {
   const { id } = useParams()
   const [openReview, setOpenReview] = useState(false)
-  const [review, setReview] = useState('')
   const [reviewDone, setReviewDone] = useState(false)
+  const [review, setReview] = useState('')
   const [order, setOrder] = useState(null)
   const [loading, setLoading] = useState(true)
   const userID = useSelector(selectUserID) || localStorage.getItem('userID')
@@ -101,7 +101,7 @@ const OrderDetail = () => {
 
   useEffect(() => {
     getReview()
-  }, [order])
+  }, [order, reviewDone])
 
   return (
     <>
@@ -110,8 +110,8 @@ const OrderDetail = () => {
           id={order?.cartProduct?.id}
           openReview={openReview}
           setOpenReview={setOpenReview}
-          review={review}
-          reviewDone={reviewDone}>
+          setReviewDone={setReviewDone}
+          review={review}>
           <div className="w-full py-[30px]">
             <div className="max-w-[1230px] mx-auto ">
               <div className="w-full px-[15px] pb-[30px]">

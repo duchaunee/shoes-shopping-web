@@ -15,6 +15,7 @@ const Review = ({
   id,
   openReview,
   setOpenReview,
+  setReviewDone,
   review
 }) => {
   const overlayRef = useRef(null)
@@ -72,6 +73,8 @@ const Review = ({
 
   const saveReview = async (e) => {
     e.preventDefault()
+    setOpenReview(false)
+    setReviewDone(true)
     try {
       await addDoc(collection(db, "reviews"), {
         userID,
@@ -88,7 +91,6 @@ const Review = ({
         autoClose: 1200,
         position: 'top-left'
       })
-      setOpenReview(false)
     } catch (e) {
       console.log(e.message);
     }
@@ -106,7 +108,8 @@ const Review = ({
         typeReview,
         orderDate: solveDate(),
         orderTime: solveTime(),
-        creatAt: Timestamp.now().toDate().toString()
+        creatAt: review.creatAt,
+        editedAt: Timestamp.now().toDate().toString()
       })
       toast.success('Sửa đánh giá thành công', {
         autoClose: 1200,

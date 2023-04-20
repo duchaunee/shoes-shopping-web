@@ -105,10 +105,6 @@ const MyOrder = () => {
     getReviews()
   }, [])
 
-  useEffect(() => {
-    console.log(allReviews);
-  }, [allReviews])
-
   // useEffect(() => {
   //   console.log(allOrders.length);
   //   console.log(JSON.parse(localStorage.getItem('orderLength')));
@@ -266,7 +262,6 @@ const MyOrder = () => {
 const OrderProduct = ({ order, allReviews }) => (
   <div className="w-full p-6 pt-3 mb-4 shadow-shadowPrimary">
     {/* top */}
-    {console.log(order.cartProduct.id)}
     <div className=" pb-3 border border-transparent border-b-[#ddd] flex justify-between items-center">
       <div className="text-bgPrimary font-bold text-[14px] uppercase ">
         <p className="inline-block text-primary mr-1">Ngày đặt hàng:</p>
