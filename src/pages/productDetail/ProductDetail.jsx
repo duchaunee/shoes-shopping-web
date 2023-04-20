@@ -25,6 +25,7 @@ const ProductDetail = () => {
   const logined = useSelector(selectIsLoggedIn) || JSON.parse(localStorage.getItem('logined'))
   //
   const [openOverlay, setOpenOverlay] = useState(false)
+  const [activeImg, setActiveImg] = useState(0)
   //top prodcut show
   const [idxActive, setIdxActive] = useState(0)
   const [translateShowX, setTranslateShowX] = useState(0)
@@ -228,6 +229,7 @@ const ProductDetail = () => {
   return (
     <>
       <OverlayProduct
+        activeImg={activeImg}
         openOverlay={openOverlay}
         setOpenOverlay={setOpenOverlay}
         imgProductsPreview={imgProductsPreview}>
@@ -237,7 +239,7 @@ const ProductDetail = () => {
             <div className="w-full h-full py-10">
               <div className="max-w-[1230px] h-full mx-auto px-[15px] flex gap-8">
                 {/* left  */}
-                <div className="flex-1">
+                <div className={`flex-1 ${openOverlay && 'pointer-events-none select-none'}`}>
                   <div
                     onMouseEnter={() => (!loading && setHoverShowProduct(true))}
                     onMouseLeave={() => (!loading && setHoverShowProduct(false))}
@@ -249,14 +251,24 @@ const ProductDetail = () => {
                     </button>
                     <Skeleton loading={loading} className='overflow-hidden' rounded='rounded-sm' height='h-full'>
                       <div
-                        onClick={() => setOpenOverlay(true)}
                         style={{
                           transform: `translateX(-${translateShowX}px)`
                         }}
-                        className="h-full transition-all ease-in-out duration-300">
+                        className='h-full transition-all ease-in-out duration-300'>
                         {imgProductsPreview.map((imgProduct, idx) => (
                           <img
                             key={idx}
+                            onClick={async () => {
+                              await new Promise((resolve) => {
+                                window.scroll({
+                                  top: 0,
+                                  behavior: 'smooth'
+                                })
+                                resolve()
+                              })
+                              setActiveImg(idx)
+                              setOpenOverlay(true)
+                            }}
                             className='inline-flex w-[584px] h-full cursor-pointer object-contain' src={imgProduct} alt="" />
                         ))}
                       </div>
