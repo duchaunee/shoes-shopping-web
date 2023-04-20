@@ -515,33 +515,44 @@ const ProductDetail = () => {
                       <p className='text-[18px] font-medium opacity-75'>Chưa có đánh giá</p>
                     </div> */}
                       {/*comment */}
-                      {allReviews.map((review, idx) => {
-                        return (
-                          <div
-                            key={idx}
-                            className={`flex gap-4 pt-5 pb-8 ${idx < allReviews.length - 1 ? 'border border-transparent border-b-[#ddd]' : ''}`}>
-                            <div className="w-[50px] h-[50px] rounded-full border border-[#ddd] overflow-hidden">
-                              {/* phải xử lí nếu nó không có avatar thì cho avatar mặc định */}
-                              <img className='w-full h-full object-contain'
-                                src={review.imgAvatar}
-                                alt="" />
-                            </div>
-                            <div className="flex-1 flex flex-col">
-                              <span className='font-medium'>{review.displayName}</span>
-                              <div className="text-[14px] detail-product-star">
-                                <StarsRating
-                                  disabled
-                                  value={review.rate}
-                                />
-                              </div>
-                              <div className="text-black opacity-50 text-[14px] mt-2">
-                                {`${review.orderDate} ${review.orderTime} | Phân loại hàng: ${solveCategory(product.category)}`}
-                              </div>
-                              <div className="mt-2  ">{review.typeReview}</div>
-                            </div>
+                      {allReviews.length === 0
+                        ? <div className="w-full flex flex-col gap-4 items-center justify-center">
+                          <img
+                            className=''
+                            src="../../noHaveComment.png" alt="" />
+                          <p className='text-[17px] text-center'>Hiện chưa có đánh giá nào</p>
+                        </div>
+                        : (
+                          <div className="">
+                            {allReviews.map((review, idx) => {
+                              return (
+                                <div
+                                  key={idx}
+                                  className={`flex gap-4 pt-5 pb-8 ${idx < allReviews.length - 1 ? 'border border-transparent border-b-[#ddd]' : ''}`}>
+                                  <div className="w-[50px] h-[50px] rounded-full border border-[#ddd] overflow-hidden">
+                                    {/* phải xử lí nếu nó không có avatar thì cho avatar mặc định */}
+                                    <img className='w-full h-full object-contain'
+                                      src={review.imgAvatar}
+                                      alt="" />
+                                  </div>
+                                  <div className="flex-1 flex flex-col">
+                                    <span className='font-medium'>{review.displayName}</span>
+                                    <div className="text-[14px] detail-product-star">
+                                      <StarsRating
+                                        disabled
+                                        value={review.rate}
+                                      />
+                                    </div>
+                                    <div className="text-black opacity-50 text-[14px] mt-2">
+                                      {`${review.orderDate} ${review.orderTime} | Phân loại hàng: ${solveCategory(product.category)}`}
+                                    </div>
+                                    <div className="mt-2  ">{review.typeReview}</div>
+                                  </div>
+                                </div>
+                              )
+                            })}
                           </div>
-                        )
-                      })}
+                        )}
                     </div>
                   </div>
                 </div>
