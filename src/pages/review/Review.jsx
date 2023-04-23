@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { Timestamp, addDoc, collection, doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../../firebase/config';
+import Spinning from '../../animation-loading/spinning/Spinning'
 
 const Review = ({
   children,
@@ -19,6 +20,8 @@ const Review = ({
   review
 }) => {
   const overlayRef = useRef(null)
+  //
+  const [loading, setLoading] = useState(false);
   //
   const [rate, setRate] = useState('');
   const [typeReview, setTypeReview] = useState('');
@@ -74,8 +77,7 @@ const Review = ({
 
   const saveReview = async (e) => {
     e.preventDefault()
-    setOpenReview(false)
-    setReviewDone(true)
+    setLoading(true)
     try {
       await addDoc(collection(db, "reviews"), {
         userID,
@@ -89,6 +91,9 @@ const Review = ({
         orderTime: solveTime(),
         creatAt: Timestamp.now().toDate().toString()
       })
+      setLoading(false)
+      setOpenReview(false)
+      setReviewDone(true)
       toast.success('Đánh giá sản phẩm thành công', {
         autoClose: 1200,
         position: 'top-left'
@@ -100,6 +105,7 @@ const Review = ({
 
   const editReview = async (e) => {
     e.preventDefault()
+    setLoading(true)
     try {
       await setDoc(doc(db, "reviews", review.id), {
         userID,
@@ -114,6 +120,7 @@ const Review = ({
         creatAt: review.creatAt,
         editedAt: Timestamp.now().toDate().toString()
       })
+      setLoading(false)
       toast.success('Sửa đánh giá thành công', {
         autoClose: 1200,
         position: 'top-left'
@@ -178,10 +185,17 @@ const Review = ({
               </div>
               <NavLink
                 onClick={detectReview(review, editReview, saveReview)}
-                className='inline-block bg-primary text-white px-4 py-2 hover:bg-[#a40206] transition-all ease-linear duration-[120ms] mt-6 rounded-[8px]'>
-                <span className='tracking-wider uppercase text-[16px] font-medium'>
-                  {review ? 'Sửa đánh giá của bạn' : 'Gửi đánh giá của bạn'}
-                </span>
+                className='inline-block bg-primary text-white px-4 py-2 hover:bg-[#a40206] transition-all ease-linear duration-[120ms] mt-6 rounded-[8px] min-w-[233px] h-[40px]'>
+                <div className="w-full">
+                  <span className='tracking-wider uppercase text-[16px] font-medium'>
+                    {loading
+                      ? <Spinning size='22px' />
+                      : (
+                        `${review ? 'Sửa đánh giá của bạn' : 'Gửi đánh giá của bạn'}`
+                      )
+                    }
+                  </span>
+                </div>
               </NavLink>
             </div>
           </div>
