@@ -113,7 +113,7 @@ const MyOrder = () => {
   return (
     <>
       <OverlayLoading loading={loading}>
-        <div className="w-full py-[30px] min-h-[800px] bg-white">
+        <div className={`w-full py-[30px] min-h-[800px] bg-white ${loading && 'blur-[2px]'}`}>
           <div className="max-w-[1230px] mx-auto ">
             <div className="w-full px-[15px] pb-[30px]">
               <div className='w-full'>

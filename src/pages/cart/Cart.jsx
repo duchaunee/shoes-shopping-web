@@ -292,7 +292,7 @@ const Cart = () => {
   return (
     <>
       <OverlayLoading loading={loading}>
-        <div className="w-full py-[30px]">
+        <div className={`w-full py-[30px] ${loading && 'blur-[3px]'}`}>
           <div className="max-w-[1230px] min-h-[600px] mx-auto ">
             <div className="w-full px-[15px] pb-[30px]">
               <div className="w-full flex">
