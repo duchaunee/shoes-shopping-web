@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import CarLoading from '../../components/carLoading/CarLoading';
 import { Timestamp, addDoc, collection, deleteDoc, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
-import { db } from '../../firebase/config';
+import { auth, db } from '../../firebase/config';
 import { useSelector } from 'react-redux';
 import { selectUserID } from '../../redux-toolkit/slice/authSlice';
 import { NavLink, useNavigate, useParams } from 'react-router-dom';
@@ -19,9 +19,12 @@ const CheckOut = () => {
   const [totalPayment, setTotalPayment] = useState(0)
   const [allProducts, setAllProducts] = useState([])
   const [cartProducts, setCartProducts] = useState([])
+  //
+  const currentUser = auth.currentUser;
   const userID = useSelector(selectUserID) || localStorage.getItem('userID')
   const displayEmail = useSelector(selectEmail) || localStorage.getItem('displayEmail')
   const displayName = useSelector(selectUserName) || localStorage.getItem('displayName')
+  const imgAvatar = currentUser?.photoURL || localStorage.getItem('imgAvatar')
   //
   const navigate = useNavigate()
   //
@@ -167,6 +170,7 @@ const CheckOut = () => {
           userID,
           displayName,
           displayEmail,
+          imgAvatar,
           // totalPayment,
           deliveryFee: deliveryFee / cartProducts.length,
           discount: discount / cartProducts.length,

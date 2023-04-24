@@ -147,6 +147,10 @@ const ProductItem = ({
               loading={loading}
               onClick={() => {
                 if (!logined) {
+                  window.scroll({
+                    top: 0,
+                    behavior: 'smooth'
+                  })
                   navigate('/dang-nhap')
                 }
                 else detectUser(handleDetectAdmin, handleAddToCart)()

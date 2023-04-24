@@ -306,9 +306,6 @@ const Cart = () => {
                       }}
                       className="w-[520px] h-[500px] bg-contain bg-no-repeat bg-center"></div>
                     <div className='text-center text-[28px] font-bold text-bgPrimary font-mono leading-[32px] uppercase'>Giỏ hàng của bạn hiện đang trống
-                      <div className="">
-                        <p className='font-mono font-normal text-[24px] text-center'>Vui lòng quay lại trang chủ để thêm sản phẩm vào giỏ</p>
-                      </div>
                     </div>
                     <NavLink
                       to='/'
