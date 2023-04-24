@@ -217,8 +217,8 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
   return (
     <>
       {/* <img className='w-[100px] h-[100px]' src={localStorage.getItem('imgAvatar')} alt="" /> */}
-      <div className={`${scrolled ? "" : "absolute"} z-[99999] h-[133px] w-full`}></div>
-      <header className={`${scrolled ? "stuck fixed" : "relative"} z-[99999] h-[133px] w-full text-white/80`}>
+      <div className={`${scrolled ? "" : "absolute"} z-[99999] h-[125px] w-full`}></div>
+      <header className={`${scrolled ? "stuck fixed" : "relative"} z-[99999] h-[125px] w-full text-white/80`}>
         <div className="h-[72px] bg-bgPrimary">
           <div className=" grid grid-cols-12 grid-rows-1 h-full px-[15px] max-w-[1230px]  mx-auto">
             <div className='col-span-4 flex items-center'>

@@ -12,9 +12,9 @@ const NavAdmin = () => {
     <div className="rounded-tl-[12px] rounded-bl-[12px] p-[20px] pt-0 w-[270px] shadow-xl">
       <div className="w-full py-[20px] flex flex-col items-center mb-[10px]">
         <img
-          className='w-[100px] h-[100px] rounded-full mb-2 object-cover'
+          className='w-[80px] h-[80px] rounded-full mb-2 object-cover'
           src={localStorage.getItem('imgAvatar') || currentUser?.photoURL} alt="" />
-        <span className='block font-[500] text-center text-bgPrimary text-[20px]'>{localStorage.getItem('displayName') || displayName}</span>
+        <span className='block font-[500] text-center text-bgPrimary text-[18px]'>{localStorage.getItem('displayName') || displayName}</span>
       </div>
       <ul className='w-full'>
         <NavActive to='home' icon={faHome} text='Thống kê' />

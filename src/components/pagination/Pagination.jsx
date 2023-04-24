@@ -22,13 +22,13 @@ const Pagination = ({
 
   return (
     <>
-      <ol className="flex items-center justify-center gap-6 text-[18px] font-medium mt-6">
+      <ol className="flex items-center justify-center gap-6 text-[18px] font-medium mt-4">
         <li>
           <button
             onClick={() => (currentPage > 1 && setCurrentPage(currentPage - 1))}
             className="inline-flex gap-2 items-center justify-center rounded border border-gray-100">
             <FontAwesomeIcon className='text-[18px] text-bgPrimary' icon={faLongArrowAltLeft} />
-            <span className="">Prev Page</span>
+            <span className="text-[16px]">Prev Page</span>
           </button>
         </li>
 
@@ -47,7 +47,7 @@ const Pagination = ({
                 {idx + activeNumber < totalPages + 1
                   ? <button
                     onClick={() => setCurrentPage(idx + activeNumber)}
-                    className={`${currentPage === idx + activeNumber ? 'bg-bgPrimary text-white' : ''} w-[48px] aspect-square block rounded py-2 border border-gray-100 text-center leading-8`} >
+                    className={`${currentPage === idx + activeNumber ? 'bg-bgPrimary text-white' : ''} w-[44px] h-[44px] flex items-center justify-center rounded py-2 border border-gray-100 leading-8`} >
                     {idx + activeNumber}
                   </button>
                   : <FontAwesomeIcon className='text-[15px] text-primary block rounded w-[48px] aspect-square py-2 border border-gray-100 text-center leading-8' icon={faBan} />}
@@ -62,7 +62,7 @@ const Pagination = ({
           <button
             onClick={() => (currentPage < totalPages && setCurrentPage(currentPage + 1))}
             className="inline-flex gap-2 items-center justify-center rounded border border-gray-100" >
-            <span className="">Next Page</span>
+            <span className="text-[16px]">Next Page</span>
             <FontAwesomeIcon className='text-[18px] text-bgPrimary' icon={faLongArrowAltRight} />
           </button>
         </li>

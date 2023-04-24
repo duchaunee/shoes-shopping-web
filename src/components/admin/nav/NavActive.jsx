@@ -14,7 +14,7 @@ const NavActive = ({ to, icon, iconSize = 'text-[18px]', text }) => {
       <div
         className='flex items-center gap-5'>
         <FontAwesomeIcon className={iconSize} icon={icon} />
-        <span className=' text-[18px] font-[450]'>{text}</span>
+        <span className=' text-[16px] font-[450]'>{text}</span>
       </div>
     </NavLink>
   );

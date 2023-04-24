@@ -1,4 +1,4 @@
-export const adminAccount = 'duchaunee@gmail.com'
+export const adminAccount = 'admin@gmail.com'
 // export const adminAccount2 = 'admin@gmail.com'
 // export const adminAccount3 = 'admin@gmail.com'
 // export const adminAccount4 = 'admin@gmail.com'

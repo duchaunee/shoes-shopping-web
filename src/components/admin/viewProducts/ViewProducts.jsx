@@ -305,16 +305,16 @@ const ViewProducts = () => {
   return (
     <>
       <div className='w-full'>
-        <span className='text-bgPrimary block text-[18px] mb-4'>
-          <p className='font-bold inline-block text-[18px]'>Số lượng</p>
+        <span className='text-bgPrimary block text-[16px] mb-4'>
+          <p className='font-bold inline-block text-[16px]'>Số lượng</p>
           : {notFound ? "0" : products.length} sản phẩm
         </span>
-        <div className='border border-transparent pb-6 border-b-[#bbb] grid grid-cols-12 items-center'>
-          <div className="col-span-4 w-full">
+        <div className='border border-transparent pb-6 border-b-[#bbb] flex justify-between items-center'>
+          <div className="">
             <select
               ref={filterRef}
               onChange={handleFilterProduct}
-              className='outline-none float-left bg-slate-100 px-3 py-3 text-bgPrimary cursor-pointer border border-solid border-[#ddd] shadow-shadowSearch'
+              className='outline-none float-left bg-slate-100 px-3 py-2 text-bgPrimary cursor-pointer border border-solid border-[#ddd] shadow-shadowSearch'
               name="sort-by" id="">
               <option key='0' value="default">Lọc sản phẩm theo</option>
               <option key='1' value="all">Tất cả</option>
@@ -327,28 +327,28 @@ const ViewProducts = () => {
           </div>
           <form
             onSubmit={handleSearchByName}
-            className="col-span-6 flex gap-4 items-center">
+            className="flex gap-4 items-center">
             <div className="px-[15px] overflow-hidden inline-flex gap-2 items-center border border-solid border-bgPrimary ">
               <input
                 required
                 value={searchByName}
                 onChange={(e) => setSearchByName(e.target.value)}
-                className='block py-[6px] text-[18px] text-bgPrimary outline-none'
+                className='block py-[6px] text-[16px] text-bgPrimary outline-none'
                 placeholder='Tìm kiếm theo tên'
                 autoComplete='off'
                 type="text" name="" id="" />
             </div>
             <button
               type='submit'
-              className='text-white  bg-bgPrimary opacity-80 hover:opacity-100 transition-all ease-linear duration-300 px-4 py-[8px] text-[18px]'>
+              className='text-white  bg-bgPrimary opacity-80 hover:opacity-100 transition-all ease-linear duration-300 px-4 py-[8px] text-[16px]'>
               <FontAwesomeIcon icon={faSearch} />
             </button>
           </form>
-          <div className="col-span-2">
+          <div className="">
             <select
               ref={queryRef}
               onChange={handleQueryProduct}
-              className='outline-none float-right bg-slate-100 px-3 py-3 text-bgPrimary cursor-pointer border border-solid border-[#ddd] shadow-shadowSearch'
+              className='outline-none float-right bg-slate-100 px-3 py-2 text-bgPrimary cursor-pointer border border-solid border-[#ddd] shadow-shadowSearch'
               name="sort-by" id="">
               <option key='0' value="default">Sắp xếp sản phẩm theo</option>
               <option key='1' value="latest">Mới nhất</option>
@@ -375,14 +375,14 @@ const ViewProducts = () => {
                 style={{
                   height: `${itemsPerPage * 148 + 55}px`
                 }}
-                className="w-full mt-2 text-bgPrimary">
+                className="w-full text-bgPrimary">
                 {loading
-                  ? <Spinning color='#1f2028' size='32px' />
+                  ? <Spinning color='#1f2028' size='28px' />
                   : (
                     <table className='w-full'>
                       <thead>
                         <tr
-                          className='border border-transparent pb-4 border-b-[#bbb] grid gap-5 grid-cols-12 mb-4 text-[18px] font-bold py-2'>
+                          className='border border-transparent border-b-[#bbb] grid gap-5 grid-cols-12 mb-4 text-[16px] font-bold py-[10px]'>
                           <td className='col-span-1'>Thứ tự</td>
                           <td className='col-span-5'>Thông tin sản phẩm</td>
                           <td className='col-span-2'>Phân loại</td>
@@ -408,15 +408,15 @@ const ViewProducts = () => {
                               <div className="col-span-4 flex flex-col mt-4">
                                 <span
                                   onClick={() => navigate(`/san-pham/${product.id}`)}
-                                  className='text-[20px] font-medium text-bgPrimary line-clamp-1 cursor-pointer'>{product.name}</span>
-                                <span className='text-[#888] line-clamp-2'>{product.desc}</span>
+                                  className='text-[18px] font-medium text-bgPrimary line-clamp-1 cursor-pointer'>{product.name}</span>
+                                <span className='text-[#888] line-clamp-2 text-[16px]'>{product.desc}</span>
                               </div>
                             </td>
                             <td className='col-span-2 flex items-center'>
-                              <span className='text-[18px] bg-[#d9d6d6] rounded-[4px] px-2 py-1'>{solveCategory(product.category)}</span>
+                              <span className='text-[16px] bg-[#d9d6d6] rounded-[4px] px-2 py-1'>{solveCategory(product.category)}</span>
                             </td>
                             <td className='col-span-2 flex items-center'>
-                              <span className='text-[18px] font-medium'>
+                              <span className='text-[16px] font-medium'>
                                 {solvePrice(product.price)}
                                 <p className='inline-block text-[16px] align-top ml-[2px]'>₫</p>
                               </span>
@@ -428,12 +428,12 @@ const ViewProducts = () => {
                                   localStorage.setItem('prevLinkEditProduct', '/admin/view-products/')
                                   localStorage.setItem('showProduct', JSON.stringify(product))
                                 }}>
-                                <FontAwesomeIcon className='text-[20px] cursor-pointer text-bgPrimary hover:text-green-600 transition-all ease-linear duration-100' icon={faEdit} />
+                                <FontAwesomeIcon className='text-[18px] cursor-pointer text-bgPrimary hover:text-green-600 transition-all ease-linear duration-100' icon={faEdit} />
                               </button>
                               <button
                                 onClick={() => confirmDelete(product.id, product.imgURL, product.imgPreviewURL1, product.imgPreviewURL2, product.imgPreviewURL3, product.imgPreviewURL4)}
                                 className=''>
-                                <FontAwesomeIcon className='text-[20px] cursor-pointer text-bgPrimary hover:text-primary transition-all ease-linear duration-100' icon={faTrashAlt} />
+                                <FontAwesomeIcon className='text-[18px] cursor-pointer text-bgPrimary hover:text-primary transition-all ease-linear duration-100' icon={faTrashAlt} />
                               </button>
                             </td>
                           </tr>

@@ -112,7 +112,7 @@ const OrderDetail = () => {
           setOpenReview={setOpenReview}
           setReviewDone={setReviewDone}
           review={review}>
-          <div className="w-full py-[30px]">
+          <div className={`w-full py-[30px] ${loading && 'blur-[2px]'}`}>
             <div className="max-w-[1230px] mx-auto ">
               <div className="w-full px-[15px] pb-[30px]">
                 <div className="w-full flex">

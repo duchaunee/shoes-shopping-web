@@ -366,7 +366,7 @@ const AddProduct = () => {
         </div>
         <button
           type="submit"
-          className='mt-[20px] w-[180px] px-[10px] h-10 bg-primary text-white text-[15px] leading-[37px] font-bold tracking-[1px] uppercase transition-all ease-in duration-500 focus:outline-none hover:bg-[#a40206]'>
+          className='mt-[20px] w-[170px] px-[10px] h-10 bg-primary text-white text-[14px] leading-[37px] font-bold tracking-[1px] uppercase transition-all ease-in duration-500 focus:outline-none hover:bg-[#a40206]'>
           {loading ? <Spinning /> : detectForm(id, (
             <div className="flex gap-1 items-center justify-center">
               <FontAwesomeIcon className='text-[18px]' icon={faPlus} />

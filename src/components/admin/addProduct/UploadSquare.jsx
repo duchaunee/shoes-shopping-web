@@ -31,8 +31,8 @@ const UploadSquare = ({ src, srcURL, setSrc, text, id, width, name, handleImageC
         {loading && <Spinning color='#000' size='26px' />}
         {!srcURL && !loading &&
           <>
-            <FontAwesomeIcon className='text-[30px]' icon={faCloudUploadAlt} />
-            <span className='text-[18px]'>{text}</span>
+            <FontAwesomeIcon className='text-[26px]' icon={faCloudUploadAlt} />
+            <span className='text-[16px]'>{text}</span>
           </>}
         {srcURL && !loading && <img className='w-full h-full object-cover object-center' src={srcURL} alt="" />}
       </label>
