@@ -123,7 +123,9 @@ const ProductDetail = () => {
         id: doc.id,
         ...doc.data()
       }))
-      setAllReviews(allReviews)
+      const allReviewsConverted = allReviews
+        .sort((reviewA, reviewB) => (new Date(reviewB.creatAt)) - (new Date(reviewA.creatAt)))
+      setAllReviews(allReviewsConverted)
     }
     catch (e) {
       console.log(e.message);
