@@ -17,7 +17,8 @@ const Review = ({
   openReview,
   setOpenReview,
   setReviewDone,
-  review
+  review,
+  orderID
 }) => {
   const overlayRef = useRef(null)
   //
@@ -87,6 +88,7 @@ const Review = ({
         productID: id,
         rate,
         typeReview,
+        orderID,
         orderDate: solveDate(),
         orderTime: solveTime(),
         creatAt: Timestamp.now().toDate().toString()
@@ -115,6 +117,7 @@ const Review = ({
         productID: id,
         rate,
         typeReview,
+        orderID,
         orderDate: review.orderDate,
         orderTime: review.orderTime,
         creatAt: review.creatAt,

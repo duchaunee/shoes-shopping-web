@@ -538,7 +538,7 @@ const ProductDetail = () => {
                               return (
                                 <div
                                   key={idx}
-                                  className={`flex gap-4 pt-5 pb-8 ${idx < allReviews.length - 1 ? 'border border-transparent border-b-[#ddd]' : ''}`}>
+                                  className={`flex gap-4 pt-5 ${idx < allReviews.length - 1 ? 'border border-transparent border-b-[#ddd] pb-8' : ''}`}>
                                   <div className="w-[50px] h-[50px] rounded-full border border-[#ddd] overflow-hidden">
                                     {/* phải xử lí nếu nó không có avatar thì cho avatar mặc định */}
                                     <img className='w-full h-full object-contain'

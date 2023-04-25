@@ -195,7 +195,9 @@ const Cart = () => {
       'Xóa',
       'Hủy bỏ',
       function okCb() {
-        handleDeleteAllCart()
+        setTimeout(() => {
+          handleDeleteAllCart()
+        }, 200)
       },
       function cancelCb() {
         // console.log();

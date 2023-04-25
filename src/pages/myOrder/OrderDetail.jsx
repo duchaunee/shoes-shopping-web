@@ -42,7 +42,7 @@ const OrderDetail = () => {
     if (order) {
       const reviewsRef = query(collection(db, "reviews"),
         where('userID', '==', userID),
-        where('productID', '==', order?.cartProduct.id));
+        where('orderID', '==', order?.id));
       const q = query(reviewsRef);
       try {
         const querySnapshot = await getDocs(q);
@@ -111,7 +111,8 @@ const OrderDetail = () => {
           openReview={openReview}
           setOpenReview={setOpenReview}
           setReviewDone={setReviewDone}
-          review={review}>
+          review={review}
+          orderID={id}>
           <div className={`w-full py-[30px] ${loading && 'blur-[2px]'}`}>
             <div className="max-w-[1230px] mx-auto ">
               <div className="w-full px-[15px] pb-[30px]">

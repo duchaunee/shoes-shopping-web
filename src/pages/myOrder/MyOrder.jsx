@@ -87,7 +87,7 @@ const MyOrder = () => {
     try {
       const querySnapshot = await getDocs(q);
       const allReviews = querySnapshot.docs.map((doc) => {
-        mapReviews.set(doc.data().productID, doc.data())
+        mapReviews.set(doc.data().orderID, doc.data())
       })
       setAllReviews(mapReviews)
     }
@@ -267,7 +267,7 @@ const OrderProduct = ({ order, allReviews }) => (
         <p className='inline-block'>{`${order.orderDate} | ${order.orderTime}`}</p>
       </div>
       <div className='flex gap-4 items-center'>
-        {allReviews.has(order.cartProduct.id) && (
+        {allReviews.has(order?.id) && (
           <p className="text-primary uppercase text-[14px] tracking-wider">Đã đánh giá</p>
         )}
         <NavLink
