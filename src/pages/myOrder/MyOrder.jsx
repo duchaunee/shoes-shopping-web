@@ -138,8 +138,8 @@ const MyOrder = () => {
                   : (
                     <>
                       {/* nav */}
-                      <div className="w-full grid grid-cols-5 grid-rows-1 item shadow-shadowPrimary mb-5">
-                        {['Tất cả', 'Đang xử lý', 'Vận chuyển', 'Đang giao', 'Hoàn thành']
+                      <div className="w-full grid grid-cols-6 grid-rows-1 item shadow-shadowPrimary mb-5">
+                        {['Tất cả', 'Đang xử lý', 'Vận chuyển', 'Đang giao', 'Hoàn thành', 'Đã hủy']
                           .map(item => (
                             <button
                               key={item}
