@@ -149,8 +149,8 @@ const Review = ({
           <div
             ref={overlayRef}
             // onClick={handleClickOutside}
-            className="wraper-review bg-black/20 absolute top-[-100px] left-0 bottom-0 right-0 z-[10000]">
-            <div className="relative review w-[520px] mx-auto px-6 py-6 bg-white rounded-[8px] mt-[216px]">
+            className="wraper-review bg-black/20 fixed top-0 left-0 bottom-0 right-0 z-[10000] flex items-center">
+            <div className="relative review w-[520px] mx-auto px-6 py-6 bg-white rounded-[8px] mt-[68px]">
               <div
                 onClick={() => setOpenReview(false)}
                 className="absolute hover:text-primary transition-all ease-linear duration-100 top-1 right-[6px]">

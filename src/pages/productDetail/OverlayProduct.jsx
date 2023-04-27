@@ -34,7 +34,7 @@ const OverlayChild = ({
   const [translateShowX, setTranslateShowX] = useState(activeImg * 876)
   return (
     <div
-      className="wraper-review bg-black/20 absolute top-0 left-0 bottom-0 right-0 z-[10000]">
+      className="wraper-review bg-black/20 fixed top-0 left-0 bottom-0 right-0 z-[10000] flex items-center justify-center">
       <div className="relative w-[1000px] mx-auto flex items-center justify-center">
         {/* prev */}
         <div
