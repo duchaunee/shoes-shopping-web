@@ -265,6 +265,7 @@ const InfoAccount = () => {
     else if (status && !changePass) {
       await handleChangeDisplayName(e);
       await handleUpdateAvatar()
+      await solveOrders()
       solveReviews()
     }
 
@@ -282,16 +283,17 @@ const InfoAccount = () => {
         if (!checkInputDone.passwordError) {
           await handleChangeDisplayName(e) //update displayName
           await handleUpdateAvatar()
-          resetAndUpdateInput()
+          await solveOrders()
           solveReviews()
+          resetAndUpdateInput()
         }
       }
     }
   }
 
   const solveReviews = async () => {
-    const ordersRef = query(collection(db, "reviews"), where('userID', "==", userID));
-    const q = query(ordersRef);
+    const reviewsRef = query(collection(db, "reviews"), where('userID', "==", userID));
+    const q = query(reviewsRef);
     try {
       const querySnapshot = await getDocs(q);
       const allReviews = querySnapshot.docs.map((doc) => ({
@@ -309,6 +311,7 @@ const InfoAccount = () => {
               productID: review.productID,
               rate: review.rate,
               typeReview: review.typeReview,
+              orderID: review.orderID,
               orderDate: review.orderDate,
               orderTime: review.orderTime,
               creatAt: review.creatAt,
@@ -319,6 +322,46 @@ const InfoAccount = () => {
         })
       )
       // setAllOrders(allOrders)
+    }
+    catch (e) {
+      console.log(e.message);
+    }
+  }
+
+  const solveOrders = async () => {
+    const ordersRef = query(collection(db, "orders"), where('userID', "==", userID));
+    const q = query(ordersRef);
+    try {
+      const querySnapshot = await getDocs(q);
+      const allOrders = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+      Promise.all(
+        allOrders.map(async (order) => {
+          try {
+            console.log(order);
+            await setDoc(doc(db, "orders", order.id), {
+              userID: order.userID,
+              displayName: infoChange.name,
+              displayEmail: order.displayEmail,
+              imgAvatar: localStorage.getItem('imgAvatar') || currentUser?.photoURL,
+              // totalPayment,
+              deliveryFee: order.deliveryFee,
+              discount: order.discount,
+              orderDate: order.orderDate,
+              orderTime: order.orderTime,
+              orderAmount: order.orderAmount,
+              orderStatus: order.orderStatus,
+              cartProduct: order.cartProduct,
+              shippingAddress: order.shippingAddress,
+              creatAt: order.creatAt
+            })
+          } catch (e) {
+            console.log(e.message);
+          }
+        })
+      )
     }
     catch (e) {
       console.log(e.message);
