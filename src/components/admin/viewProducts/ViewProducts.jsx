@@ -373,7 +373,7 @@ const ViewProducts = () => {
             : <>
               <div
                 style={{
-                  height: `${itemsPerPage * 148 + 55}px`
+                  height: `${itemsPerPage * 148 + 20}px`
                 }}
                 className="w-full text-bgPrimary">
                 {loading
@@ -394,7 +394,7 @@ const ViewProducts = () => {
                         {pageProducts.map((product, idx) => (
                           <tr
                             key={product.id}
-                            className='grid gap-5 grid-cols-12 mb-4 rounded-[4px] py-4 shadow-md'>
+                            className='grid gap-5 grid-cols-12 mb-4 rounded-[4px] py-[10px] shadow-md'>
                             <td className='col-span-1 flex items-center justify-center'>
                               <span className='text-[18px] font-medium'>
                                 {(idx + 1) + itemsPerPage * (currentPage - 1)}
