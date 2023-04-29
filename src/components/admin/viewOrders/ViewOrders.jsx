@@ -2,9 +2,10 @@ import { faMinus, faPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { collection, getDocs, query } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { NavLink, useParams } from 'react-router-dom';
+import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { db } from '../../../firebase/config';
 import { Spinning } from '../../../animation-loading'
+import OrderDetailAdmin from './OrderDetailAdmin';
 
 const solveCategory = (category) => {
   switch (category) {
@@ -48,8 +49,11 @@ function formatDate(dateString) {
 
 const ViewOrders = () => {
   const { id } = useParams()
+  const [orderID, setOrderID] = useState('')
+  const [orderDetailAdmin, setOrderDetailAdmin] = useState(false)
   const [loading, setLoading] = useState(true)
   const [allOrders, setAllOrders] = useState(true)
+  const navigate = useNavigate()
 
   const getOrders = async () => {
     setLoading(true)
@@ -75,71 +79,85 @@ const ViewOrders = () => {
     }
   }
 
-  const detectPath = (f1, f2) => {
-    if (id === 'view') return f1
-    else return f2
-  }
 
   useEffect(() => {
     getOrders()
   }, [])
 
+  useEffect(() => {
+    if (id === 'view') setOrderDetailAdmin(false)
+    else setOrderDetailAdmin(true)
+  }, [id])
+
   return (
     <>
-      <div className="w-full shadow-shadowPrimary px-3 rounded-md">
-        <table className='w-full'>
-          <thead>
-            <tr className={`${!loading && 'border-[3px] border-transparent border-b-[#ececec]'} grid grid-cols-14 gap-2 grid-rows-1 text-[14px] font-bold py-4 uppercase tracking-wider`}>
-              <td className='col-span-3'>Họ tên</td>
-              <td className='col-span-3'>Địa chỉ</td>
-              <td className='col-span-2'>SĐT</td>
-              <td className='col-span-2'>Ngày đặt</td>
-              <td className='col-span-2'>Tình trạng</td>
-              <td className='col-span-2'>Hành động</td>
-            </tr>
-          </thead>
-          <tbody>
-            {!loading
-              && (
-                allOrders.map((order) => (
-                  <tr
-                    key={order.id}
-                    className='grid items-center grid-cols-14 gap-2 rounded-[4px] h-[70px] border border-transparent border-b-[#ececec]'>
-                    <td className='col-span-3 grid grid-cols-7 gap-3 items-center'>
-                      <p className="col-span-7 flex flex-col line-clamp-2">
-                        {order.displayName}
-                      </p>
-                    </td >
-                    <td className='col-span-3 flex ' >
-                      <span className='text-[16px] line-clamp-2'>{order.shippingAddress.address}</span>
-                    </td >
-                    <td className='col-span-2 flex items-center py-2'>
-                      <p className="">{order.shippingAddress.phoneNumber}</p>
-                    </td>
-                    <td className='col-span-2 flex items-center py-2'>
-                      <p className="">{formatDate(order.orderDate)}</p>
-                    </td>
-                    <td className='col-span-2 flex items-center font-bold'>
-                      <p className='text-bgPrimary text-center text-[16px]'>{order.orderStatus}</p>
-                    </td>
-                    <td className='col-span-2 flex items-center font-bold'>
-                      <NavLink
-                        to={`/admin/view-order/${order?.id}`}
-                        className='bg-primary text-white px-2 py-1 hover:bg-[#a40206] transition-all ease-linear duration-[120ms]'>
-                        <span className='tracking-wider uppercase text-[14px] font-medium'>Xem chi tiết</span>
-                      </NavLink>
-                    </td>
+      {!orderDetailAdmin
+        ? (
+          <div className="">
+            <div className="w-full shadow-shadowPrimary px-3 rounded-md">
+              <table className='w-full'>
+                <thead>
+                  <tr className={`${!loading && 'border-[3px] border-transparent border-b-[#ececec]'} grid grid-cols-14 gap-2 grid-rows-1 text-[14px] font-bold py-4 uppercase tracking-wider`}>
+                    <td className='col-span-3'>Họ tên</td>
+                    <td className='col-span-3'>Địa chỉ</td>
+                    <td className='col-span-2'>SĐT</td>
+                    <td className='col-span-2'>Ngày đặt</td>
+                    <td className='col-span-2'>Tình trạng</td>
+                    <td className='col-span-2'>Hành động</td>
                   </tr>
-                ))
-              )}
-          </tbody>
-        </table>
-      </div>
-      {loading && (
-        <div className="w-full h-[350px]">
-          <Spinning color='#1f2028' size='30px' />
-        </div>
-      )}
+                </thead>
+                <tbody>
+                  {!loading
+                    && (
+                      allOrders.map((order) => (
+                        <tr
+                          key={order.id}
+                          className='grid items-center grid-cols-14 gap-2 rounded-[4px] h-[70px] border border-transparent border-b-[#ececec]'>
+                          <td className='col-span-3 grid grid-cols-7 gap-3 items-center'>
+                            <p className="col-span-7 flex flex-col line-clamp-2">
+                              {order.displayName}
+                            </p>
+                          </td >
+                          <td className='col-span-3 flex ' >
+                            <span className='text-[16px] line-clamp-2'>{order.shippingAddress.address}</span>
+                          </td >
+                          <td className='col-span-2 flex items-center py-2'>
+                            <p className="">{order.shippingAddress.phoneNumber}</p>
+                          </td>
+                          <td className='col-span-2 flex items-center py-2'>
+                            <p className="">{formatDate(order.orderDate)}</p>
+                          </td>
+                          <td className='col-span-2 flex items-center font-bold'>
+                            <p className='text-bgPrimary text-center text-[16px]'>{order.orderStatus}</p>
+                          </td>
+                          <td className='col-span-2 flex items-center font-bold'>
+                            <button
+                              onClick={(e) => {
+                                setOrderID(order.id)
+                                setOrderDetailAdmin(true)
+                                navigate(`/admin/view-orders/${order.id}`)
+                              }}
+                              className='bg-primary text-white px-2 py-1 hover:bg-[#a40206] transition-all ease-linear duration-[120ms]'>
+                              <span className='tracking-wider uppercase text-[14px] font-medium'>Xem chi tiết</span>
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                </tbody>
+              </table>
+            </div>
+            {loading && (
+              <div className="w-full h-[350px]">
+                <Spinning color='#1f2028' size='30px' />
+              </div>
+            )}
+          </div>
+        )
+        : <>
+          {/* lí do phải || id là orderID chỉ được set khi click vào sp, vậy khi click rồi, vào đc OrderDetailAdmin rồi mà nhấn refresh thì orderID nó là '', vậy nên phải || id (vì id lúc này là cái path phía sau view-order/kjas2pIeRvlnvkGAHpjX) */}
+          <OrderDetailAdmin id={orderID || id} />
+        </>}
     </>
   );
 };

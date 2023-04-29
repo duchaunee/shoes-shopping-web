@@ -1,7 +1,11 @@
-import React from 'react';
-import { OverlayLoading } from '../../../animation-loading';
-import { doc, getDoc } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
+import { OverlayLoading, Skeleton } from '../../../animation-loading';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../../firebase/config';
+import { NavLink, useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { selectEmail, selectUserName } from '../../../redux-toolkit/slice/authSlice'
+import Notiflix from 'notiflix';
 
 const solveCategory = (category) => {
   switch (category) {
@@ -14,6 +18,10 @@ const solveCategory = (category) => {
     default:
       break;
   }
+}
+
+const solvePrice = (price) => {
+  return Number(price).toLocaleString('vi-VN');
 }
 
 const solveBrand = (brand) => {
@@ -33,9 +41,12 @@ const solveBrand = (brand) => {
   }
 }
 
-const OrderDetailAdmin = () => {
-  const { id } = useParams()
+const OrderDetailAdmin = ({ id }) => {
   const [loading, setLoading] = useState(true)
+  const [activeStatus, setActiveStatus] = useState('')
+  const [order, setOrder] = useState(null)
+  const displayEmail = useSelector(selectEmail) || localStorage.getItem('displayEmail')
+  const displayName = useSelector(selectUserName) || localStorage.getItem('displayName')
 
   const getOrder = async () => {
     setLoading(true)
@@ -48,6 +59,7 @@ const OrderDetailAdmin = () => {
         id: id,
         ...docSnap.data()
       })
+
       setTimeout(() => {
         setLoading(false)
       }, 1000)
@@ -57,22 +69,91 @@ const OrderDetailAdmin = () => {
     }
   }
 
+  const handleUpdateStatus = () => {
+    try {
+      setDoc(doc(db, "orders", id), {
+        userID: order.userID,
+        displayName: order.displayName,
+        displayEmail: order.displayEmail,
+        imgAvatar: order.imgAvatar,
+        // totalPayment,
+        deliveryFee: order.deliveryFee,
+        discount: order.discount,
+        orderDate: order.orderDate,
+        orderTime: order.orderTime,
+        orderAmount: order.orderAmount,
+        orderStatus: activeStatus,
+        cartProduct: order.cartProduct,
+        shippingAddress: order.shippingAddress,
+        creatAt: order.creatAt,
+      })
+      setTimeout(() => {
+        getOrder()
+      }, 500)
+    } catch (e) {
+      console.log(e.message);
+    }
+  }
+
+  const confirmUpdateStatus = (e) => {
+    e.preventDefault();
+    Notiflix.Confirm.show(
+      'Cập nhật tình trạng đơn hàng',
+      'Bạn có muốn cập nhật tình trạng đơn hàng?',
+      'Cập nhật',
+      'Hủy bỏ',
+      function okCb() {
+        handleUpdateStatus()
+      },
+      function cancelCb() {
+        console.log();
+      },
+      {
+        zindex: 2000,
+        width: '352px',
+        zindex: 999999,
+        fontFamily: 'Roboto',
+        borderRadius: '4px',
+        titleFontSize: '18px',
+        titleColor: '#c30005',
+        messageFontSize: '16px',
+        cssAnimationDuration: 300,
+        cssAnimationStyle: 'zoom',
+        buttonsFontSize: '16px',
+        okButtonBackground: '#c30005',
+        cancelButtonBackground: '#a5a3a3',
+        backgroundColor: '##d8d8d8',
+        backOverlayColor: 'rgba(0,0,0,0.4)',
+      },
+    );
+  }
+
+  useEffect(() => {
+    getOrder()
+  }, [])
+
+  useEffect(() => {
+    if (order?.orderStatus) setActiveStatus(order?.orderStatus)
+  }, [order])
 
   return (
     <>
       <OverlayLoading loading={loading}>
-        <div className={`w-full py-[30px] ${loading && 'blur-[2px]'}`}>
+        <div className={`w-full h-auto ${loading && 'blur-[2px]'}`}>
           <div className="max-w-[1230px] mx-auto ">
-            <div className="w-full px-[15px] pb-[30px]">
+            <div className="w-full px-[15px]">
               <div className="w-full flex">
-                <form className='w-full flex'>
-                  {/* left */}
-                  <div className="basis-[58.33%] pr-[30px] flex flex-col gap-5">
-                    <div className="w-full">
-                      <h1 className='text-[22px] text-bgPrimary font-bold uppercase'>
+                <form className='w-full flex flex-col '>
+                  {/* top */}
+                  <div className="flex">
+                    <div className="w-full pr-4 border border-transparent border-r-[#ddd]">
+                      <h1 className='text-[18px] text-bgPrimary font-bold uppercase flex items-center'>
                         Chi tiết đơn hàng
+                        <div className="inline-block px-1 border border-[#777] ml-2 text-[16px]">
+                          <p className="inline-block text-primary opacity-75">{order?.orderStatus}</p>
+                        </div>
                       </h1>
-                      <div className="w-[50px] h-[3px] my-[10px] bg-red-600"></div>
+                      <div className="w-[100px] h-[3px] my-[10px] bg-red-600"></div>
                       <div className="">
                         <div className="flex justify-between uppercase font-bold border-[2px] border-transparent border-b-[#ccc]">
                           <h2 className='text-[14px] tracking-widest text-bgPrimary py-2'>Sản phẩm</h2>
@@ -89,7 +170,7 @@ const OrderDetailAdmin = () => {
                               </NavLink>
                             </Skeleton>
                             <div className="pl-4">
-                              <div className="">
+                              <div className="flex">
                                 <Skeleton loading={loading}>
                                   <NavLink
                                     to={`/san-pham/${order?.cartProduct.id}`}
@@ -110,15 +191,14 @@ const OrderDetailAdmin = () => {
                               <div className="text-primary px-1 text-[12px] border border-primary inline-block">7 ngày trả hàng</div>
                             </div>
                           </div>
-                          {!loading && (
-                            <NavLink
-                              onClick={() => setOpenReview(true)}
-                              className='bg-primary text-white px-4 py-1 hover:bg-[#a40206] transition-all ease-linear duration-[120ms]'>
-                              <span className='tracking-wider uppercase text-[14px] font-medium'>
-                                {review ? 'Sửa đánh giá' : 'Đánh giá'}
-                              </span>
-                            </NavLink>
-                          )}
+                        </div>
+                        <div className="flex justify-between text-[14px] py-2 border border-transparent border-b-[#ddd]">
+                          <h2 className=''>Thời gian đặt hàng</h2>
+                          <Skeleton className='inline-block' loading={loading}>
+                            <h2 className={`${loading && 'w-[100px]'} font-bold inline-block text-[14px]`}>
+                              {(order && `${order?.orderDate} | ${order?.orderTime}`) || '25 tháng 4 năm 2002'}
+                            </h2>
+                          </Skeleton>
                         </div>
                         <div className="flex justify-between text-[14px] py-2 border border-transparent border-b-[#ddd]">
                           <h2 className=''>Tổng phụ</h2>
@@ -168,67 +248,100 @@ const OrderDetailAdmin = () => {
                         </div>
                       </div>
                     </div>
-                    <div style={{
-                      height: '.1875rem',
-                      width: '100%',
-                      backgroundPositionX: '-1.875rem',
-                      backgroundSize: '7.25rem .1875rem',
-                      backgroundImage: 'repeating-linear-gradient(45deg,#6fa6d6,#6fa6d6 33px,transparent 0,transparent 41px,#f18d9b 0,#f18d9b 74px,transparent 0,transparent 82px)',
-                    }}></div>
-                    <div className="w-full">
-                      <h1 className='text-[22px] text-bgPrimary font-bold uppercase'>Địa chỉ giao hàng</h1>
-                      <div className="w-[50px] h-[3px] my-[10px] bg-red-600"></div>
+                    <div className="w-full pl-4">
+                      <h1 className='text-[18px] text-bgPrimary font-bold uppercase'>Thông tin khách hàng</h1>
+                      <div className="w-[100px] h-[3px] my-[10px] bg-red-600"></div>
+                      <div className="flex justify-between uppercase font-bold border-[2px] border-transparent border-b-[#ccc]">
+                        <h2 className='text-[14px] tracking-widest text-bgPrimary py-2'>Thông tin</h2>
+                        <h2 className='text-[14px] tracking-widest text-bgPrimary py-2'>Cụ thể</h2>
+                      </div>
                       <div className="">
-                        <div className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
-                          <h2 className='text-[14px]'>Tỉnh / Thành phố
+                        <div className="flex items-center justify-between border border-transparent border-b-[#ddd]">
+                          <div className="flex pb-4 mt-4">
+                            <Skeleton loading={loading}>
+                              <NavLink
+                                // to={`/san-pham/${order?.cartProduct.id}`}
+                                className=''>
+                                <img className="h-[80px] aspect-square object-cover rounded-full"
+                                  src={order?.imgAvatar} alt="" />
+                              </NavLink>
+                            </Skeleton>
+                            <div className="pl-4">
+                              <div className="">
+                                <Skeleton loading={loading}>
+                                  <div
+                                    className='text-bgPrimary'>
+                                    <p className="font-medium inline-block mr-1">Họ tên:</p>
+                                    {order?.displayName || 'day la ten de chay skeleton'}
+                                  </div>
+                                </Skeleton>
+                                <Skeleton loading={loading} className='inline-block'>
+                                  <p className="font-medium inline-block mr-1">Email:</p>
+                                  <p className='inline-block'> {order?.displayEmail}</p>
+                                </Skeleton>
+                              </div>
+                              <div className="text-primary px-1 text-[12px] border border-primary inline-block">Thành viên của ShoesPlus</div>
+                            </div>
+                          </div>
+                        </div>
+                        {/* <div className="flex justify-between text-[14px] py-2 border border-transparent border-b-[#ddd]">
+                          <h2 className=''>Thời gian đặt hàng</h2>
+                          <Skeleton className='inline-block' loading={loading}>
+                            <h2 className={`${loading && 'w-[100px]'} font-bold inline-block text-[14px]`}>
+                              {(order && `${order?.orderDate} | ${order?.orderTime}`) || '25 tháng 4 năm 2002'}
+                            </h2>
+                          </Skeleton>
+                        </div> */}
+                        <div className="flex justify-between py-2 border border-transparent border-b-[#ddd] text-[14px]">
+                          <h2 className=''>Tỉnh / Thành phố
                           </h2>
                           <Skeleton className='inline-block' loading={loading}>
-                            <h2 className='font-bold inline-block text-[14px]'>
+                            <h2 className='font-bold inline-block '>
                               {(order && order?.shippingAddress.city) || 'Bắc Ninhhhhhhhhhhhhhhhhhhh'}
                             </h2>
                           </Skeleton>
                         </div>
-                        <div className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
-                          <h2 className='text-[14px]'>Quận / Huyện
+                        <div className="flex justify-between py-2 border border-transparent border-b-[#ddd] text-[14px]">
+                          <h2 className=''>Quận / Huyện
                           </h2>
                           <Skeleton className='inline-block' loading={loading}>
-                            <h2 className='font-bold inline-block text-[14px]'>
+                            <h2 className='font-bold inline-block'>
                               {(order && order?.shippingAddress.district) || 'Bắc Ninhhhhhhhhhhhhhhhhhhh'}
                             </h2>
                           </Skeleton>
                         </div>
-                        <div className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
-                          <h2 className='text-[14px]'>Phường / Xã
+                        <div className="flex justify-between py-2 border border-transparent border-b-[#ddd] text-[14px]">
+                          <h2 className=''>Phường / Xã
                           </h2>
                           <Skeleton className='inline-block' loading={loading}>
-                            <h2 className='font-bold inline-block text-[14px]'>
+                            <h2 className='font-bold inline-block'>
                               {(order && order?.shippingAddress.wards) || 'Bắc Ninhhhhhhhhhhhhhhhhhhh'}
                             </h2>
                           </Skeleton>
                         </div>
-                        <div className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
-                          <h2 className='text-[14px]'>Địa chỉ cụ thể
+                        <div className="flex justify-between py-2 border border-transparent border-b-[#ddd] text-[14px]">
+                          <h2 className=''>Địa chỉ cụ thể
                           </h2>
                           <Skeleton className='inline-block' loading={loading}>
-                            <h2 className='font-bold inline-block text-[14px]'>
+                            <h2 className='font-bold inline-block '>
                               {(order && order?.shippingAddress.address) || 'Bắc Ninhhhhhhhhhhhhhhhhhhh'}
                             </h2>
                           </Skeleton>
                         </div>
-                        <div className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
-                          <h2 className='text-[14px]'>Số điện thoại
+                        <div className="flex justify-between py-2 border border-transparent border-b-[#ddd] text-[14px]">
+                          <h2 className=''>Số điện thoại
                           </h2>
                           <Skeleton className='inline-block' loading={loading}>
-                            <h2 className='font-bold inline-block text-[14px]'>
+                            <h2 className='font-bold inline-block '>
                               {(order && order?.shippingAddress.phoneNumber) || 'Bắc Ninhhhhhhhhhhhhhhhhhhh'}
                             </h2>
                           </Skeleton>
                         </div>
-                        <div className="flex justify-between py-2 border border-transparent border-b-[#ddd]">
-                          <h2 className='text-[14px]'>Ghi chú
+                        <div className="flex justify-between py-2 border border-transparent border-b-[#ddd] text-[14px]">
+                          <h2 className=''>Ghi chú
                           </h2>
                           <Skeleton className='inline-block' loading={loading}>
-                            <h2 className='font-bold inline-block text-[14px]'>
+                            <h2 className='font-bold inline-block '>
                               {order && order?.shippingAddress.note
                                 ? order.shippingAddress.note
                                 : <p className={`${loading || 'italic'}`}>Không có ghi chú</p>}
@@ -238,53 +351,33 @@ const OrderDetailAdmin = () => {
                       </div>
                     </div>
                   </div>
-                  {/* right */}
-                  <div className='self-start flex-1 py-6  bg-[#fafafa] shadow-md px-[30px] border-[2px] border-solid'>
-                    <strong className='text-[#7a9c59] font-bold block mb-5 uppercase'>
-                      Thông tin đặt hàng
-                    </strong>
-                    <ul className=''>
-                      <li className='flex mb-3'>
-                        <p className='mr-1'>Thời gian đặt hàng:</p>
-                        <Skeleton className='inline-block' loading={loading}>
-                          <strong className='text-[16px]'>{(order && `${order?.orderDate} | ${order?.orderTime}`) || '25 tháng 4 năm 2002'}</strong>
-                        </Skeleton>
-                      </li>
-                      <li className='flex mb-3 text-[16px]'>
-                        <p className='mr-1'>Tên hiển thị:</p>
-                        <Skeleton className='inline-block' loading={loading}>
-                          <strong>{(order && order?.displayName) || displayName}</strong>
-                        </Skeleton>
-                      </li>
-                      <li className='flex mb-3 text-[16px]'>
-                        <p className='mr-1'>Email:</p>
-                        <Skeleton className='inline-block' loading={loading}>
-                          <strong>{(order && order?.displayEmail) || displayEmail}</strong>
-                        </Skeleton>
-                      </li>
-                      <li className='flex mb-3 text-[16px]'>
-                        <p className='mr-1'>Tổng cộng:</p>
-                        <Skeleton className='inline-block' loading={loading}>
-                          <strong>
-                            {`${order && order?.cartProduct.price + order?.deliveryFee - order?.discount > 0
-                              ? solvePrice(order?.cartProduct.price + order?.deliveryFee - order?.discount)
-                              : 0} ₫` || '9.999.999 ₫'}
-                          </strong>
-                        </Skeleton>
-                      </li>
-                      <li className='flex mb-3 text-[16px]'>
-                        <p className='mr-1'>Phương thức thanh toán:</p>
-                        <Skeleton className='inline-block' loading={loading}>
-                          <strong className='font-bold inline-block'>
-                            {order && order?.shippingAddress.paymentMethod
-                              ? `${order?.shippingAddress.paymentMethod === "cash"
-                                ? 'Trả tiền mặt khi nhận hàng'
-                                : 'Chuyển khoản ngân hàng'}`
-                              : 'Trả tiền mặt khi nhận hàng'}
-                          </strong>
-                        </Skeleton>
-                      </li>
-                    </ul>
+                  <div style={{
+                    height: '.1875rem',
+                    width: '100%',
+                    backgroundPositionX: '-1.875rem',
+                    backgroundSize: '7.25rem .1875rem',
+                    backgroundImage: 'repeating-linear-gradient(45deg,#6fa6d6,#6fa6d6 33px,transparent 0,transparent 41px,#f18d9b 0,#f18d9b 74px,transparent 0,transparent 82px)',
+                  }} className='my-4'></div>
+                  {/* bottom */}
+                  <div className="">
+                    <div className="w-full flex items-center justify-between item shadow-shadowPrimary px-3">
+                      {['Đang xử lý', 'Vận chuyển', 'Đang giao', 'Hoàn thành']
+                        .map(item => (
+                          <button
+                            key={item}
+                            onClick={(e) => {
+                              e.preventDefault()
+                              setActiveStatus(item)
+                            }}
+                            value={item}
+                            className={`${activeStatus === item ? 'border-b-primary text-primary' : 'border-b-[#fff]'} text-center text-bgPrimary cursor-pointer transition-all ease-in-out duration-150 border-[2px] border-t-0 border-l-0 border-r-0 hover:text-primary font-medium py-3`}>{item}</button>
+                        ))}
+                      <button
+                        onClick={confirmUpdateStatus}
+                        className='bg-primary text-white px-2 py-1 hover:bg-[#a40206] transition-all ease-linear duration-[120ms]'>
+                        <span className='tracking-wider uppercase text-[14px] font-medium'>Cập nhật tình trạng</span>
+                      </button>
+                    </div>
                   </div>
                 </form>
               </div>
