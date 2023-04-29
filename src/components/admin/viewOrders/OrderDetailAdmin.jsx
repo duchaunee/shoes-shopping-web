@@ -6,6 +6,7 @@ import { NavLink, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { selectEmail, selectUserName } from '../../../redux-toolkit/slice/authSlice'
 import Notiflix from 'notiflix';
+import { toast } from 'react-toastify';
 
 const solveCategory = (category) => {
   switch (category) {
@@ -43,6 +44,7 @@ const solveBrand = (brand) => {
 
 const OrderDetailAdmin = ({ id }) => {
   const [loading, setLoading] = useState(true)
+  const [changeStatus, setChangeStatus] = useState(false)
   const [activeStatus, setActiveStatus] = useState('')
   const [order, setOrder] = useState(null)
   const displayEmail = useSelector(selectEmail) || localStorage.getItem('displayEmail')
@@ -88,8 +90,11 @@ const OrderDetailAdmin = ({ id }) => {
         creatAt: order.creatAt,
       })
       setTimeout(() => {
-        getOrder()
-      }, 500)
+        setChangeStatus(true)
+        toast.success('Cập nhật tình trạng đơn hàng thành công', {
+          autoClose: 1200
+        })
+      }, 300)
     } catch (e) {
       console.log(e.message);
     }
@@ -129,8 +134,9 @@ const OrderDetailAdmin = ({ id }) => {
   }
 
   useEffect(() => {
+    setChangeStatus(false)
     getOrder()
-  }, [])
+  }, [changeStatus])
 
   useEffect(() => {
     if (order?.orderStatus) setActiveStatus(order?.orderStatus)

@@ -85,7 +85,10 @@ const ViewOrders = () => {
   }, [])
 
   useEffect(() => {
-    if (id === 'view') setOrderDetailAdmin(false)
+    if (id === 'view') {
+      setOrderDetailAdmin(false)
+      getOrders()
+    }
     else setOrderDetailAdmin(true)
   }, [id])
 

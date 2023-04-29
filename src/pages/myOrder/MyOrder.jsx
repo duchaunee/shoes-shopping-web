@@ -47,6 +47,7 @@ const solvePrice = (price) => {
 const MyOrder = () => {
   const [loading, setLoading] = useState(true)
   const [allOrders, setAllOrders] = useState([])
+  const [allOrdersSort, setAllOrdersSort] = useState([])
   const [allReviews, setAllReviews] = useState(new Map())
   const displayEmail = useSelector(selectEmail) || localStorage.getItem('displayEmail')
   const displayName = useSelector(selectUserName) || localStorage.getItem('displayName')
@@ -72,6 +73,7 @@ const MyOrder = () => {
       setTimeout(() => {
         setLoading(false)
         setAllOrders(allOrdersConverted)
+        setAllOrdersSort(allOrdersConverted)
       }, 500)
     }
     catch (e) {
@@ -109,6 +111,12 @@ const MyOrder = () => {
   //   console.log(allOrders.length);
   //   console.log(JSON.parse(localStorage.getItem('orderLength')));
   // }, [allOrders])
+
+  useEffect(() => {
+    setAllOrdersSort(
+      activeStatus !== 'Tất cả' ? allOrders.filter(order => order.orderStatus === activeStatus) : allOrders
+    )
+  }, [activeStatus])
 
   return (
     <>
@@ -149,7 +157,7 @@ const MyOrder = () => {
                           ))}
                       </div>
                       {/* products */}
-                      {allOrders.map((order, idx) => {
+                      {allOrdersSort.map((order, idx) => {
                         countProducts++;
                         if (countProducts === order.orderAmount && idx < allOrders.length - 1) {
                           countProducts = 0;
