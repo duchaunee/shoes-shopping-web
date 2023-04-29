@@ -2,7 +2,7 @@ import { faMinus, faPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { collection, getDocs, query } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useParams } from 'react-router-dom';
 import { db } from '../../../firebase/config';
 import { Spinning } from '../../../animation-loading'
 
@@ -47,6 +47,7 @@ function formatDate(dateString) {
 }
 
 const ViewOrders = () => {
+  const { id } = useParams()
   const [loading, setLoading] = useState(true)
   const [allOrders, setAllOrders] = useState(true)
 
@@ -74,10 +75,14 @@ const ViewOrders = () => {
     }
   }
 
+  const detectPath = (f1, f2) => {
+    if (id === 'view') return f1
+    else return f2
+  }
+
   useEffect(() => {
     getOrders()
   }, [])
-
 
   return (
     <>
@@ -119,7 +124,7 @@ const ViewOrders = () => {
                     </td>
                     <td className='col-span-2 flex items-center font-bold'>
                       <NavLink
-                        // to={`/chi-tiet/${order?.id}`}
+                        to={`/admin/view-order/${order?.id}`}
                         className='bg-primary text-white px-2 py-1 hover:bg-[#a40206] transition-all ease-linear duration-[120ms]'>
                         <span className='tracking-wider uppercase text-[14px] font-medium'>Xem chi tiết</span>
                       </NavLink>

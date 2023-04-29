@@ -20,7 +20,7 @@ const NavAdmin = () => {
         <NavActive to='home' icon={faHome} text='Thống kê' />
         <NavActive to='view-products' icon={faMountain} iconSize='text-[22px]' text='Xem sản phẩm' />
         <NavActive to='add-product/add' icon={faPlus} text='Thêm sản phẩm' />
-        <NavActive to='view-orders' icon={faFolder} text='Xem đơn đặt hàng' />
+        <NavActive to='view-orders/view' icon={faFolder} text='Xem đơn đặt hàng' />
       </ul>
 
     </div>
