@@ -157,28 +157,38 @@ const MyOrder = () => {
                           ))}
                       </div>
                       {/* products */}
-                      {allOrdersSort.map((order, idx) => {
-                        countProducts++;
-                        if (countProducts === order.orderAmount && idx < allOrders.length - 1) {
-                          countProducts = 0;
-                          return (
-                            <div className='w-full' key={order.id} >
-                              <OrderProduct order={order} allReviews={allReviews} />
-                              <div style={{
-                                height: '.1875rem',
-                                width: '100%',
-                                marginBottom: '16px',
-                                backgroundPositionX: '-1.875rem',
-                                backgroundSize: '7.25rem .1875rem',
-                                backgroundImage: 'repeating-linear-gradient(45deg,#6fa6d6,#6fa6d6 33px,transparent 0,transparent 41px,#f18d9b 0,#f18d9b 74px,transparent 0,transparent 82px)',
-                              }}></div>
-                            </div>
-                          )
-                        }
-                        else return (
-                          <OrderProduct key={order.id} order={order} allReviews={allReviews} />
-                        )
-                      })}
+                      {allOrdersSort.length === 0 && !loading
+                        ? (<div className="w-full h-[380px] flex flex-col gap-10 items-center justify-center">
+                          <img className='w-full h-[250px] object-contain' src="../../orderNoExist.png" alt="" />
+                          <h1 className='text-center text-[22px] font-bold text-bgPrimary leading-[32px] uppercase'>
+                            Chưa có đơn hàng nào
+                            <p className="inline-block text-primary ml-[6px]">{activeStatus}</p>
+                          </h1>
+                        </div>)
+                        : (
+                          allOrdersSort.map((order, idx) => {
+                            countProducts++;
+                            if (countProducts === order.orderAmount && idx < allOrders.length - 1) {
+                              countProducts = 0;
+                              return (
+                                <div className='w-full' key={order.id} >
+                                  <OrderProduct order={order} allReviews={allReviews} />
+                                  <div style={{
+                                    height: '.1875rem',
+                                    width: '100%',
+                                    marginBottom: '16px',
+                                    backgroundPositionX: '-1.875rem',
+                                    backgroundSize: '7.25rem .1875rem',
+                                    backgroundImage: 'repeating-linear-gradient(45deg,#6fa6d6,#6fa6d6 33px,transparent 0,transparent 41px,#f18d9b 0,#f18d9b 74px,transparent 0,transparent 82px)',
+                                  }}></div>
+                                </div>
+                              )
+                            }
+                            else return (
+                              <OrderProduct key={order.id} order={order} allReviews={allReviews} />
+                            )
+                          })
+                        )}
                     </>
                   )}
 
