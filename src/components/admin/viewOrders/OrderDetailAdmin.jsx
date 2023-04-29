@@ -373,7 +373,12 @@ const OrderDetailAdmin = ({ id }) => {
                             key={item}
                             onClick={(e) => {
                               e.preventDefault()
-                              setActiveStatus(item)
+                              if (activeStatus === 'Hoàn thành') {
+                                toast.error('Đơn hàng đã hoàn thành, không thể cập nhật', {
+                                  autoClose: 1200
+                                })
+                              }
+                              else setActiveStatus(item)
                             }}
                             value={item}
                             className={`${activeStatus === item ? 'border-b-primary text-primary' : 'border-b-[#fff]'} text-center text-bgPrimary cursor-pointer transition-all ease-in-out duration-150 border-[2px] border-t-0 border-l-0 border-r-0 hover:text-primary font-medium py-3`}>{item}</button>

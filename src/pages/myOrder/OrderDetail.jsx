@@ -162,7 +162,7 @@ const OrderDetail = () => {
                                 <div className="text-primary px-1 text-[12px] border border-primary inline-block">7 ngày trả hàng</div>
                               </div>
                             </div>
-                            {!loading && (
+                            {!loading && order?.orderStatus === 'Hoàn thành' && (
                               <NavLink
                                 onClick={() => setOpenReview(true)}
                                 className='bg-primary text-white px-4 py-1 hover:bg-[#a40206] transition-all ease-linear duration-[120ms]'>

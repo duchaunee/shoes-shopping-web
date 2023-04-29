@@ -96,11 +96,11 @@ const ViewOrders = () => {
     <>
       {!orderDetailAdmin
         ? (
-          <div className="">
+          <div className="h-full">
             <div className="w-full shadow-shadowPrimary px-3 rounded-md">
               <table className='w-full'>
                 <thead>
-                  <tr className={`${!loading && 'border-[3px] border-transparent border-b-[#ececec]'} grid grid-cols-14 gap-2 grid-rows-1 text-[14px] font-bold py-4 uppercase tracking-wider`}>
+                  <tr className={`${!loading && allOrders.length > 0 && 'border-[3px] border-transparent border-b-[#ececec]'} grid grid-cols-14 gap-2 grid-rows-1 text-[14px] font-bold py-4 uppercase tracking-wider`}>
                     <td className='col-span-3'>Họ tên</td>
                     <td className='col-span-3'>Địa chỉ</td>
                     <td className='col-span-2'>SĐT</td>
@@ -153,6 +153,17 @@ const ViewOrders = () => {
             {loading && (
               <div className="w-full h-[350px]">
                 <Spinning color='#1f2028' size='30px' />
+              </div>
+            )}
+            {!loading && allOrders.length === 0 && (
+              <div className="w-full h-full flex flex-col gap-8 items-center justify-center mt-[-24px]">
+                <div
+                  style={{
+                    backgroundImage: "url('/emptyOrder.jpg')"
+                  }}
+                  className="w-[320px] h-[200px] bg-cover bg-no-repeat bg-center"></div>
+                <div className='text-center text-[20px] font-bold text-bgPrimary font-mono leading-[32px] uppercase'>Chưa có đơn hàng nào được tạo ra
+                </div>
               </div>
             )}
           </div>
