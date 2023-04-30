@@ -45,7 +45,7 @@ const solveBrand = (brand) => {
 function formatDate(dateString) {
   const arr = dateString.split(/[\s,]+/);
   const filteredArr = arr.filter(item => !isNaN(item));
-  return `${filteredArr[0]}/${filteredArr[1].padStart(2, '0')}/${filteredArr[2]}`
+  return `${filteredArr[0].padStart(2, '0')}/${filteredArr[1].padStart(2, '0')}/${filteredArr[2]}`
 }
 
 const itemsPerPage = 6;

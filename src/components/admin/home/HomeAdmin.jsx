@@ -55,15 +55,19 @@ const HomeAdmin = () => {
     const q = query(ordersRef);
     try {
       const querySnapshot = await getDocs(q);
-      const allOrders = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }))
+      const allOrders = querySnapshot.docs.map((doc) => {
+        console.log(doc.data());
+        if (doc.data().orderStatus !== 'Đã hủy') return ({
+          id: doc.id,
+          ...doc.data()
+        })
+      }).filter(order => order) //lọc ra những thằng undefined
+      console.log(allOrders);
       const total = allOrders.reduce((total, item) => {
         let tmpPrice;
         if (item.orderStatus === 'Đã hủy') tmpPrice = 0
-        else tmpPrice = item.cartProduct.price * item.cartProduct.quantity
-        return total + tmpPrice + item.deliveryFee - item.discount
+        else tmpPrice = item.cartProduct.price * item.cartProduct.quantity + item.deliveryFee - item.discount
+        return total + tmpPrice;
       }, 0)
       setAllOrders(allOrders)
       setTotal(total)
