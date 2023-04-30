@@ -17,6 +17,7 @@
     "mathsass": "^0.11.0",
     "notiflix": "^3.2.6",
     "react": "^18.2.0",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.9.0",
