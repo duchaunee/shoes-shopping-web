@@ -372,12 +372,12 @@ const OrderDetailAdmin = ({ id }) => {
                             key={item}
                             onClick={(e) => {
                               e.preventDefault()
-                              if (activeStatus === 'Hoàn thành') {
+                              if (order.orderStatus === 'Hoàn thành') {
                                 toast.error('Đơn hàng đã hoàn thành, không thể cập nhật', {
                                   autoClose: 1200
                                 })
                               }
-                              else if (activeStatus === 'Đã hủy') {
+                              else if (order.orderStatus === 'Đã hủy') {
                                 toast.error('Đơn hàng đã bị hủy, không thể cập nhật', {
                                   autoClose: 1200
                                 })
@@ -391,12 +391,12 @@ const OrderDetailAdmin = ({ id }) => {
                         onClick={(e) => {
                           e.preventDefault()
                           console.log(activeStatus);
-                          if (activeStatus === 'Hoàn thành') {
+                          if (order.orderStatus === 'Hoàn thành') {
                             toast.error('Đơn hàng đã hoàn thành, không thể cập nhật', {
                               autoClose: 1200
                             })
                           }
-                          else if (activeStatus === 'Đã hủy') {
+                          else if (order.orderStatus === 'Đã hủy') {
                             toast.error('Đơn hàng đã bị hủy, không thể cập nhật', {
                               autoClose: 1200
                             })

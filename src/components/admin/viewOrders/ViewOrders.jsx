@@ -142,7 +142,9 @@ const ViewOrders = () => {
                               <p className="">{formatDate(order.orderDate)}</p>
                             </td>
                             <td className='col-span-2 flex items-center font-bold'>
-                              <p className='text-bgPrimary text-center text-[16px]'>{order.orderStatus}</p>
+                              <p className={`text-bgPrimary text-center text-[16px] ${order.orderStatus === 'Hoàn thành' && 'text-green-600'} ${order.orderStatus === 'Đã hủy' && 'text-primary'}`}>
+                                {order.orderStatus}
+                              </p>
                             </td>
                             <td className='col-span-2 flex items-center font-bold'>
                               <button
