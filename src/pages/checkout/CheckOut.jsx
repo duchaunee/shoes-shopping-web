@@ -20,6 +20,8 @@ const CheckOut = () => {
   const [allProducts, setAllProducts] = useState([])
   const [cartProducts, setCartProducts] = useState([])
   //
+  const [quantityProduct, setQuantityProduct] = useState(new Map())
+  //
   const currentUser = auth.currentUser;
   const userID = useSelector(selectUserID) || localStorage.getItem('userID')
   const displayEmail = useSelector(selectEmail) || localStorage.getItem('displayEmail')
@@ -63,8 +65,37 @@ const CheckOut = () => {
     }
   }
 
+  const handleInventory = async () => {
+    Promise.all(
+      allProducts.map(async (product) => {
+        if (quantityProduct.has(product.id)) {
+          try {
+            await setDoc(doc(db, "products", product.id), {
+              name: product.name,
+              imgURL: product.imgURL,
+              price: product.price,
+              inventory: product.inventory - quantityProduct.get(product.id), //số lượng tồn kho trừ đi 1 khi đơn hàng hoàn thành
+              category: product.category,
+              brand: product.brand,
+              desc: product.desc,
+              imgPreviewURL1: product.imgPreviewURL1,
+              imgPreviewURL2: product.imgPreviewURL2,
+              imgPreviewURL3: product.imgPreviewURL3,
+              imgPreviewURL4: product.imgPreviewURL4,
+              creatAt: product.creatAt,
+              editedAt: product.editedAt
+            })
+          } catch (e) {
+            console.log(e.message);
+          }
+        }
+      })
+    )
+  }
+
   const getCartProducts = async () => {
     setLoading(true)
+    const map = new Map()
     const productsRef = query(collection(db, "cartProducts"), where('userID', "==", userID));
     const q = query(productsRef);
     if (allProducts.length > 0) {
@@ -76,6 +107,7 @@ const CheckOut = () => {
               // console.log(doc.data().id);
               const newProduct = allProducts.filter((product) => product.id === doc.data().id)[0]
               // console.log('newProduct: ', newProduct);
+              map.set(doc.data().id, doc.data().quantity)
               return {
                 ...doc.data(),
                 name: newProduct.name,
@@ -92,6 +124,8 @@ const CheckOut = () => {
           }, 0)
           setTotalPayment(totalPayment)
           localStorage.setItem('cartLength', JSON.stringify(allCartProducts.length))
+          //
+          setQuantityProduct(map)
           setTimeout(() => {
             setCartProducts(allCartProducts)
             setLoading(false)
@@ -213,6 +247,7 @@ const CheckOut = () => {
         await handleDeleteAllCart() //xóa tất cả sp trong giỏ hàng khi ấn đặt hàng
         //chuyển hướng tới /thanh-toan/success
         await resetVouchers() //mỗi khi bấm đặt hàng thì reset voucher (tránh TH đặt hàng qua nút Đặt hàng ở DropDownCart)
+        await handleInventory() //xóa đi số sản phẩm tương ứng của 'sản phẩm có sẵn'
         setTimeout(() => {
           setLoadingNavigate(false)
           setCheckoutSuccess(true)
