@@ -174,7 +174,7 @@ const MyOrder = () => {
                               countProducts = 0;
                               return (
                                 <div className='w-full' key={order.id} >
-                                  <OrderProduct order={order} allReviews={allReviews} setCancelOrder={setCancelOrder} />
+                                  <OrderProduct order={order} allReviews={allReviews} setCancelOrder={setCancelOrder} setActiveStatus={setActiveStatus} />
                                   <div style={{
                                     height: '.1875rem',
                                     width: '100%',
@@ -187,7 +187,7 @@ const MyOrder = () => {
                               )
                             }
                             else return (
-                              <OrderProduct key={order.id} order={order} allReviews={allReviews} setCancelOrder={setCancelOrder} />
+                              <OrderProduct key={order.id} order={order} allReviews={allReviews} setCancelOrder={setCancelOrder} setActiveStatus={setActiveStatus} />
                             )
                           })
                         )}
@@ -278,7 +278,7 @@ const MyOrder = () => {
   );
 };
 
-const OrderProduct = ({ order, allReviews, setCancelOrder }) => {
+const OrderProduct = ({ order, allReviews, setCancelOrder, setActiveStatus }) => {
 
   const handleInventory = async (product) => {
     try {
@@ -325,6 +325,7 @@ const OrderProduct = ({ order, allReviews, setCancelOrder }) => {
         autoClose: 1200
       })
       setCancelOrder(true)
+      setActiveStatus('Tất cả')
     } catch (e) {
       console.log(e.message);
     }
