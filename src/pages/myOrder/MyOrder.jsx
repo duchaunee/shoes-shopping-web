@@ -3,11 +3,12 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import { selectEmail, selectUserID, selectUserName } from '../../redux-toolkit/slice/authSlice';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { OverlayLoading, Skeleton } from '../../animation-loading';
 import { faLongArrowAltLeft, faMoneyCheckDollar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Notiflix from 'notiflix';
 
 
 const solveCategory = (category) => {
@@ -47,6 +48,9 @@ const solvePrice = (price) => {
 const MyOrder = () => {
   const [loading, setLoading] = useState(true)
   const [allOrders, setAllOrders] = useState([])
+  //
+  const [cancelOrder, setCancelOrder] = useState(false)
+  //
   const [allOrdersSort, setAllOrdersSort] = useState([])
   const [allReviews, setAllReviews] = useState(new Map())
   const displayEmail = useSelector(selectEmail) || localStorage.getItem('displayEmail')
@@ -98,14 +102,11 @@ const MyOrder = () => {
     }
   }
 
-  const filderProductsDelivery = () => {
-
-  }
-
   useEffect(() => {
     getOrders()
     getReviews()
-  }, [])
+    setCancelOrder(false)
+  }, [cancelOrder])
 
   // useEffect(() => {
   //   console.log(allOrders.length);
@@ -172,7 +173,7 @@ const MyOrder = () => {
                               countProducts = 0;
                               return (
                                 <div className='w-full' key={order.id} >
-                                  <OrderProduct order={order} allReviews={allReviews} />
+                                  <OrderProduct order={order} allReviews={allReviews} setCancelOrder={setCancelOrder} />
                                   <div style={{
                                     height: '.1875rem',
                                     width: '100%',
@@ -185,7 +186,7 @@ const MyOrder = () => {
                               )
                             }
                             else return (
-                              <OrderProduct key={order.id} order={order} allReviews={allReviews} />
+                              <OrderProduct key={order.id} order={order} allReviews={allReviews} setCancelOrder={setCancelOrder} />
                             )
                           })
                         )}
@@ -276,70 +277,164 @@ const MyOrder = () => {
   );
 };
 
-const OrderProduct = ({ order, allReviews }) => (
-  <div className="w-full p-6 pt-3 mb-4 shadow-shadowPrimary">
-    {/* top */}
-    <div className=" pb-3 border border-transparent border-b-[#ddd] flex justify-between items-center">
-      <div className="text-bgPrimary font-bold text-[14px] uppercase ">
-        <p className="inline-block text-primary mr-1">Ngày đặt hàng:</p>
-        <p className='inline-block'>{`${order.orderDate} | ${order.orderTime}`}</p>
-      </div>
-      <div className='flex gap-4 items-center'>
-        {allReviews.has(order?.id) && (
-          <p className="text-primary uppercase text-[14px] tracking-wider">Đã đánh giá</p>
-        )}
-        <NavLink
-          to={`/chi-tiet/${order?.id}`}
-          className='bg-primary text-white px-4 py-1 hover:bg-[#a40206] transition-all ease-linear duration-[120ms]'>
-          <span className='tracking-wider uppercase text-[14px] font-medium'>Xem đơn hàng</span>
-        </NavLink>
-      </div>
-    </div>
-    {/* bottom */}
-    <div className="w-full flex items-center justify-between pt-4">
-      <div className="flex">
-        <NavLink
-          to={`/san-pham/${order.cartProduct.id}`}
-          className=''>
-          <img className="h-[80px] object-cover"
-            src={order.cartProduct.imgURL} alt="" />
-        </NavLink>
-        <div className="pl-4">
-          <div className="">
-            <NavLink
-              to={`/san-pham/${order.cartProduct.id}`}
-              className='text-[#334862]'>
-              {order.cartProduct.name}
-            </NavLink>
-            <p className='inline-block ml-1'> ×{order.cartProduct.quantity}</p>
+const OrderProduct = ({ order, allReviews, setCancelOrder }) => {
+
+  const handleInventory = async (product) => {
+    try {
+      await setDoc(doc(db, "products", product.id), {
+        name: product.name,
+        imgURL: product.imgURL,
+        price: product.price,
+        inventory: product.inventory, //số lượng tồn kho sẽ được cộng lại khi đơn bị hủy, inventory là số lượng CHƯA TRỪ ĐI, chỉ cần set lại là đc
+        category: product.category,
+        brand: product.brand,
+        desc: product.desc,
+        imgPreviewURL1: product.imgPreviewURL1,
+        imgPreviewURL2: product.imgPreviewURL2,
+        imgPreviewURL3: product.imgPreviewURL3,
+        imgPreviewURL4: product.imgPreviewURL4,
+        creatAt: product.creatAt,
+        editedAt: product.editedAt
+      })
+    } catch (e) {
+      console.log(e.message);
+    }
+  }
+
+  const handleCancelOrder = async () => {
+    try {
+      await setDoc(doc(db, "orders", order.id), {
+        userID: order.userID,
+        displayName: order.displayName,
+        displayEmail: order.displayEmail,
+        imgAvatar: order.imgAvatar,
+        // totalPayment,
+        deliveryFee: order.deliveryFee,
+        discount: order.discount,
+        orderDate: order.orderDate,
+        orderTime: order.orderTime,
+        orderAmount: order.orderAmount,
+        orderStatus: 'Đã hủy',
+        cartProduct: order.cartProduct,
+        shippingAddress: order.shippingAddress,
+        creatAt: order.creatAt,
+      })
+      await handleInventory(order.cartProduct)
+      setCancelOrder(true)
+    } catch (e) {
+      console.log(e.message);
+    }
+  }
+
+  const confirmCancelOrder = (e) => {
+    e.preventDefault();
+    Notiflix.Confirm.show(
+      'Hủy đặt hàng',
+      'Bạn có muốn hủy đơn hàng này không?',
+      'Hủy đơn hàng',
+      'Hủy bỏ',
+      function okCb() {
+        handleCancelOrder()
+      },
+      function cancelCb() {
+        console.log();
+      },
+      {
+        zindex: 2000,
+        width: '352px',
+        zindex: 999999,
+        fontFamily: 'Roboto',
+        borderRadius: '4px',
+        titleFontSize: '18px',
+        titleColor: '#c30005',
+        messageFontSize: '16px',
+        cssAnimationDuration: 300,
+        cssAnimationStyle: 'zoom',
+        buttonsFontSize: '16px',
+        okButtonBackground: '#c30005',
+        cancelButtonBackground: '#a5a3a3',
+        backgroundColor: '##d8d8d8',
+        backOverlayColor: 'rgba(0,0,0,0.4)',
+      },
+    );
+  }
+
+  return (
+    <div className="w-full p-6 pt-3 mb-4 shadow-shadowPrimary" >
+      {/* top */}
+      <div className=" pb-3 border border-transparent border-b-[#ddd] flex justify-between items-center" >
+        <div className="text-bgPrimary font-bold text-[14px] uppercase ">
+          <p className="inline-block text-primary mr-1">Ngày đặt hàng:</p>
+          <p className='inline-block'>{`${order.orderDate} | ${order.orderTime}`}</p>
+          <div className="inline-flex px-2 border border-[#777] ml-2 text-[14px]  items-center justify-center">
+            <p className="inline-block text-primary uppercase">{order?.orderStatus}</p>
           </div>
-          <div className="text-[14px] text-[#777]">
-            <p className="mr-1 inline-block">Phân loại hàng:</p>
-            {`${solveCategory(order.cartProduct.category)} | ${solveBrand(order.cartProduct.brand)}`}
+        </div>
+        <div className='flex gap-3 items-center'>
+          {allReviews.has(order?.id) && (
+            <p className="text-primary uppercase text-[14px] tracking-wider">Đã đánh giá</p>
+          )}
+          {order.orderStatus !== 'Hoàn thành' && order.orderStatus === 'Đang xử lý' && (
+            <button
+              onClick={confirmCancelOrder}
+              className='bg-primary text-white px-4 py-1 hover:bg-[#a40206] transition-all ease-linear duration-[120ms]'>
+              <span className='tracking-wider uppercase text-[14px] font-medium'>Hủy</span>
+            </button>
+          )}
+          <NavLink
+            to={`/chi-tiet/${order?.id}`}
+            className='bg-primary text-white px-4 py-1 hover:bg-[#a40206] transition-all ease-linear duration-[120ms]'>
+            <span className='tracking-wider uppercase text-[14px] font-medium'>Xem đơn hàng</span>
+          </NavLink>
+        </div>
+      </div >
+      {/* bottom */}
+      <div className="w-full flex items-center justify-between pt-4" >
+        <div className="flex">
+          <NavLink
+            to={`/san-pham/${order.cartProduct.id}`}
+            className=''>
+            <img className="h-[80px] object-cover"
+              src={order.cartProduct.imgURL} alt="" />
+          </NavLink>
+          <div className="pl-4">
+            <div className="">
+              <NavLink
+                to={`/san-pham/${order.cartProduct.id}`}
+                className='text-[#334862]'>
+                {order.cartProduct.name}
+              </NavLink>
+              <p className='inline-block ml-1'> ×{order.cartProduct.quantity}</p>
+            </div>
+            <div className="text-[14px] text-[#777]">
+              <p className="mr-1 inline-block">Phân loại hàng:</p>
+              {`${solveCategory(order.cartProduct.category)} | ${solveBrand(order.cartProduct.brand)}`}
+            </div>
+            <div className="text-primary px-1 text-[12px] border border-primary inline-block">7 ngày trả hàng</div>
           </div>
-          <div className="text-primary px-1 text-[12px] border border-primary inline-block">7 ngày trả hàng</div>
         </div>
-      </div>
-      <div className="flex flex-col items-end">
-        <div className="flex gap-2 items-center">
-          <p className="inline-block line-through text-[#aaa]">
-            {solvePrice(order.cartProduct.price * 2)} ₫
-          </p>
-          <p className="inline-block font-semibold  text-bgPrimary">
-            {solvePrice(order.cartProduct.price)} ₫
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <FontAwesomeIcon className='text-[20px]' icon={faMoneyCheckDollar} />
-          <div className="font-medium">Thành tiền:
-            <p className="text-primary font-medium inline-block ml-1">
-              {solvePrice((order.cartProduct.price - (order.discount - order.deliveryFee)).toFixed(3))} ₫
+        <div className="flex flex-col items-end">
+          <div className="flex gap-2 items-center">
+            <p className="inline-block line-through text-[#aaa]">
+              {solvePrice(order.cartProduct.price * 2)} ₫
+            </p>
+            <p className="inline-block font-semibold  text-bgPrimary">
+              {solvePrice(order.cartProduct.price)} ₫
             </p>
           </div>
+          <div className="flex items-center gap-2">
+            <FontAwesomeIcon className='text-[20px]' icon={faMoneyCheckDollar} />
+            <div className="font-medium">Thành tiền:
+              <p className="text-primary font-medium inline-block ml-1">
+                {solvePrice((order.cartProduct.price - (order.discount - order.deliveryFee)).toFixed(3))} ₫
+              </p>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
-)
+      </div >
+    </div >
+  )
+
+}
 
 export default MyOrder;

@@ -121,9 +121,14 @@ const OrderDetail = () => {
                     {/* left */}
                     <div className="basis-[58.33%] pr-[30px] flex flex-col gap-5">
                       <div className="w-full">
-                        <h1 className='text-[22px] text-bgPrimary font-bold uppercase'>
-                          Chi tiết đơn hàng
-                        </h1>
+                        <div className="flex items-center">
+                          <h1 className='text-[22px] text-bgPrimary font-bold uppercase'>
+                            Chi tiết đơn hàng
+                          </h1>
+                          <div className="inline-flex px-2 border border-[#777] ml-2 text-[16px]  items-center justify-center">
+                            <p className="inline-block text-primary uppercase">{order?.orderStatus}</p>
+                          </div>
+                        </div>
                         <div className="w-[50px] h-[3px] my-[10px] bg-red-600"></div>
                         <div className="">
                           <div className="flex justify-between uppercase font-bold border-[2px] border-transparent border-b-[#ccc]">
