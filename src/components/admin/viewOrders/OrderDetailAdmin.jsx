@@ -101,7 +101,6 @@ const OrderDetailAdmin = ({ id }) => {
   }
 
   const confirmUpdateStatus = (e) => {
-    e.preventDefault();
     Notiflix.Confirm.show(
       'Cập nhật tình trạng đơn hàng',
       'Bạn có muốn cập nhật tình trạng đơn hàng?',
@@ -378,13 +377,32 @@ const OrderDetailAdmin = ({ id }) => {
                                   autoClose: 1200
                                 })
                               }
+                              else if (activeStatus === 'Đã hủy') {
+                                toast.error('Đơn hàng đã bị hủy, không thể cập nhật', {
+                                  autoClose: 1200
+                                })
+                              }
                               else setActiveStatus(item)
                             }}
                             value={item}
                             className={`${activeStatus === item ? 'border-b-primary text-primary' : 'border-b-[#fff]'} text-center text-bgPrimary cursor-pointer transition-all ease-in-out duration-150 border-[2px] border-t-0 border-l-0 border-r-0 hover:text-primary font-medium py-3`}>{item}</button>
                         ))}
                       <button
-                        onClick={confirmUpdateStatus}
+                        onClick={(e) => {
+                          e.preventDefault()
+                          console.log(activeStatus);
+                          if (activeStatus === 'Hoàn thành') {
+                            toast.error('Đơn hàng đã hoàn thành, không thể cập nhật', {
+                              autoClose: 1200
+                            })
+                          }
+                          else if (activeStatus === 'Đã hủy') {
+                            toast.error('Đơn hàng đã bị hủy, không thể cập nhật', {
+                              autoClose: 1200
+                            })
+                          }
+                          else confirmUpdateStatus(e)
+                        }}
                         className='bg-primary text-white px-2 py-1 hover:bg-[#a40206] transition-all ease-linear duration-[120ms]'>
                         <span className='tracking-wider uppercase text-[14px] font-medium'>Cập nhật tình trạng</span>
                       </button>
