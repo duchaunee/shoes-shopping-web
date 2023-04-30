@@ -9,6 +9,7 @@ import { OverlayLoading, Skeleton } from '../../animation-loading';
 import { faLongArrowAltLeft, faMoneyCheckDollar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Notiflix from 'notiflix';
+import { toast } from 'react-toastify';
 
 
 const solveCategory = (category) => {
@@ -320,6 +321,9 @@ const OrderProduct = ({ order, allReviews, setCancelOrder }) => {
         creatAt: order.creatAt,
       })
       await handleInventory(order.cartProduct)
+      toast.success('Hủy đơn hàng thành công', {
+        autoClose: 1200
+      })
       setCancelOrder(true)
     } catch (e) {
       console.log(e.message);
