@@ -170,7 +170,7 @@ const MyOrder = () => {
                         : (
                           allOrdersSort.map((order, idx) => {
                             countProducts++;
-                            if (countProducts === order.orderAmount && idx < allOrders.length - 1) {
+                            if (countProducts === order.orderAmount && idx < allOrdersSort.length - 1) {
                               countProducts = 0;
                               return (
                                 <div className='w-full' key={order.id} >
