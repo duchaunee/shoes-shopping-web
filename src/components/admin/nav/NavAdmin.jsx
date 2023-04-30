@@ -1,5 +1,5 @@
 import React from 'react';
-import { faFolder, faHome, faMountain, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faFolder, faHome, faMountain, faPlus, faUsers } from '@fortawesome/free-solid-svg-icons';
 import NavActive from './NavActive';
 import { useSelector } from 'react-redux';
 import { auth } from '../../../firebase/config';
@@ -18,6 +18,7 @@ const NavAdmin = () => {
       </div>
       <ul className='w-full'>
         <NavActive to='home' icon={faHome} text='Thống kê' />
+        <NavActive to='view-customer' icon={faUsers} iconSize='text-[18px]' text='Quản lý khách hàng' />
         <NavActive to='view-products' icon={faMountain} iconSize='text-[22px]' text='Xem sản phẩm' />
         <NavActive to='add-product/add' icon={faPlus} text='Thêm sản phẩm' />
         <NavActive to='view-orders/view' icon={faFolder} text='Xem đơn đặt hàng' />

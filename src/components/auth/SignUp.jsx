@@ -6,8 +6,11 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 //firebase
 import { createUserWithEmailAndPassword } from "firebase/auth"
-import { auth } from '../../firebase/config';
+import { auth, db } from '../../firebase/config';
 import { Spinning } from '../../animation-loading';
+import { addDoc, collection, getDocs, query, where } from 'firebase/firestore';
+import { useSelector } from 'react-redux';
+import { selectUserID } from '../../redux-toolkit/slice/authSlice';
 
 
 const SignUp = ({ signUp, setSignUp, signInWithGoogle }) => {
@@ -56,6 +59,30 @@ const SignUp = ({ signUp, setSignUp, signInWithGoogle }) => {
     })
   }
 
+  const addCurrentUser = async (avatar, displayName, displayEmail, userID) => {
+    const productsRef = query(collection(db, "users"), where("userID", "==", userID));
+    const q = query(productsRef);
+    try {
+      const querySnapshot = await getDocs(q);
+      const user = querySnapshot.docs.map(doc => ({ ...doc.data() }))
+      if (user.length === 0) {
+        try {
+          const docRef = addDoc(collection(db, "users"), {
+            userID,
+            avatar,
+            displayName,
+            displayEmail,
+          });
+        } catch (e) {
+          console.log(e.message);
+        }
+      }
+    }
+    catch (e) {
+      console.log(e.message);
+    }
+  }
+
   const handleSignUp = (e) => {
     e.preventDefault();
 
@@ -73,11 +100,26 @@ const SignUp = ({ signUp, setSignUp, signInWithGoogle }) => {
       handleInput(e);
       setLoading(true)
       createUserWithEmailAndPassword(auth, regInfo.email, regInfo.password)
-        .then((userCredential) => {
+        .then(async (userCredential) => {
           navigate('/')
           const user = userCredential.user;
-
-          if (user.photoURL) localStorage.setItem('imgAvatar', user.photoURL); //set avatar cho user login by google
+          if (user.photoURL) {
+            localStorage.setItem('imgAvatar', user.photoURL); //set avatar cho user login by google
+            await addCurrentUser(
+              user.photoURL,
+              user.displayName?.slice(0, 20) || (user.email.slice(0, -10).charAt(0).toUpperCase() + (user.email.slice(0, -10)).slice(1)),
+              user?.email,
+              user.uid
+            )
+          }
+          else {
+            await addCurrentUser(
+              '../../defaultAvatar.jpg',
+              user.displayName?.slice(0, 20) || (user.email.slice(0, -10).charAt(0).toUpperCase() + (user.email.slice(0, -10)).slice(1)),
+              user?.email,
+              user.uid
+            )
+          }
           setLoading(false);
           toast.success(notify, {
             autoClose: 1200,

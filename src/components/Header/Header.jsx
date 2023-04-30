@@ -22,7 +22,7 @@ import {
 import Admin from '../admin/Admin';
 import { adminAccount } from '../../AdminAccount';
 import { SET_CURRENT_USER, STORE_PRODUCTS } from '../../redux-toolkit/slice/productSlice';
-import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
+import { addDoc, collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 import { selectTotalPayment } from '../../redux-toolkit/slice/cartSlice';
 import DropDownCart from './DropDownCart';
 import DropDownSearch from './DropDownSearch';
@@ -37,7 +37,7 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
   // const totalPayment = useSelector(selectTotalPayment) || JSON.parse(localStorage.getItem('totalPayment'))
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const userEmail = useSelector(selectEmail)
+  const userEmail = useSelector(selectEmail) || localStorage.getItem('displayEmail')
   const userID = useSelector(selectUserID) || localStorage.getItem('userID')
   //
   const currentPath = window.location.pathname;
@@ -106,7 +106,7 @@ const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogl
   //DO thằng Header để ở đầu file App nên lúc nào cũng đc chạy trước :v nên lấy luôn thông tin từ đây cho nhanh, thông tin luôn được lấy đầu tiên
   useEffect(() => {
     //Nhận diện người dùng đã log in vào hay chưa
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
         if (user.photoURL) localStorage.setItem('imgAvatar', user.photoURL); //set avatar cho user login by google
         else { //avatar default cho account
