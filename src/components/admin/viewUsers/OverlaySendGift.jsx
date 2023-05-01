@@ -23,8 +23,7 @@ const OverlaySendGift = ({
       const docRef = addDoc(collection(db, "vouchers"), {
         userID,
         code: codeRef.current.value,
-        value: Number(valueRef.current.value),
-        activeCode: true
+        value: Number(valueRef.current.value)
       });
       setTimeout(() => {
         setLoading(false)

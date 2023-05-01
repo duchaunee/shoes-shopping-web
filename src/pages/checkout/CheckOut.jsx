@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import CarLoading from '../../components/carLoading/CarLoading';
-import { Timestamp, addDoc, collection, deleteDoc, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import { Timestamp, addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, where } from 'firebase/firestore';
 import { auth, db } from '../../firebase/config';
 import { useSelector } from 'react-redux';
 import { selectUserID } from '../../redux-toolkit/slice/authSlice';
@@ -32,6 +32,10 @@ const CheckOut = () => {
   //
   const [deliveryFee, setDeliveryFee] = useState(30000)
   const [discount, setDiscount] = useState(0)
+  const [vouchers, setVouchers] = useState(new Map())
+  const [checkTypeVouchers, setCheckTypeVouchers] = useState({})
+  const inputVoucher = useRef()
+  const vouchersID = useRef([])
   //
   const { id } = useParams()
   // console.log('id: ', id);
@@ -139,16 +143,24 @@ const CheckOut = () => {
   }
 
   const getVouchers = async () => {
-    const productsRef = query(collection(db, "vouchers"));
+    const productsRef = query(collection(db, "vouchers"), where('userID', '==', userID));
     const q = query(productsRef);
     try {
       const querySnapshot = await getDocs(q);
+      const map = new Map()
+      const check = {}
       querySnapshot.docs.map(doc => {
-        const { code, activeCode } = doc.data()
-        // console.log(code, activeCode);
-        if (code === 'FREESHIP' && activeCode) setDeliveryFee(0)
-        if (code === 'GIAM50K' && activeCode) setDiscount(50000)
+        const id = doc.id
+        const { code, value } = doc.data()
+        map.set(code, {
+          voucherID: id,
+          value,
+        })
+        check[code] = true
       })
+      console.log(check);
+      setVouchers(map)
+      setCheckTypeVouchers(check)
     } catch (e) {
       console.log(e.message);
     }
@@ -186,17 +198,6 @@ const CheckOut = () => {
     }
   }
 
-  const resetVouchers = async (e) => {
-    await setDoc(doc(db, "vouchers", 'FREESHIIP_SHOESPLUS'), {
-      code: 'FREESHIP',
-      activeCode: false
-    });
-    await setDoc(doc(db, "vouchers", 'GIAM50K_SHOESPLUS'), {
-      code: 'GIAM50K',
-      activeCode: false
-    });
-  }
-
   const saveOrder = async () => {
     cartProducts.map((cartProduct) => {
       try {
@@ -222,6 +223,18 @@ const CheckOut = () => {
     })
   }
 
+  const handleVoucherFalse = async () => {
+    Promise.all(
+      vouchersID.current.map(async (voucherID) => {
+        try {
+          await deleteDoc(doc(db, "vouchers", voucherID));
+        } catch (e) {
+          console.log(e.message);
+        }
+      })
+    )
+  }
+
   const handleOrder = async (e) => {
     //CHỈ KHI NÀO BẤM VÀO ĐẶT HÀNG MỚI CHUYỂN ĐẾN TRANG THÀNH CÔNG
     e.preventDefault()
@@ -238,6 +251,7 @@ const CheckOut = () => {
     else {
       if (!loading) {
         e.preventDefault()
+        console.log(inputVoucher.current.value);
         window.scrollTo({
           top: 0,
           // behavior: 'smooth'
@@ -246,8 +260,8 @@ const CheckOut = () => {
         await saveOrder() // await HANDLE VIỆC ĐẨY ORDER LÊN FIREBASE SAU ĐÓ MỚI XÓA SẢN PHẨM TRONG GIỎ HÀNG
         await handleDeleteAllCart() //xóa tất cả sp trong giỏ hàng khi ấn đặt hàng
         //chuyển hướng tới /thanh-toan/success
-        await resetVouchers() //mỗi khi bấm đặt hàng thì reset voucher (tránh TH đặt hàng qua nút Đặt hàng ở DropDownCart)
         await handleInventory() //xóa đi số sản phẩm tương ứng của 'sản phẩm có sẵn'
+        await handleVoucherFalse() //sửa voucher thành false (không được nhập)
         setTimeout(() => {
           setLoadingNavigate(false)
           setCheckoutSuccess(true)
@@ -493,8 +507,62 @@ const CheckOut = () => {
                                 </h2>
                               </Skeleton>
                             </div>
+                            <div className="border-[3px] pb-3 border-transparent border-b-[#ddd]">
+                              <div className="pt-6 flex gap-2">
+                                <FontAwesomeIcon
+                                  className='text-[#b0b0b0] text-[20px]'
+                                  icon={faTags}
+                                  rotation={90} />
+                                <p className='font-bold text-[14px] uppercase tracking-widest'>Phiếu ưu đãi</p>
+                              </div>
+                              <input
+                                ref={inputVoucher}
+                                className='mb-5 mt-3 text-[16px] w-full px-3 py-2 outline-none border border-[#ccc] focus:shadow-shadowPink'
+                                placeholder='Mã ưu đãi'
+                                type="text" name="" id="" />
+                              <button
+                                onClick={(e) => {
+                                  if (!loading) {
+                                    e.preventDefault()
+                                    if (inputVoucher.current.value === 'FREESHIP') {
+                                      setDeliveryFee(0)
+                                      toast.success('Áp dụng mã miễn phí vận chuyển thành công', {
+                                        autoClose: 1200
+                                      })
+                                      inputVoucher.current.value = ''
+                                    }
+                                    else {
+                                      if (!vouchers.has(inputVoucher.current.value)) {
+                                        toast.error('Mã giảm giá không tồn tại', {
+                                          autoClose: 1200
+                                        })
+                                      }
+                                      else if (checkTypeVouchers[inputVoucher.current.value] === false) {
+                                        toast.error('Bạn đã áp dụng mã giảm giá', {
+                                          autoClose: 1200
+                                        })
+                                      }
+                                      else {
+                                        const field = inputVoucher.current.value
+                                        vouchersID.current.push(vouchers.get(field).voucherID)
+                                        setCheckTypeVouchers(prevState => {
+                                          return Object.assign({}, prevState, { [field]: false });
+                                        })
+                                        setDiscount(Number(vouchers.get(field).value))
+                                        inputVoucher.current.value = ''
+                                        toast.success('Áp dụng mã giảm giá thành công', {
+                                          autoClose: 1200
+                                        })
+                                      }
+                                    }
+                                  }
+                                }}
+                                className='w-full p-2 border border-[#ccc] bg-[#f9f9f9] hover:bg-[#c7c7c7] flex items-center justify-center -tracking-tighter text-[16px] text-[#666] transition-all ease-in-out duration-100'>
+                                Áp dụng
+                              </button>
+                            </div>
                             <div className='mt-6 text-[14px]'>
-                              <div className="flex flex-col gap-4 mb-8">
+                              <div className="flex flex-col gap-4 mb-4">
                                 <div className="flex gap-2">
                                   <input
                                     value='cash'

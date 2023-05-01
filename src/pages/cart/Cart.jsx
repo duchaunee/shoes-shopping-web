@@ -102,32 +102,6 @@ const Cart = () => {
     }
   }
 
-  const resetVouchers = async (e) => {
-    await setDoc(doc(db, "vouchers", 'FREESHIIP_SHOESPLUS'), {
-      code: 'FREESHIP',
-      activeCode: false
-    });
-    await setDoc(doc(db, "vouchers", 'GIAM50K_SHOESPLUS'), {
-      code: 'GIAM50K',
-      activeCode: false
-    });
-  }
-
-  const handleAciveCode = async () => {
-    if (vouchersAction.current.FREESHIP) {
-      await setDoc(doc(db, "vouchers", 'FREESHIIP_SHOESPLUS'), {
-        code: 'FREESHIP',
-        activeCode: true
-      });
-    }
-    if (vouchersAction.current.GIAM50K) {
-      await setDoc(doc(db, "vouchers", 'GIAM50K_SHOESPLUS'), {
-        code: 'GIAM50K',
-        activeCode: true
-      });
-    }
-  }
-
   const handleUpdateCartProduct = async () => {
     window.scrollTo({
       top: 0,
@@ -177,7 +151,6 @@ const Cart = () => {
     e.preventDefault()
     setLoading(true)
 
-    await handleAciveCode() //sửa lại activeCode bằng true
     setTimeout(() => {
       navigate('/thanh-toan/bill-info')
       // setLoading(false)
@@ -271,10 +244,6 @@ const Cart = () => {
   const solvePrice = (price) => {
     return Number(price).toLocaleString('vi-VN');
   }
-
-  useEffect(() => {
-    resetVouchers()
-  }, [])
 
   useEffect(() => {
     // console.log('dasd');
@@ -404,65 +373,7 @@ const Cart = () => {
                             onClick={handleCheckOut}
                             className='block text-center w-full px-2 py-3 bg-secondary font-bold tracking-widest text-white hover:brightness-90 transition-all ease-in-out duration-100 uppercase'>Tiến hành thanh toán
                           </button>
-                          <div className="pt-6 pb-3 flex gap-2 border-[2px] border-transparent border-b-[#ddd]">
-                            <FontAwesomeIcon
-                              className='text-[#b0b0b0] text-[20px]'
-                              icon={faTags}
-                              rotation={90} />
-                            <p className='font-bold text-[16px]'>Phiếu ưu đãi</p>
-                          </div>
-                          <input
-                            ref={inputVoucher}
-                            className='my-5 text-[16px] w-full px-3 py-2 outline-none border border-[#ccc] focus:shadow-shadowPink'
-                            placeholder='Mã ưu đãi'
-                            type="text" name="" id="" />
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault()
-                              if (inputVoucher.current.value === 'FREESHIP') {
-                                if (deliveryFee > 0) {
-                                  setDeliveryFee(0)
-                                  vouchersAction.current.FREESHIP = true
-                                  toast.success('Áp dụng mã miễn phí vận chuyển thành công', {
-                                    autoClose: 1200,
-                                    position: 'top-left'
-                                  })
-                                } else {
-                                  toast.error('Mã đã được sử dụng', {
-                                    autoClose: 1200,
-                                    position: 'top-left'
-                                  })
-                                }
 
-                                inputVoucher.current.value = ''
-                              }
-                              else if (inputVoucher.current.value === 'GIAM50K') {
-                                if (discount === 0) {
-                                  setDiscount(50000)
-                                  vouchersAction.current.GIAM50K = true
-                                  toast.success('Áp dụng mã giảm 50k thành công', {
-                                    autoClose: 1200,
-                                    position: 'top-left'
-                                  })
-                                } else {
-                                  toast.error('Mã đã được sử dụng', {
-                                    autoClose: 1200,
-                                    position: 'top-left'
-                                  })
-                                }
-                                inputVoucher.current.value = ''
-                              }
-                              else {
-                                if (inputVoucher.current.value !== '') {
-                                  toast.error('Phiếu ưu đãi không tồn tại', {
-                                    autoClose: 1200,
-                                    position: 'top-left'
-                                  })
-                                  inputVoucher.current.value = ''
-                                }
-                              }
-                            }}
-                            className='w-full p-2 border border-[#ccc] bg-[#f9f9f9] hover:bg-[#c7c7c7] flex items-center justify-center -tracking-tighter text-[16px] text-[#666] transition-all ease-in-out duration-100'>Áp dụng</button>
                         </div>
                       </div>
                     </>
