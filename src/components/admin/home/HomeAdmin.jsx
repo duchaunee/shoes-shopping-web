@@ -5,6 +5,7 @@ import { faCartShopping, faDollarSign, faTruck, faUserPlus } from '@fortawesome/
 import { collection, getDocs, query } from 'firebase/firestore';
 import { db } from '../../../firebase/config';
 import { Skeleton } from '../../../animation-loading';
+import { adminAccount } from '../../../AdminAccount';
 
 const solvePrice = (price) => {
   return Number(price).toLocaleString('vi-VN');
@@ -22,10 +23,14 @@ const HomeAdmin = () => {
     const q = query(ordersRef);
     try {
       const querySnapshot = await getDocs(q);
-      const allUsers = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }))
+      const allUsers = querySnapshot.docs.map((doc) => {
+        if (doc.data().displayEmail !== adminAccount) {
+          return ({
+            id: doc.id,
+            ...doc.data()
+          })
+        }
+      }).filter(user => user)
       // localStorage.setItem('orderLength', JSON.stringify(allOrders.length))
       setAllUsers(allUsers)
     }

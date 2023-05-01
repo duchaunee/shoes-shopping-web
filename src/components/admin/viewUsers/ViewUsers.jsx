@@ -1,8 +1,9 @@
-import { collection, getDocs, query } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { db } from '../../../firebase/config';
 import Pagination from '../../pagination/Pagination';
 import { Spinning } from '../../../animation-loading';
+import { adminAccount } from '../../../AdminAccount';
 
 const itemsPerPage = 6;
 const quantity = 3;
@@ -22,16 +23,35 @@ const ViewUsers = () => {
     const q = query(ordersRef);
     try {
       const querySnapshot = await getDocs(q);
-      const allUsers = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
+      const allUsers = querySnapshot.docs.map((doc) => {
+        if (doc.data().displayEmail !== adminAccount) {
+          return ({
+            id: doc.id,
+            ...doc.data()
+          })
+        }
+      }).filter(user => user)
+      const allUserWithOrder = await Promise.all(allUsers.map(async (user) => {
+        const ordersRef = query(collection(db, "orders"), where('userID', "==", user.userID));
+        const q = query(ordersRef);
+        try {
+          const querySnapshot = await getDocs(q);
+          const order = querySnapshot.docs.map((doc) => ({ ...doc.data() }))
+          return ({
+            ...user,
+            orderQuantity: order.length
+          })
+        }
+        catch (e) {
+          console.log(e.message);
+        }
       }))
       // localStorage.setItem('orderLength', JSON.stringify(allOrders.length))
       setTimeout(() => {
         setLoading(false)
-        setAllUsers(allUsers)
-        setAllUsersSort(allUsers)
-        setPageProducts(allUsers.slice(0, itemsPerPage))
+        setAllUsers(allUserWithOrder)
+        setAllUsersSort(allUserWithOrder)
+        setPageProducts(allUserWithOrder.slice(0, itemsPerPage))
       }, 1000)
     }
     catch (e) {
@@ -125,7 +145,7 @@ const ViewUsers = () => {
                             </td>
                             <td className='col-span-2 flex items-center justify-center font-bold'>
                               <p className='text-bgPrimary text-center text-[16px]'>
-                                20
+                                {user.orderQuantity}
                               </p>
                             </td>
                             <td className='col-span-2 flex items-center font-bold justify-center'>
