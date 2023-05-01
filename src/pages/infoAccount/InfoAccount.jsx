@@ -266,7 +266,8 @@ const InfoAccount = () => {
       await handleChangeDisplayName(e);
       await handleUpdateAvatar()
       await solveOrders()
-      solveReviews()
+      await solveReviews()
+      solveUsers()
     }
 
     //CÓ CHANGE PASSWORD & update password thành công
@@ -284,7 +285,8 @@ const InfoAccount = () => {
           await handleChangeDisplayName(e) //update displayName
           await handleUpdateAvatar()
           await solveOrders()
-          solveReviews()
+          await solveReviews()
+          solveUsers()
           resetAndUpdateInput()
         }
       }
@@ -340,7 +342,6 @@ const InfoAccount = () => {
       Promise.all(
         allOrders.map(async (order) => {
           try {
-            console.log(order);
             await setDoc(doc(db, "orders", order.id), {
               userID: order.userID,
               displayName: infoChange.name,
@@ -364,6 +365,31 @@ const InfoAccount = () => {
       )
     }
     catch (e) {
+      console.log(e.message);
+    }
+  }
+
+  const solveUsers = async () => {
+    console.log('dsadsds');
+    const ordersRef = query(collection(db, "users"), where('userID', "==", userID));
+    const q = query(ordersRef);
+    try {
+      const querySnapshot = await getDocs(q);
+      const user = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }))[0]
+      try {
+        await setDoc(doc(db, "users", user.id), {
+          userID: user.userID,
+          avatar: localStorage.getItem('imgAvatar') || currentUser?.photoURL,
+          displayName: infoChange.name,
+          displayEmail: user.displayEmail,
+        })
+      } catch (e) {
+        console.log(e.message);
+      }
+    } catch (e) {
       console.log(e.message);
     }
   }
