@@ -59,7 +59,7 @@ const SignUp = ({ signUp, setSignUp, signInWithGoogle }) => {
     })
   }
 
-  const addCurrentUser = async (avatar, displayName, displayEmail, userID) => {
+  const addCurrentUser = async (avatar, displayName, displayEmail, userID, provider) => {
     const productsRef = query(collection(db, "users"), where("userID", "==", userID));
     const q = query(productsRef);
     try {
@@ -72,6 +72,7 @@ const SignUp = ({ signUp, setSignUp, signInWithGoogle }) => {
             avatar,
             displayName,
             displayEmail,
+            provider,
           });
         } catch (e) {
           console.log(e.message);
@@ -109,7 +110,8 @@ const SignUp = ({ signUp, setSignUp, signInWithGoogle }) => {
               user.photoURL,
               user.displayName?.slice(0, 20) || (user.email.slice(0, -10).charAt(0).toUpperCase() + (user.email.slice(0, -10)).slice(1)),
               user?.email,
-              user.uid
+              user.uid,
+              'email'
             )
           }
           else {
@@ -117,7 +119,8 @@ const SignUp = ({ signUp, setSignUp, signInWithGoogle }) => {
               '../../defaultAvatar.jpg',
               user.displayName?.slice(0, 20) || (user.email.slice(0, -10).charAt(0).toUpperCase() + (user.email.slice(0, -10)).slice(1)),
               user?.email,
-              user.uid
+              user.uid,
+              'email'
             )
           }
           setLoading(false);

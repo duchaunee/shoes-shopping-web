@@ -19,7 +19,7 @@ const Auth = () => {
   const [signUp, setSignUp] = useState(false);
   const navigate = useNavigate();
 
-  const addCurrentUser = async (avatar, displayName, displayEmail, userID) => {
+  const addCurrentUser = async (avatar, displayName, displayEmail, userID, provider) => {
     const productsRef = query(collection(db, "users"), where("userID", "==", userID));
     const q = query(productsRef);
     try {
@@ -32,6 +32,7 @@ const Auth = () => {
             avatar,
             displayName,
             displayEmail,
+            provider,
           });
         } catch (e) {
           console.log(e.message);
@@ -54,7 +55,8 @@ const Auth = () => {
           user.photoURL,
           user.displayName?.slice(0, 20) || (user.email.slice(0, -10).charAt(0).toUpperCase() + (user.email.slice(0, -10)).slice(1)),
           user.email,
-          user.uid
+          user.uid,
+          'google'
         )
         toast.success('Đăng nhập thành công', {
           autoClose: 1200,

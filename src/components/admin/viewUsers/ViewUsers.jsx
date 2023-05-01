@@ -1,9 +1,14 @@
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { db } from '../../../firebase/config';
+import { auth, db } from '../../../firebase/config';
 import Pagination from '../../pagination/Pagination';
 import { Spinning } from '../../../animation-loading';
 import { adminAccount } from '../../../AdminAccount';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGift, faLock } from '@fortawesome/free-solid-svg-icons';
+import { browserSessionPersistence, createUserWithEmailAndPassword, sendPasswordResetEmail, setPersistence } from 'firebase/auth';
+import Notiflix from 'notiflix';
+import { toast } from 'react-toastify';
 
 const itemsPerPage = 6;
 const quantity = 3;
@@ -57,6 +62,92 @@ const ViewUsers = () => {
     catch (e) {
       console.log(e.message);
     }
+  }
+
+  const getUserProvider = async (id) => {
+    const docRef = doc(db, "users", id);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      return docSnap.data().provider
+      // setUser({
+      //   id: id,
+      //   ...docSnap.data()
+      // })
+    } else {
+      //
+    }
+  }
+
+  const handleCreateNewUser = () => {
+    createUserWithEmailAndPassword(auth, 'duchau123@gmail.com', '11111111')
+      .then((userCredential) => {
+        // Signed in 
+        const user = userCredential.user;
+        console.log('user: ', user);
+        // ...
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+      });
+  }
+
+  const handleSendMail = (e, email, userID) => {
+    e.preventDefault()
+    Notiflix.Confirm.show(
+      'Đặt lại mật khẩu',
+      'Bạn có muốn gửi email đặt lại mật khẩu cho người dùng này ?',
+      'Gửi email',
+      'Hủy bỏ',
+      async function okCb() {
+        const provider = await getUserProvider(userID)
+        if (provider === 'google') {
+          toast.error('Tài khoàn google không thể đổi mật khẩu', {
+            autoClose: 1200,
+            position: 'top-left'
+          })
+        }
+        // sendPasswordResetEmail(auth, email)
+        //   .then(() => {
+        //     toast.success('Email đã được gửi thành công', {
+        //       autoClose: 1200,
+        //       position: 'top-left'
+        //     })
+        //   })
+        //   .catch((error) => {
+        //     const errorCode = error.code;
+        //     const errorMessage = error.message;
+        //     // ..
+        //   });
+      },
+      function cancelCb() {
+        console.log();
+      },
+      {
+        zindex: 2000,
+        width: '320px',
+        zindex: 999999,
+        fontFamily: 'Roboto',
+        borderRadius: '4px',
+        titleFontSize: '20px',
+        titleColor: '#c30005',
+        messageFontSize: '18px',
+        cssAnimationDuration: 300,
+        cssAnimationStyle: 'zoom',
+        buttonsFontSize: '16px',
+        okButtonBackground: '#c30005',
+        cancelButtonBackground: '#a5a3a3',
+        backgroundColor: '##d8d8d8',
+        backOverlayColor: 'rgba(0,0,0,0.4)',
+      },
+    );
+
+  }
+
+  const handleSendVoucher = (e, userID) => {
+    console.log('userID: ', userID);
   }
 
   useEffect(() => {
@@ -128,15 +219,16 @@ const ViewUsers = () => {
                                 {user.orderQuantity}
                               </p>
                             </td>
-                            <td className='col-span-2 flex items-center font-bold justify-center'>
+                            <td className='col-span-2 flex gap-4 items-center font-bold justify-center'>
                               <button
-                                // onClick={(e) => {
-                                //   setOrderID(order.id)
-                                //   setOrderDetailAdmin(true)
-                                //   navigate(`/admin/view-orders/${order.id}`)
-                                // }}
-                                className='bg-primary text-white px-2 py-1 hover:bg-[#a40206] transition-all ease-linear duration-[120ms]'>
-                                <span className='tracking-wider uppercase text-[14px] font-medium'>Xem chi tiết</span>
+                                className='hover:text-primary transition-all ease-in-out duration-200'
+                                onClick={(e) => handleSendMail(e, user.displayEmail, user.id)}>
+                                <FontAwesomeIcon className='text-[18px]' icon={faLock} />
+                              </button>
+                              <button
+                                className='hover:text-primary transition-all ease-in-out duration-200'
+                                onClick={(e) => handleSendVoucher(e, user.id)}>
+                                <FontAwesomeIcon className='text-[18px]' icon={faGift} />
                               </button>
                             </td>
                           </tr>
