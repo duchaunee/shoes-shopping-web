@@ -445,7 +445,7 @@ const InfoAccount = () => {
                 <thead className='block w-full pb-2 mb-1 border-[3px] border-t-0 border-l-0 border-r-0 border-[#ccc]'>
                   <tr className='flex w-full justify-between'>
                     <td className="">Mã giảm giá</td>
-                    <td className="">Giá trị</td>
+                    <td className="">Giá trị (VNĐ)</td>
                   </tr>
                 </thead>
                 <tbody className='w-full'>
