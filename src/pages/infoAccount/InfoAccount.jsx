@@ -9,6 +9,12 @@ import UploadSquare from '../../components/admin/addProduct/UploadSquare';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
 
+
+const solvePrice = (price) => {
+  return Number(price).toLocaleString('vi-VN');
+}
+
+
 const InfoAccount = () => {
   const isGoogleUser = localStorage.getItem('isGoogleUser') === 'true' ? true : false
   //khi reload cần thời gian xác thực xem có đăng nhập hay không thì mới trả về current đc nha
@@ -33,6 +39,9 @@ const InfoAccount = () => {
   const [fileImg, setFileImg] = useState('')
 
   const avatar = localStorage.getItem('imgAvatar'); //link avt tren github
+  //
+  const [vouchers, setVouchers] = useState([])
+  const [showVouchers, setShowVouchers] = useState(false)
 
   // src này `CHỈ ĐỂ KHI MỞ ẢNH MỚI` lên thì nó hiện trong khung, không liên quan gì đến firebase
   //khi reload lại thì phải lấy ảnh trong firebase hiển thị vì cái src này k có tác dụng với internet
@@ -55,6 +64,22 @@ const InfoAccount = () => {
       ...infoChange,
       [e.target.name]: e.target.value
     })
+  }
+
+  const getVouchers = async () => {
+    const productsRef = query(collection(db, "vouchers"), where('userID', '==', userID));
+    const q = query(productsRef);
+    try {
+      const querySnapshot = await getDocs(q);
+      const vouchers = querySnapshot.docs.map(doc => ({
+        voucherID: doc.id,
+        ...doc.data(),
+      }))
+      setVouchers(vouchers)
+      console.log('vouchers: ', vouchers);
+    } catch (e) {
+      console.log(e.message);
+    }
   }
 
   //kiểm tra đầu vào có đúng chưa, nếu ok hết thì mới cho submit
@@ -394,10 +419,55 @@ const InfoAccount = () => {
     }
   }
 
+  useEffect(() => {
+    getVouchers()
+  }, [])
+
   return (
     <>
       <div className="my-[30px] max-w-[1230px] mx-auto">
         <div className="px-[15px]">
+          <div className="mb-4">
+            <span className='text-[#353535] block text-[16px] font-bold uppercase '>Thông tin mã giảm giá</span>
+            <button
+              onClick={() => {
+                setShowVouchers(prev => !prev)
+              }}
+              className='mt-[20px] w-[250px] h-10 bg-primary text-white text-[15px] leading-[37px] font-bold tracking-[1px] uppercase transition-transform ease-in duration-500 focus:outline-none hover:bg-[#a40206]'>
+              {loading ? <Spinning /> : "Xem mã giảm giá hiện có"}
+            </button>
+            <div
+              style={{
+                height: `${showVouchers ? vouchers.length * 32 + 38 : 0}px`
+              }}
+              className={`${showVouchers || 'h-0 opacity-0'} transition-all ease-linear duration-200 mt-4`}>
+              <table className='w-[250px]'>
+                <thead className='block w-full pb-2 mb-1 border-[3px] border-t-0 border-l-0 border-r-0 border-[#ccc]'>
+                  <tr className='flex w-full justify-between'>
+                    <td className="">Mã giảm giá</td>
+                    <td className="">Giá trị</td>
+                  </tr>
+                </thead>
+                <tbody className='w-full'>
+                  {vouchers.map((voucher) => (
+                    <tr
+                      key={voucher.voucherID}
+                      className="flex justify-between border border-t-0 border-l-0 border-r-0 border-[#ddd] py-1">
+                      <td className="">{voucher.code}:</td>
+                      <td className="">{solvePrice(voucher.value)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div style={{
+            height: '.1875rem',
+            width: '100%',
+            backgroundPositionX: '-1.875rem',
+            backgroundSize: '7.25rem .1875rem',
+            backgroundImage: 'repeating-linear-gradient(45deg,#6fa6d6,#6fa6d6 33px,transparent 0,transparent 41px,#f18d9b 0,#f18d9b 74px,transparent 0,transparent 82px)',
+          }} className='my-6'></div>
           <form onSubmit={handleSubmit}>
             <div className="w-full mb-12 text-[#222] text-[14px] flex flex-col gap-5 ">
               <span className='text-[#353535] block text-[16px] font-bold uppercase '>Thông tin tài khoản</span>
