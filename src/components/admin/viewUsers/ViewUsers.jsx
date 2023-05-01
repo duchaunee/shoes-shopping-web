@@ -67,38 +67,6 @@ const ViewUsers = () => {
     <>
       <div className="">
         <div className="h-full">
-          {/* <div className="flex gap-4 mb-4 w-full items-center justify-end">
-            <div className='text-bgPrimary text-[16px] flex items-center'>
-              <p className='font-bold inline-block text-[16px]'>Số lượng</p>
-              : {notFound ? "0" : allOrdersSort.length} đơn hàng
-            </div>
-            <div className="">
-              <select
-                ref={filterRef}
-                onChange={handleFilterOrder}
-                className='outline-none bg-slate-100 px-3 py-2 text-bgPrimary cursor-pointer border border-solid border-[#ddd] inline-block'
-                name="sort-by" id="">
-                <option key='0' value="default">Lọc đơn hàng theo</option>
-                <option key='1' value="all">Tất cả</option>
-                <option key='2' value="Đang xử lý">Đang xử lý</option>
-                <option key='3' value="Vận chuyển">Vận chuyển</option>
-                <option key='4' value="Đang giao">Đang giao</option>
-                <option key='5' value="Hoàn thành">Hoàn thành</option>
-                <option key='6' value="Đã hủy">Đã hủy</option>
-              </select>
-            </div>
-            <div className="">
-              <select
-                ref={queryRef}
-                onChange={handleQueryOrder}
-                className='outline-none bg-slate-100 px-3 py-2 text-bgPrimary cursor-pointer border border-solid border-[#ddd] shadow-shadowSearch'
-                name="sort-by" id="">
-                <option key='0' value="default">Sắp xếp đơn hàng theo</option>
-                <option key='1' value="latest">Mới nhất</option>
-                <option key='2' value="oldest">Cũ nhất</option>
-              </select>
-            </div>
-          </div> */}
           <div className="w-full shadow-shadowPrimary px-3 rounded-md">
             <table className='w-full'>
               <thead>
@@ -113,9 +81,21 @@ const ViewUsers = () => {
               <tbody style={{
                 height: `${loading ? '0' : itemsPerPage * 70 + 20}px`
               }}>
+                {!loading && allUsers.length === 0 && (
+                  <div className="w-full h-full flex flex-col gap-4 items-center mt-8">
+                    <div
+                      style={{
+                        backgroundImage: "url('/emptyOrder.jpg')"
+                      }}
+                      className="w-[220px] h-[250px] bg-cover bg-no-repeat bg-center"></div>
+                    {/* khi chưa có người dùng nào */}
+                    <div className='text-center text-[18px] font-bold text-bgPrimary leading-[32px] uppercase'>Chưa có người dùng nào được tạo ra
+                    </div>
+                  </div>
+                )}
                 {!loading
                   && (
-                    pageProducts.length === 0
+                    (pageProducts.length === 0 && allUsers.length > 0)
                       ? (
                         <div className="w-full flex flex-col gap-4 items-center mt-8">
                           <div
@@ -171,20 +151,8 @@ const ViewUsers = () => {
               <Spinning color='#1f2028' size='30px' />
             </div>
           )}
-          {!loading && allUsers.length === 0 && (
-            <div className="w-full h-full flex flex-col gap-8 items-center justify-center mt-[-24px]">
-              <div
-                style={{
-                  backgroundImage: "url('/emptyOrder.jpg')"
-                }}
-                className="w-[320px] h-[200px] bg-cover bg-no-repeat bg-center"></div>
-              {/* khi chưa có người dùng nào */}
-              <div className='text-center text-[20px] font-bold text-bgPrimary font-mono leading-[32px] uppercase'>Chưa có người dùng nào được tạo ra
-              </div>
-            </div>
-          )}
         </div>
-        {!loading && (
+        {!loading && allUsers.length !== 0 && (
           <div className="">
             <Pagination
               products={allUsersSort}
