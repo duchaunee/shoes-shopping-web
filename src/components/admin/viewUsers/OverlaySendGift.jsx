@@ -59,7 +59,7 @@ const OverlaySendGift = ({
               <div className="flex gap-3">
                 <div className="flex-1 mt-7 relative bg-[#fff]">
                   <label
-                    htmlFor='review'
+                    htmlFor='code'
                     className='absolute inline-block font-medium cursor-pointer top-0 left-[20px] px-[5px] text-[16px] translate-y-[-50%] text-bgPrimary bg-[#fff]'>
                     Mã giảm giá
                   </label>
@@ -69,12 +69,12 @@ const OverlaySendGift = ({
                     className='px-2 py-3 pl-[20px] block w-full h-full text-[16px] border border-solid border-bgPrimary rounded-[4px] bg-transparent text-bgPrimary outline-none resize-none'
                     autoComplete="off"
                     type="text"
-                    id='review'
+                    id='code'
                     placeholder='Mã giảm giá (Nhập chuỗi)' />
                 </div>
                 <div className="flex-1 mt-7 relative bg-[#fff]">
                   <label
-                    htmlFor='review'
+                    htmlFor='value'
                     className='absolute inline-block font-medium cursor-pointer top-0 left-[20px] px-[5px] text-[16px] translate-y-[-50%] text-bgPrimary bg-[#fff]'>
                     Giá trị
                   </label>
@@ -84,7 +84,7 @@ const OverlaySendGift = ({
                     className='px-2 py-3 pl-[20px] block w-full h-full text-[16px] border border-solid border-bgPrimary rounded-[4px] bg-transparent text-bgPrimary outline-none resize-none'
                     autoComplete="off"
                     type="text"
-                    id='review'
+                    id='value'
                     placeholder='Giá trị (VNĐ)' />
                 </div>
               </div>
