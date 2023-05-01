@@ -18,7 +18,7 @@ const NavAdmin = () => {
       </div>
       <ul className='w-full'>
         <NavActive to='home' icon={faHome} text='Thống kê' />
-        <NavActive to='view-customer' icon={faUsers} iconSize='text-[18px]' text='Quản lý khách hàng' />
+        <NavActive to='view-users' icon={faUsers} iconSize='text-[18px]' text='Quản lý khách hàng' />
         <NavActive to='view-products' icon={faMountain} iconSize='text-[22px]' text='Xem sản phẩm' />
         <NavActive to='add-product/add' icon={faPlus} text='Thêm sản phẩm' />
         <NavActive to='view-orders/view' icon={faFolder} text='Xem đơn đặt hàng' />
