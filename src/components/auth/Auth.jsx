@@ -2,11 +2,12 @@ import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import React, { memo, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { auth } from '../../firebase/config';
+import { auth, db } from '../../firebase/config';
 import "./auth.scss"
 import SignIn from './SignIn';
 import SignUp from './SignUp';
 import Reset from './Reset';
+import { addDoc, collection, getDocs, query, where } from 'firebase/firestore';
 
 // Responsive: Truyền cả 2 thằng là false để nó đều cùng ở bên trái dễ responsive
 // - signIn: Truyền <SignIn signUp={false} /> là false để nó bay sang bên phải (để cùng bên phải với signUp tiện cho việc làm responsive)
@@ -18,13 +19,43 @@ const Auth = () => {
   const [signUp, setSignUp] = useState(false);
   const navigate = useNavigate();
 
+  const addCurrentUser = async (avatar, displayName, displayEmail, userID) => {
+    const productsRef = query(collection(db, "users"), where("userID", "==", userID));
+    const q = query(productsRef);
+    try {
+      const querySnapshot = await getDocs(q);
+      const user = querySnapshot.docs.map(doc => ({ ...doc.data() }))
+      if (user.length === 0) {
+        try {
+          const docRef = addDoc(collection(db, "users"), {
+            userID,
+            avatar,
+            displayName,
+            displayEmail,
+          });
+        } catch (e) {
+          console.log(e.message);
+        }
+      }
+    }
+    catch (e) {
+      console.log(e.message);
+    }
+  }
+
   const provider = new GoogleAuthProvider();
   const signInWithGoogle = useCallback(() => {
     signInWithPopup(auth, provider)
-      .then((result) => {
+      .then(async (result) => {
         const credential = GoogleAuthProvider.credentialFromResult(result);
         const token = credential.accessToken;
         const user = result.user;
+        await addCurrentUser(
+          user.photoURL,
+          user.displayName?.slice(0, 20) || (user.email.slice(0, -10).charAt(0).toUpperCase() + (user.email.slice(0, -10)).slice(1)),
+          user.email,
+          user.uid
+        )
         toast.success('Đăng nhập thành công', {
           autoClose: 1200,
         });
