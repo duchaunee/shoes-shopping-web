@@ -13,7 +13,7 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 import MenuFooter from "./MenuFooter";
 import Social from "./Social";
-import { navData } from "../header";
+import { navData } from "../header/navData";
 
 const Footer = () => {
   return (
