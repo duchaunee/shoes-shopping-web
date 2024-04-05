@@ -1,4 +1,4 @@
-export { default as Header } from "./header/Header";
+export { default as Header } from "../header/Header";
 export { default as Footer } from "./footer/Footer";
 export { default as ProductItem } from "./productItem/ProductItem";
 export { default as ButtonPrimary } from "./button/ButtonPrimary";
