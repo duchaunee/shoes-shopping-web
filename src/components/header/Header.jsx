@@ -137,11 +137,8 @@ const Header = ({
     //Nhận diện người dùng đã log in vào hay chưa
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        if (user.photoURL)
-          localStorage.setItem(
-            "imgAvatar",
-            user.photoURL
-          ); //set avatar cho user login by google
+        if (user.photoURL) localStorage.setItem("imgAvatar", user.photoURL);
+        //set avatar cho user login by google
         else {
           //avatar default cho account
           const currentUser = auth.currentUser;
