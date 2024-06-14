@@ -84,7 +84,7 @@ const App = () => {
           <Route
             path="/lien-he"
             element={
-              <EmplyPage className="text-3xl">
+              <EmplyPage className="!text-3xl">
                 Liên hệ: dwchau.dev@gmail.com
               </EmplyPage>
             }
