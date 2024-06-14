@@ -1,15 +1,25 @@
-import React, { memo, useCallback, useEffect, useState } from 'react';
-import { faSearch, faShapes, faShoppingCart, faUser } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Nav from './Nav';
-import './headerScroll.scss'
-import { navData } from './navData';
-import DropDownAccount from './DropDownAccount';
-import { onAuthStateChanged, signOut, updateEmail, updateProfile } from 'firebase/auth';
-import { auth, db } from '../../firebase/config';
-import { toast, ToastContainer } from 'react-toastify';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { memo, useCallback, useEffect, useState } from "react";
+import {
+  faSearch,
+  faShapes,
+  faShoppingCart,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Nav from "./Nav";
+import "./headerScroll.scss";
+import { navData } from "./navData";
+import DropDownAccount from "./DropDownAccount";
+import {
+  onAuthStateChanged,
+  signOut,
+  updateEmail,
+  updateProfile,
+} from "firebase/auth";
+import { auth, db } from "../../firebase/config";
+import { toast, ToastContainer } from "react-toastify";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import {
   REMOVE_ACTIVE_USER,
   SET_ACTIVE_USER,
@@ -18,33 +28,51 @@ import {
   REMOVE_ACTIVE_ADMIN,
   SET_GOOGLE_USER,
   selectUserID,
-} from '../../redux-toolkit/slice/authSlice';
-import Admin from '../admin/Admin';
-import { adminAccount } from '../../AdminAccount';
-import { SET_CURRENT_USER, STORE_PRODUCTS } from '../../redux-toolkit/slice/productSlice';
-import { addDoc, collection, getDocs, orderBy, query, where } from 'firebase/firestore';
-import { selectTotalPayment } from '../../redux-toolkit/slice/cartSlice';
-import DropDownCart from './DropDownCart';
-import DropDownSearch from './DropDownSearch';
+} from "../../redux-toolkit/slice/authSlice";
+import Admin from "../admin/Admin";
+import { adminAccount } from "../../AdminAccount";
+import {
+  SET_CURRENT_USER,
+  STORE_PRODUCTS,
+} from "../../redux-toolkit/slice/productSlice";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
+import { selectTotalPayment } from "../../redux-toolkit/slice/cartSlice";
+import DropDownCart from "./DropDownCart";
+import DropDownSearch from "./DropDownSearch";
 
-const Header = ({ logined, setLogined, admin, setAdmin, isGoogleUser, setIsGoogleUser }) => {
+const Header = ({
+  logined,
+  setLogined,
+  admin,
+  setAdmin,
+  isGoogleUser,
+  setIsGoogleUser,
+}) => {
   // khi reload lại window, logined bị chạy lại const [logined, setLogined] = useState(false) nên nó sẽ nhấp nháy ở "Đăng nhập/đăng xuất" (logined = false) rồi mới chuyển qua Tài khoản (logined = false), do đó phải khởi tạo lấy giá trị từ localstrogate
   // const [logined, setLogined] = useState(localStorage.getItem('logined') === 'true' ? true : false)
   const [scrolled, setScrolled] = useState(false);
-  const [hoverAccount, setHoverAccount] = useState(false)
-  const [hoverCart, setHoverCart] = useState(false)
-  const [hoverSearch, setHoverSearch] = useState(false)
+  const [hoverAccount, setHoverAccount] = useState(false);
+  const [hoverCart, setHoverCart] = useState(false);
+  const [hoverSearch, setHoverSearch] = useState(false);
   // const totalPayment = useSelector(selectTotalPayment) || JSON.parse(localStorage.getItem('totalPayment'))
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const userEmail = useSelector(selectEmail) || localStorage.getItem('displayEmail')
-  const userID = useSelector(selectUserID) || localStorage.getItem('userID')
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const userEmail =
+    useSelector(selectEmail) || localStorage.getItem("displayEmail");
+  const userID = useSelector(selectUserID) || localStorage.getItem("userID");
   //
   const currentPath = window.location.pathname;
 
   const getProducts = async () => {
     const productsRef = collection(db, "products");
-    const q = query(productsRef, orderBy('creatAt', 'desc'));
+    const q = query(productsRef, orderBy("creatAt", "desc"));
     try {
       const querySnapshot = await getDocs(q);
       const allProducts = querySnapshot.docs.map((doc) => {
