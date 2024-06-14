@@ -22,6 +22,7 @@ import InfoAccount from "./pages/infoAccount/InfoAccount";
 import { PermissionDenied } from "./components/admin";
 import OverlayProduct from "./pages/productDetail/OverlayProduct";
 import OrderDetail from "./pages/myOrder/OrderDetail";
+import EmplyPage from "./pages/emplyPage/EmplyPage";
 
 //LƯU Ý: đang set height cho body là 300vh để xuất hiện thanh scroll
 const App = () => {
@@ -65,15 +66,29 @@ const App = () => {
             path="/tai-khoan"
             element={logined ? <InfoAccount /> : <Navigate to="/dang-nhap" />}
           />
-          ;<Route path="/gioi-thieu" element={<h2>GIOI THIEU</h2>}></Route>
+          ;
+          <Route
+            path="/gioi-thieu"
+            element={<EmplyPage>Giới thiệu</EmplyPage>}
+          ></Route>
           <Route path="/giay-nu" element={<GirlShoes></GirlShoes>}></Route>
           <Route path="/giay-nam" element={<BoyShoes></BoyShoes>}></Route>
           <Route
             path="/giay-tre-em"
             element={<ChildShoes></ChildShoes>}
           ></Route>
-          <Route path="/tin-tuc" element={<h2>TIN TỨC</h2>}></Route>
-          <Route path="/lien-he" element={<h2>LIÊN HỆ</h2>}></Route>
+          <Route
+            path="/tin-tuc"
+            element={<EmplyPage>Tin tức</EmplyPage>}
+          ></Route>
+          <Route
+            path="/lien-he"
+            element={
+              <EmplyPage className="text-3xl">
+                Liên hệ: dwchau.dev@gmail.com
+              </EmplyPage>
+            }
+          ></Route>
           <Route
             path="/admin/*"
             element={admin ? <Admin /> : <PermissionDenied />}
