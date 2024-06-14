@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import BgHomeAdmin from './BgHomeAdmin';
+import Chart from './Chart';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartShopping, faDollarSign, faTruck, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { collection, getDocs, query } from 'firebase/firestore';
@@ -61,13 +61,13 @@ const HomeAdmin = () => {
     try {
       const querySnapshot = await getDocs(q);
       const allOrders = querySnapshot.docs.map((doc) => {
-        console.log(doc.data());
+        // console.log(doc.data());
         if (doc.data().orderStatus !== 'Đã hủy') return ({
           id: doc.id,
           ...doc.data()
         })
       }).filter(order => order) //lọc ra những thằng undefined
-      console.log(allOrders);
+      // console.log(allOrders);
       const total = allOrders.reduce((total, item) => {
         let tmpPrice;
         if (item.orderStatus === 'Đã hủy') tmpPrice = 0
@@ -165,7 +165,11 @@ const HomeAdmin = () => {
           </div>
         </Skeleton>
       </div>
-      <div className="w-full bg-red-600 flex-1 rounded-[12px]"></div>
+
+      {/* chart */}
+      <div className="w-full flex-1 pt-6 border border-l-0 border-r-0 border-b-0  border-t-[#ccc]">
+        <Chart />
+      </div>
     </div>
   );
 };
